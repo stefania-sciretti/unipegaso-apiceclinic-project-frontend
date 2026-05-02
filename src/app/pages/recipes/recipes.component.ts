@@ -6,13 +6,13 @@ import { RecipeService } from '../../services/recipe.service';
 import { AlertService } from '../../services/alert.service';
 import { ConfirmModalService } from '../../services/confirm-modal.service';
 import { Recipe, RecipeRequest, ApiError } from '../../models/models';
-import { BtnDirective } from '../../shared/btn.directive';
+import { ButtonComponent } from '../../components/ui/button/button.component';
 import { FormControlDirective } from '../../shared/form-control.directive';
 import { FormLabelDirective } from '../../shared/form-label.directive';
 
 @Component({
   selector: 'app-recipes',
-  imports: [ReactiveFormsModule, NgClass, BtnDirective, FormControlDirective, FormLabelDirective],
+  imports: [ReactiveFormsModule, NgClass, ButtonComponent, FormControlDirective, FormLabelDirective],
   templateUrl: './recipes.component.html'
 })
 export class RecipesComponent implements OnInit {
