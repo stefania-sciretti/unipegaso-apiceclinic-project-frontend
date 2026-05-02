@@ -6,7 +6,7 @@
       </h1>
       <p class="text-[var(--primary-mid)] text-[0.95rem]">Piani dietetici personalizzati e consulenza nutrizionale</p>
     </div>
-    <button appBtn="primary" (click)="openCreate()">+ Nuovo Piano Dieta</button>
+    <app-button (click)="openCreate()">+ Nuovo Piano Dieta</app-button>
   </div>
 
   @if (alertSignal(); as alert) {
@@ -54,8 +54,8 @@
                 </td>
                 <td appTd>
                   <div class="flex gap-2 flex-nowrap items-center">
-                    <button appBtn="sm-blue" (click)="openEdit(p)">Modifica</button>
-                    <button appBtn="sm-danger" (click)="delete(p.id)">Elimina</button>
+                    <app-button size="sm" (click)="openEdit(p)">Modifica</app-button>
+                    <app-button variant="danger" size="sm" (click)="delete(p.id)">Elimina</app-button>
                   </div>
                 </td>
               </tr>
@@ -72,7 +72,7 @@
     <div class="bg-white rounded-[10px] shadow-[0_10px_40px_rgba(53,88,114,0.22)] p-8 w-full max-w-[560px] max-h-[90vh] overflow-y-auto">
       <div class="flex justify-between items-center mb-6 pb-4 border-b-2 border-[var(--border)]">
         <h3 class="text-[1.15rem] text-[var(--primary)] font-bold">{{ editingId() ? 'Modifica Piano Dieta' : 'Nuovo Piano Dieta' }}</h3>
-        <button appBtn="close" (click)="showModal.set(false)">&times;</button>
+        <app-button variant="close" (click)="showModal.set(false)">&times;</app-button>
       </div>
       <form [formGroup]="form" (ngSubmit)="save()">
         <div class="mb-4">
@@ -125,8 +125,8 @@
           </label>
         </div>
         <div class="flex justify-end gap-3 mt-6 pt-4 border-t border-[var(--border)]">
-          <button appBtn="outline" type="button" (click)="showModal.set(false)">Annulla</button>
-          <button appBtn="primary" type="submit">Salva Piano</button>
+          <app-button variant="secondary" type="button" (click)="showModal.set(false)">Annulla</app-button>
+          <app-button type="submit">Salva Piano</app-button>
         </div>
       </form>
     </div>
