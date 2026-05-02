@@ -98,10 +98,9 @@
       <!-- ── Non loggato: Login ──────────────────────────────────── -->
       @if (!auth.isLoggedIn) {
         <li class="flex items-center">
-          <button (click)="openLogin()"
-            class="flex items-center gap-[0.4rem] px-4 py-[0.4rem] rounded-md bg-white/15 text-white border border-white/35 text-sm font-semibold cursor-pointer transition-colors duration-200 hover:bg-white/25">
+          <app-button variant="ghost-light" (click)="openLogin()">
             <span class="material-icons text-[1.1rem]">login</span> Login
-          </button>
+          </app-button>
         </li>
       }
 
@@ -187,8 +186,7 @@
     <dialog class="bg-white rounded-2xl shadow-[0_24px_64px_rgba(17,45,78,0.35)] px-[2.2rem] pt-8 pb-[1.8rem] w-full max-w-[400px] relative border-0"
       open aria-label="Finestra di login" (click)="$event.stopPropagation()" (keydown)="$event.stopPropagation()">
 
-      <button class="absolute top-3 right-4 bg-transparent border-0 text-2xl text-[var(--text-muted)] cursor-pointer leading-none transition-colors duration-200 hover:text-[var(--primary)]"
-        (click)="closeLogin()">&times;</button>
+      <app-button variant="close" extraClass="absolute top-3 right-4" (click)="closeLogin()">&times;</app-button>
 
       <div class="flex items-center justify-center mb-5">
         <img ngSrc="assets/logo/logomark.svg" alt="Apice Clinic" class="h-12 w-auto" height="227" width="249"/>
@@ -223,20 +221,19 @@
             <input id="login-password" formControlName="password" [type]="showPassword ? 'text' : 'password'" placeholder="••••••••"
               autocomplete="current-password" aria-describedby="password-error"
               class="w-full pl-10 pr-10 py-[0.65rem] border-[1.5px] border-[var(--border)] rounded-[var(--radius)] text-[0.95rem] text-[var(--text)] bg-[var(--bg)] outline-none transition-colors duration-200 focus:border-[var(--primary-mid)] focus:bg-white"/>
-            <button type="button" (click)="showPassword = !showPassword"
-              class="absolute right-3 border-0 bg-transparent p-0 text-[var(--text-muted)] hover:text-[var(--primary)] focus:outline-none cursor-pointer"
-              [attr.aria-label]="showPassword ? 'Nascondi password' : 'Mostra password'">
+            <app-button variant="icon" extraClass="absolute right-3 p-0"
+              [ariaLabel]="showPassword ? 'Nascondi password' : 'Mostra password'"
+              (click)="showPassword = !showPassword">
               <span class="material-icons text-[1.1rem]">{{ showPassword ? 'visibility_off' : 'visibility' }}</span>
-            </button>
+            </app-button>
           </div>
           @if (isInvalid('password')) {
             <div class="text-[0.78rem] text-[var(--danger)] mt-1" id="password-error">Campo obbligatorio</div>
           }
         </div>
-        <button type="submit" [disabled]="loginLoading"
-          class="w-full py-3 bg-[var(--primary-mid)] text-white border-0 rounded-[var(--radius)] text-base font-semibold cursor-pointer mt-2 transition-[background-color,transform] duration-200 enabled:hover:bg-[var(--primary)] enabled:hover:-translate-y-px disabled:opacity-60 disabled:cursor-not-allowed">
+        <app-button type="submit" [disabled]="loginLoading" extraClass="w-full mt-2 py-3 text-base">
           {{ loginLoading ? 'Accesso in corso...' : 'Accedi' }}
-        </button>
+        </app-button>
       </form>
 
       <div class="flex gap-3 mt-6">

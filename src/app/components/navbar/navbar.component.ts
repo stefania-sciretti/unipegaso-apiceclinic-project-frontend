@@ -3,10 +3,11 @@ import { Router } from '@angular/router';
 import { NgClass, NgOptimizedImage } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { AuthService } from '../../services/auth.service';
+import { ButtonComponent } from '../ui/button/button.component';
 
 @Component({
   selector: 'app-navbar',
-  imports: [ReactiveFormsModule, NgOptimizedImage, NgClass],
+  imports: [ReactiveFormsModule, NgOptimizedImage, NgClass, ButtonComponent],
   templateUrl: './navbar.component.html',
 })
 export class NavbarComponent {
