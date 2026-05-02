@@ -11,7 +11,7 @@ import { ConfirmModalService } from '../../services/confirm-modal.service';
 import { Patient, GlycemiaContext, GlycemiaMeasurement, GlycemiaMeasurementRequest, GlycemiaContextRule, ApiError } from '../../models/models';
 import { TableThComponent, TableColumn } from '../../shared/table-th.component';
 import { TableTdDirective } from '../../shared/table-td.directive';
-import { BtnDirective } from '../../shared/btn.directive';
+import { ButtonComponent } from '../../components/ui/button/button.component';
 import { FormControlDirective } from '../../shared/form-control.directive';
 import { FormLabelDirective } from '../../shared/form-label.directive';
 import { FormValidationHelper } from '../../shared/form-validation.helper';
@@ -20,7 +20,7 @@ import { StatusBadgePipe } from '../../shared/status-badge.pipe';
 @Component({
   selector: 'app-glycemia',
   standalone: true,
-  imports: [ReactiveFormsModule, DatePipe, NgClass, TableThComponent, TableTdDirective, BtnDirective, FormControlDirective, FormLabelDirective, StatusBadgePipe],
+  imports: [ReactiveFormsModule, DatePipe, NgClass, TableThComponent, TableTdDirective, ButtonComponent, FormControlDirective, FormLabelDirective, StatusBadgePipe],
   templateUrl: './glycemia.component.html'
 })
 export class GlycemiaComponent implements OnInit {

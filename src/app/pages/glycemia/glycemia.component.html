@@ -4,7 +4,7 @@
       <h1 class="text-[1.75rem] font-bold mb-1 text-[var(--primary)] flex items-center"><span class="material-icons text-[1.6rem] align-middle mr-[0.3rem] text-[var(--primary-mid)]">colorize</span> Misurazioni Glicemia</h1>
       <p class="text-[var(--primary-mid)] text-[0.95rem]">Monitoraggio glicemico tramite pungidito — gestito da Simona</p>
     </div>
-    <button appBtn="primary" (click)="openCreate()">+ Nuova Misurazione</button>
+    <app-button (click)="openCreate()">+ Nuova Misurazione</app-button>
   </div>
   @if (alertSignal(); as alert) {
     <div
@@ -51,8 +51,8 @@
                 <td appTd>{{ m.notes ?? '–' }}</td>
                 <td appTd>
                   <div class="flex gap-2 flex-nowrap items-center">
-                    <button appBtn="sm-primary" (click)="openEdit(m)"><span class="material-icons text-[1rem]">edit</span></button>
-                    <button appBtn="sm-danger" (click)="delete(m.id)"><span class="material-icons text-[1rem]">delete</span></button>
+                    <app-button size="sm" (click)="openEdit(m)"><span class="material-icons text-[1rem]">edit</span></app-button>
+                    <app-button variant="danger" size="sm" (click)="delete(m.id)"><span class="material-icons text-[1rem]">delete</span></app-button>
                   </div>
                 </td>
               </tr>
@@ -84,7 +84,7 @@
     <div class="bg-white rounded-[10px] shadow-[0_10px_40px_rgba(53,88,114,0.22)] p-8 w-full max-w-[520px] max-h-[90vh] overflow-y-auto">
       <div class="flex justify-between items-center mb-6 pb-4 border-b-2 border-[var(--border)]">
         <h3 class="text-[1.15rem] text-[var(--primary)] font-bold">{{ editingId() ? 'Modifica Misurazione' : 'Nuova Misurazione Glicemia' }}</h3>
-        <button appBtn="close" (click)="closeModal()">&times;</button>
+        <app-button variant="close" (click)="closeModal()">&times;</app-button>
       </div>
       <form [formGroup]="form" (ngSubmit)="save()">
         <div class="mb-4">
@@ -128,8 +128,8 @@
           <textarea appFormControl id="glycemiaNotes" formControlName="notes" rows="2" placeholder="Note aggiuntive…"></textarea>
         </div>
         <div class="flex justify-end gap-3 mt-4">
-          <button appBtn="outline" type="button" (click)="closeModal()">Annulla</button>
-          <button appBtn="primary" type="submit">{{ editingId() ? 'Salva Modifiche' : 'Registra' }}</button>
+          <app-button variant="secondary" type="button" (click)="closeModal()">Annulla</app-button>
+          <app-button type="submit">{{ editingId() ? 'Salva Modifiche' : 'Registra' }}</app-button>
         </div>
       </form>
     </div>
