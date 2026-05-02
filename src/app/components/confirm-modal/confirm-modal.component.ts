@@ -1,9 +1,11 @@
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { ConfirmModalService } from '../../services/confirm-modal.service';
+import { ButtonComponent } from '../ui/button/button.component';
 
 @Component({
   selector: 'app-confirm-modal',
   standalone: true,
+  imports: [ButtonComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     @if (svc.isOpen()) {
@@ -21,20 +23,8 @@ import { ConfirmModalService } from '../../services/confirm-modal.service';
             </p>
           </div>
           <div class="flex justify-between gap-3 mt-6">
-            <button
-              type="button"
-              class="px-[1.1rem] py-2 rounded-[10px] text-[0.9rem] cursor-pointer font-semibold bg-transparent border-[1.5px] border-[var(--primary)] text-[var(--primary)] hover:bg-[var(--primary)] hover:text-white transition-colors duration-[180ms]"
-              (click)="svc.cancel()"
-            >
-              Annulla
-            </button>
-            <button
-              type="button"
-              class="px-[1.1rem] py-2 border-0 rounded-[10px] text-[0.9rem] cursor-pointer font-semibold bg-[var(--danger)] text-white hover:bg-red-700 transition-colors duration-[180ms]"
-              (click)="svc.confirm()"
-            >
-              Conferma
-            </button>
+            <app-button variant="secondary" (click)="svc.cancel()">Annulla</app-button>
+            <app-button variant="danger" (click)="svc.confirm()">Conferma</app-button>
           </div>
         </div>
       </div>
