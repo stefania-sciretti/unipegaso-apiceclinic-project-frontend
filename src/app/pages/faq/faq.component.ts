@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { NgClass } from '@angular/common';
 import { RouterModule } from '@angular/router';
+import { ButtonComponent } from '../../components/ui/button/button.component';
 
 interface Faq {
   q: string;
@@ -10,7 +11,7 @@ interface Faq {
 
 @Component({
   selector: 'app-faq',
-  imports: [RouterModule, NgClass],
+  imports: [RouterModule, NgClass, ButtonComponent],
   templateUrl: './faq.component.html'
 })
 export class FaqComponent {

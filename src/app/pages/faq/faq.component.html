@@ -12,14 +12,15 @@
     @for (faq of faqs; track faq; let i = $index) {
       <div class="bg-white rounded-[10px] shadow-[0_2px_14px_rgba(17,45,78,0.10)] overflow-hidden border-[1.5px] transition-colors duration-200"
            [ngClass]="faq.open ? 'border-[var(--primary-mid)]' : 'border-[var(--border)]'">
-        <button class="w-full flex items-center gap-4 px-5 py-[1.1rem] bg-transparent border-0 cursor-pointer text-left text-[1rem] font-semibold text-[var(--primary)] transition-colors duration-150 hover:bg-[var(--bg)] select-none"
-                (click)="toggle(faq)" role="button" tabindex="0"
-                (keydown.enter)="toggle(faq)" (keydown.space)="toggle(faq)">
-          <span class="min-w-[28px] h-7 rounded-full bg-[var(--border)] text-[var(--primary-mid)] text-[0.85rem] font-bold flex items-center justify-center shrink-0 pointer-events-none">{{ i + 1 }}</span>
-          <span class="flex-1">{{ faq.q }}</span>
-          <span class="material-icons text-[var(--primary-mid)] shrink-0 transition-transform duration-200"
-                [class.rotate-180]="faq.open">expand_more</span>
-        </button>
+         <app-button variant="ghost"
+                     extraClass="w-full flex items-center gap-4 px-5 py-[1.1rem] text-[1rem] font-semibold select-none text-left transition-colors duration-150 hover:bg-[var(--bg)]"
+                     (click)="toggle(faq)"
+                     (keydown.enter)="toggle(faq)" (keydown.space)="toggle(faq)">
+           <span class="min-w-[28px] h-7 rounded-full bg-[var(--border)] text-[var(--primary-mid)] text-[0.85rem] font-bold flex items-center justify-center shrink-0 pointer-events-none">{{ i + 1 }}</span>
+           <span class="flex-1">{{ faq.q }}</span>
+           <span class="material-icons text-[var(--primary-mid)] shrink-0 transition-transform duration-200"
+                 [class.rotate-180]="faq.open">expand_more</span>
+         </app-button>
         @if (faq.open) {
           <div class="px-5 pb-[1.1rem] pl-[4rem] border-t border-[var(--border)]">
             @for (line of faq.a.split('\n'); track line) {
