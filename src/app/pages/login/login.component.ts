@@ -6,10 +6,11 @@ import { AuthService } from '../../services/auth.service';
 import { BookingService, PendingBooking } from '../../services/booking.service';
 import { AppointmentService } from '../../services/appointment.service';
 import { HttpErrorResponse } from '@angular/common/http';
+import { ButtonComponent } from '../../components/ui/button/button.component';
 
 @Component({
   selector: 'app-login',
-  imports: [ReactiveFormsModule, NgClass],
+  imports: [ReactiveFormsModule, NgClass, ButtonComponent],
   templateUrl: './login.component.html'
 })
 export class LoginComponent implements OnInit {

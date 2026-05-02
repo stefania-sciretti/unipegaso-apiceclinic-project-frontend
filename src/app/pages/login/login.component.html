@@ -54,23 +54,20 @@
           <input id="loginPassword" formControlName="password" [type]="showPassword ? 'text' : 'password'" placeholder="••••••••"
             [attr.autocomplete]="isRegistering ? 'new-password' : 'current-password'"
             class="flex-1 py-[0.6rem] outline-none text-[0.9rem] text-[var(--primary)] bg-transparent"/>
-          <button type="button" (click)="showPassword = !showPassword"
-            class="px-3 text-[var(--primary-mid)] hover:text-[var(--primary)] focus:outline-none"
-            [attr.aria-label]="showPassword ? 'Nascondi password' : 'Mostra password'">
+          <app-button variant="icon" [ariaLabel]="showPassword ? 'Nascondi password' : 'Mostra password'"
+            extraClass="px-3" (click)="showPassword = !showPassword">
             <span class="material-icons text-[1.2rem]">{{ showPassword ? 'visibility_off' : 'visibility' }}</span>
-          </button>
+          </app-button>
         </div>
         @if (isInvalid('password')) {
           <span class="text-[var(--danger)] text-[0.78rem]">Campo obbligatorio</span>
         }
       </div>
 
-      <button type="submit"
-        class="w-full py-[0.75rem] rounded-xl bg-[var(--primary)] text-white font-semibold text-[0.95rem] cursor-pointer transition-colors duration-200 hover:bg-[var(--primary-mid)] disabled:opacity-60 disabled:cursor-not-allowed mt-1"
-        [disabled]="loading">
+      <app-button type="submit" [disabled]="loading" extraClass="w-full mt-1 py-[0.75rem] rounded-xl text-[0.95rem]">
         @if (!loading) { {{ isRegistering ? 'Registrati' : 'Accedi' }} }
         @if (loading) { Caricamento… }
-      </button>
+      </app-button>
     </form>
 
     <div class="mt-5 text-center text-[0.88rem] text-[var(--primary-mid)]">
