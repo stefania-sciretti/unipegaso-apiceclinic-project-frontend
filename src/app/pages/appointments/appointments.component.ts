@@ -13,7 +13,7 @@ import { ConfirmModalService } from '../../services/confirm-modal.service';
 import { AppointmentStatus, Patient, FitnessAppointment, FitnessAppointmentRequest, Specialist, ApiError } from '../../models/models';
 import { TableThComponent, TableColumn } from '../../shared/table-th.component';
 import { TableTdDirective } from '../../shared/table-td.directive';
-import { BtnDirective } from '../../shared/btn.directive';
+import { ButtonComponent } from '../../components/ui/button/button.component';
 import { FormControlDirective } from '../../shared/form-control.directive';
 import { FormLabelDirective } from '../../shared/form-label.directive';
 import { COLOR_ACCENT, COLOR_SECONDARY, COLOR_PRIMARY } from '../../shared/constants/colors.constants';
@@ -24,7 +24,7 @@ import { APPOINTMENT_STATUS_LABELS } from '../../shared/constants/appointment-st
 @Component({
   selector: 'app-appointments',
   standalone: true,
-  imports: [ReactiveFormsModule, DatePipe, NgClass, NgStyle, MatIconModule, TableThComponent, TableTdDirective, BtnDirective, FormControlDirective, FormLabelDirective, StatusBadgePipe],
+  imports: [ReactiveFormsModule, DatePipe, NgClass, NgStyle, MatIconModule, TableThComponent, TableTdDirective, ButtonComponent, FormControlDirective, FormLabelDirective, StatusBadgePipe],
   templateUrl: './appointments.component.html'
 })
 export class AppointmentsComponent implements OnInit {

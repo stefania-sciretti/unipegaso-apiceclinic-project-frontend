@@ -6,7 +6,7 @@
       </h1>
       <p class="text-[var(--primary-mid)] text-[0.95rem]">Gestione prenotazioni</p>
     </div>
-    <button appBtn="primary" (click)="openCreate()">+ Nuovo Appuntamento</button>
+    <app-button (click)="openCreate()">+ Nuovo Appuntamento</app-button>
   </div>
   @if (alertSignal(); as alert) {
     <div class="px-[1.1rem] py-[0.8rem] rounded-[10px] mb-4 text-[0.9rem] flex items-center gap-2 border-l-4"
@@ -52,9 +52,9 @@
                 <td appTd><span [class]="a.status | statusBadge">{{ statusLabel(a.status) }}</span></td>
                 <td appTd class="w-[200px] min-w-[200px] whitespace-nowrap">
                   <div class="flex items-center gap-2">
-                    <button appBtn="sm-primary" (click)="openStatusModal(a)">Modifica</button>
+                    <app-button size="sm" (click)="openStatusModal(a)">Modifica</app-button>
                     @if (canCancel(a)) {
-                      <button appBtn="sm-danger" (click)="cancel(a.id)">Annulla</button>
+                      <app-button variant="danger" size="sm" (click)="cancel(a.id)">Annulla</app-button>
                     }
                   </div>
                 </td>
@@ -72,7 +72,7 @@
     <div class="bg-white rounded-[10px] shadow-[0_10px_40px_rgba(53,88,114,0.22)] p-8 w-full max-w-[560px] max-h-[90vh] overflow-y-auto">
       <div class="flex justify-between items-center mb-6 pb-4 border-b-2 border-[var(--border)]">
         <h3 id="apptModalTitle" class="text-[1.15rem] text-[var(--primary)] font-bold">Nuovo Appuntamento</h3>
-        <button appBtn="close" aria-label="Chiudi" (click)="showApptModal.set(false)">&times;</button>
+        <app-button variant="close" ariaLabel="Chiudi" (click)="showApptModal.set(false)">&times;</app-button>
       </div>
       <form [formGroup]="apptForm" (ngSubmit)="saveAppointment()" aria-labelledby="apptModalTitle">
         <div class="mb-4">
@@ -131,8 +131,8 @@
                     class="transition-[border-color,box-shadow] duration-200 resize-vertical min-h-[85px]"></textarea>
         </div>
         <div class="flex justify-end gap-3 mt-6 pt-4 border-t border-[var(--border)]">
-          <button appBtn="outline" type="button" (click)="showApptModal.set(false)">Annulla</button>
-          <button appBtn="primary" type="submit">Prenota</button>
+          <app-button variant="secondary" type="button" (click)="showApptModal.set(false)">Annulla</app-button>
+          <app-button type="submit">Prenota</app-button>
         </div>
       </form>
     </div>
@@ -144,7 +144,7 @@
     <div class="bg-white rounded-[10px] shadow-[0_10px_40px_rgba(53,88,114,0.22)] p-8 w-full max-w-[360px] max-h-[90vh] overflow-y-auto">
       <div class="flex justify-between items-center mb-6 pb-4 border-b-2 border-[var(--border)]">
         <h3 id="statusModalTitle" class="text-[1.15rem] text-[var(--primary)] font-bold">Aggiorna Stato</h3>
-        <button appBtn="close" aria-label="Chiudi" (click)="showStatusModal.set(false)">&times;</button>
+        <app-button variant="close" ariaLabel="Chiudi" (click)="showStatusModal.set(false)">&times;</app-button>
       </div>
       <form [formGroup]="statusForm" (ngSubmit)="saveStatus()" aria-labelledby="statusModalTitle">
         <div class="mb-4">
@@ -156,8 +156,8 @@
           </select>
         </div>
         <div class="flex justify-end gap-3 mt-6 pt-4 border-t border-[var(--border)]">
-          <button appBtn="outline" type="button" (click)="showStatusModal.set(false)">Annulla</button>
-          <button appBtn="primary" type="submit">Aggiorna</button>
+          <app-button variant="secondary" type="button" (click)="showStatusModal.set(false)">Annulla</app-button>
+          <app-button type="submit">Aggiorna</app-button>
         </div>
       </form>
     </div>
