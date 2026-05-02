@@ -29,29 +29,26 @@
     <!-- Toggle vista -->
     <div class="flex items-center gap-2">
       <div class="flex rounded-lg overflow-hidden border border-[var(--border)]">
-        <button
-          class="px-4 py-2 text-sm font-semibold transition-colors duration-150"
-          [ngClass]="viewMode() === 'month' ? 'bg-[var(--primary)] text-white' : 'bg-white text-[var(--primary)] hover:bg-slate-100'"
+        <app-button
+          [variant]="viewMode() === 'month' ? 'toggle-active' : 'toggle-inactive'"
           (click)="viewMode.set('month')">
           Mensile
-        </button>
-        <button
-          class="px-4 py-2 text-sm font-semibold transition-colors duration-150 border-l border-[var(--border)]"
-          [ngClass]="viewMode() === 'week' ? 'bg-[var(--primary)] text-white' : 'bg-white text-[var(--primary)] hover:bg-slate-100'"
+        </app-button>
+        <app-button
+          [variant]="viewMode() === 'week' ? 'toggle-active' : 'toggle-inactive'"
+          extraClass="border-l border-[var(--border)]"
           (click)="viewMode.set('week')">
           Settimanale
-        </button>
+        </app-button>
       </div>
     </div>
   </div>
 
   <!-- Navigazione -->
   <div class="flex items-center gap-3 mb-4">
-    <button
-      class="p-1.5 rounded-md hover:bg-slate-100 border-0 transition-colors text-[var(--primary)]"
-      (click)="previousPeriod()">
+    <app-button variant="icon" (click)="previousPeriod()">
       <span class="material-icons">chevron_left</span>
-    </button>
+    </app-button>
     <span class="text-[1.05rem] font-semibold text-[var(--primary)] min-w-[180px] text-center capitalize">
       @if (viewMode() === 'month') {
         {{ currentDate() | date:'MMMM yyyy':'':'it-IT' }}
@@ -59,16 +56,12 @@
         {{ weekLabel() }}
       }
     </span>
-    <button
-      class="p-1.5 rounded-md hover:bg-slate-100 border-0 transition-colors text-[var(--primary)]"
-      (click)="nextPeriod()">
+    <app-button variant="icon" (click)="nextPeriod()">
       <span class="material-icons">chevron_right</span>
-    </button>
-    <button
-      class="ml-2 px-3 py-1.5 rounded-md text-sm font-semibold border-0 hover:bg-slate-100 transition-colors"
-      (click)="goToToday()">
+    </app-button>
+    <app-button variant="ghost" extraClass="ml-2 px-3 py-1.5 text-sm" (click)="goToToday()">
       Oggi
-    </button>
+    </app-button>
   </div>
 
   <!-- Loading -->
@@ -194,9 +187,7 @@
           </div>
           <div class="text-[1rem] font-bold text-[var(--primary)]">{{ ev.serviceType }}</div>
         </div>
-        <button
-          class="ml-auto text-[var(--primary-mid)] hover:text-[var(--danger)] bg-transparent border-0 cursor-pointer text-xl leading-none"
-          (click)="closePopover()">&times;</button>
+        <app-button variant="close" extraClass="ml-auto" (click)="closePopover()">&times;</app-button>
       </div>
 
       <!-- Dettagli -->

@@ -5,6 +5,7 @@ import { AppointmentService } from '../../services/appointment.service';
 import { COLOR_PRIMARY, COLOR_SECONDARY, COLOR_ACCENT } from '../../shared/constants/colors.constants';
 import { StatusBadgePipe } from '../../shared/status-badge.pipe';
 import { APPOINTMENT_STATUS_LABELS } from '../../shared/constants/appointment-status.constants';
+import { ButtonComponent } from '../../components/ui/button/button.component';
 
 interface BookingEvent {
   id: number;
@@ -22,7 +23,7 @@ interface BookingEvent {
 @Component({
   selector: 'app-booking-calendar',
   standalone: true,
-  imports: [DatePipe, NgClass, NgStyle, StatusBadgePipe],
+  imports: [DatePipe, NgClass, NgStyle, StatusBadgePipe, ButtonComponent],
   providers: [DatePipe],
   templateUrl: './booking-calendar.component.html'
 })
