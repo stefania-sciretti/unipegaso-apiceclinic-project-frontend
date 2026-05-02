@@ -2,6 +2,7 @@
 /dist
 /.angular
 .env
+.idea/
 
 # --- AI agents ---
 .claude
