@@ -1,5 +1,5 @@
 <main class="max-w-[1200px] mx-auto my-8 px-6">
-  <div class="bg-gradient-to-br from-[#112D4E] to-[#3F72AF] text-white rounded-[10px] px-8 py-10 mb-8 flex items-center gap-6">
+  <div class="bg-gradient-to-br from-[var(--primary)] to-[var(--primary-mid)] text-white rounded-[10px] px-8 py-10 mb-8 flex items-center gap-6">
     <span class="material-icons text-[3rem] text-white/80">local_hospital</span>
     <div>
       <h1 class="text-[2rem] font-bold mb-[0.35rem]">Apice Clinic</h1>
@@ -8,7 +8,7 @@
   </div>
 
   <!-- ──────── BOOKING BANNER ──────── -->
-  <div class="bg-gradient-to-br from-[#112D4E] to-[#1B4A7A] rounded-xl p-8 mb-12 shadow-[0_4px_20px_rgba(17,45,78,0.15)] text-white">
+  <div class="bg-gradient-to-br from-[var(--primary)] to-[var(--primary-mid)] rounded-xl p-8 mb-12 shadow-[0_4px_20px_rgba(17,45,78,0.15)] text-white">
     <h2 class="text-[1.75rem] font-bold mb-8 text-white">Cosa vuoi prenotare?</h2>
 
     <div class="grid grid-cols-1 lg:grid-cols-[1fr_1fr_auto] gap-6 items-stretch">
@@ -32,7 +32,7 @@
                 @for (area of serviceAreas; track area) {
                   <button
                     type="button"
-                    class="w-full text-left px-[1.125rem] py-[0.875rem] text-[#112D4E] cursor-pointer border-b border-[rgba(17,45,78,0.1)] last:border-b-0 transition-colors duration-200 text-[0.95rem] hover:bg-[#f0f4f8] bg-transparent"
+                    class="w-full text-left px-[1.125rem] py-[0.875rem] text-[var(--primary)] cursor-pointer border-b border-[rgba(17,45,78,0.1)] last:border-b-0 transition-colors duration-200 text-[0.95rem] hover:bg-slate-100 bg-transparent"
                     (click)="selectArea(area); showAreaDropdown = false">
                     {{ area.label }}
                   </button>
@@ -55,7 +55,7 @@
                   type="button"
                   class="w-full text-left flex items-center justify-between px-[1.125rem] py-[0.875rem] border rounded-md text-white cursor-pointer transition-all duration-200 text-[0.95rem]"
                   [ngClass]="selectedService?.id === service.id
-                    ? 'bg-[rgba(76,175,80,0.25)] border-[#4CAF50]'
+                    ? 'bg-[rgba(34,197,94,0.25)] border-green-500'
                     : 'bg-white/10 border-white/20 hover:bg-white/15 hover:border-white/40'"
                   (click)="selectService(service)">
                   {{ service.name }}
@@ -71,7 +71,7 @@
         <!-- Selected Service Display -->
         @if (selectedService && !selectedArea) {
           <div>
-            <div class="inline-flex items-center gap-2 px-5 py-3 bg-[rgba(76,175,80,0.15)] border border-[#4CAF50] rounded-[20px] text-white text-[0.95rem] font-medium">
+            <div class="inline-flex items-center gap-2 px-5 py-3 bg-[rgba(34,197,94,0.15)] border border-green-500 rounded-[20px] text-white text-[0.95rem] font-medium">
               {{ selectedService.name }}
               <button type="button"
                       class="bg-transparent border-0 p-0 inline-flex items-center text-white cursor-pointer hover:opacity-80 material-icons text-[1rem]"
@@ -89,28 +89,28 @@
           <div class="bg-white rounded-lg p-6 shadow-[0_2px_8px_rgba(0,0,0,0.1)] flex-1">
             <div class="flex items-center justify-between mb-6">
               <button type="button"
-                      class="bg-transparent border-0 p-0 material-icons cursor-pointer text-[#112D4E] transition-colors duration-200 hover:text-[#1B4A7A]"
+                      class="bg-transparent border-0 p-0 material-icons cursor-pointer text-[var(--primary)] transition-colors duration-200 hover:text-[var(--primary-mid)]"
                       aria-label="Mese precedente"
                       (click)="previousMonth()">chevron_left</button>
-              <h3 class="text-[1.1rem] font-semibold text-[#112D4E] m-0 capitalize">{{ currentMonth | date: 'MMMM yyyy' : 'it-IT' }}</h3>
+              <h3 class="text-[1.1rem] font-semibold text-[var(--primary)] m-0 capitalize">{{ currentMonth | date: 'MMMM yyyy' : 'it-IT' }}</h3>
               <button type="button"
-                      class="bg-transparent border-0 p-0 material-icons cursor-pointer text-[#112D4E] transition-colors duration-200 hover:text-[#1B4A7A]"
+                      class="bg-transparent border-0 p-0 material-icons cursor-pointer text-[var(--primary)] transition-colors duration-200 hover:text-[var(--primary-mid)]"
                       aria-label="Mese successivo"
                       (click)="nextMonth()">chevron_right</button>
             </div>
             <div class="grid grid-cols-7 gap-2">
               @for (day of ['L', 'M', 'M', 'G', 'V', 'S', 'D']; track day) {
-                <div class="text-center font-semibold text-[#112D4E] text-[0.85rem] p-2">{{ day }}</div>
+                <div class="text-center font-semibold text-[var(--primary)] text-[0.85rem] p-2">{{ day }}</div>
               }
               @for (d of getCalendarDays(); track d) {
                 @if (d !== 0) {
                   <button
-                    class="aspect-square border rounded-md bg-white text-[#112D4E] cursor-pointer text-[0.9rem] font-medium transition-all duration-200"
+                    class="aspect-square border rounded-md bg-white text-[var(--primary)] cursor-pointer text-[0.9rem] font-medium transition-all duration-200"
                     [ngClass]="isDateSelected(d)
-                      ? 'bg-[#112D4E] text-white border-[#112D4E] font-bold'
+                      ? 'bg-[var(--primary)] text-white border-[var(--primary)] font-bold'
                       : isDateDisabled(d)
                         ? 'opacity-50 cursor-not-allowed bg-gray-100 text-gray-400 border-gray-200'
-                        : 'border-gray-200 hover:border-[#112D4E] hover:bg-[#f0f4f8]'"
+                        : 'border-gray-200 hover:border-[var(--primary)] hover:bg-slate-100'"
                     [disabled]="isDateDisabled(d)"
                     (click)="selectCalendarDate(d)">
                     {{ d }}
@@ -132,10 +132,10 @@
           <div class="bg-white rounded-lg overflow-hidden shadow-[0_2px_8px_rgba(0,0,0,0.1)] flex-1">
             <!-- Doctor Card -->
             <div>
-              <div class="flex items-center gap-6 p-6 bg-gradient-to-br from-[#f5f5f5] to-[#fafafa] border-b border-gray-200">
-                <span class="material-icons text-[3rem] text-[#112D4E] shrink-0">{{ getSelectedDoctor()?.icon }}</span>
+              <div class="flex items-center gap-6 p-6 bg-gradient-to-br from-slate-100 to-slate-50 border-b border-gray-200">
+                <span class="material-icons text-[3rem] text-[var(--primary)] shrink-0">{{ getSelectedDoctor()?.icon }}</span>
                 <div class="flex-1">
-                  <h4 class="text-[1.1rem] font-semibold text-[#112D4E] m-0 mb-1">{{ getSelectedDoctor()?.name }}</h4>
+                  <h4 class="text-[1.1rem] font-semibold text-[var(--primary)] m-0 mb-1">{{ getSelectedDoctor()?.name }}</h4>
                   <p class="text-[0.9rem] text-gray-500 m-0">{{ getSelectedDoctor()?.title }}</p>
                 </div>
               </div>
@@ -149,8 +149,8 @@
                     <button
                       class="px-4 py-3 border rounded-md text-[0.9rem] font-medium cursor-pointer transition-all duration-200"
                       [ngClass]="selectedTime === slot
-                        ? 'bg-[#112D4E] text-white border-[#112D4E] font-semibold'
-                        : 'bg-white text-[#112D4E] border-gray-200 hover:border-[#112D4E] hover:bg-[#f0f4f8]'"
+                        ? 'bg-[var(--primary)] text-white border-[var(--primary)] font-semibold'
+                        : 'bg-white text-[var(--primary)] border-gray-200 hover:border-[var(--primary)] hover:bg-slate-100'"
                       (click)="selectTime(slot)">
                       {{ slot }}
                     </button>
@@ -164,7 +164,7 @@
 
       <!-- Booking Button -->
       <button
-        class="flex items-center justify-center gap-3 px-8 py-4 bg-gradient-to-br from-[#112D4E] to-[#1B4A7A] border-none rounded-lg text-white text-[1.05rem] font-bold cursor-pointer transition-all duration-300 whitespace-nowrap shadow-[0_4px_15px_rgba(17,45,78,0.3)] tracking-wide uppercase disabled:opacity-50 disabled:cursor-not-allowed hover:[&:not(:disabled)]:from-[#1B4A7A] hover:[&:not(:disabled)]:to-[#2A5F9E] hover:[&:not(:disabled)]:-translate-y-0.5 hover:[&:not(:disabled)]:shadow-[0_6px_20px_rgba(17,45,78,0.4)]"
+        class="flex items-center justify-center gap-3 px-8 py-4 bg-gradient-to-br from-[var(--primary)] to-[var(--primary-mid)] border-none rounded-lg text-white text-[1.05rem] font-bold cursor-pointer transition-all duration-300 whitespace-nowrap shadow-[0_4px_15px_rgba(17,45,78,0.3)] tracking-wide uppercase disabled:opacity-50 disabled:cursor-not-allowed hover:[&:not(:disabled)]:from-[var(--primary-mid)] hover:[&:not(:disabled)]:to-[var(--accent)] hover:[&:not(:disabled)]:-translate-y-0.5 hover:[&:not(:disabled)]:shadow-[0_6px_20px_rgba(17,45,78,0.4)]"
         [disabled]="!selectedService || !selectedDate || !selectedTime"
         (click)="bookAppointment()">
         <span class="material-icons text-[1.3rem]">check</span> Prenota
@@ -174,15 +174,15 @@
 
   <!-- ──────── OFFER SECTION ──────── -->
   <div class="mt-10 mb-5">
-    <h2 class="text-[1.3rem] font-bold text-[#112D4E] mb-1">Cosa offriamo</h2>
-    <p class="text-[0.9rem] text-[#3F72AF]">Un approccio integrato che unisce medicina, nutrizione e sport per il benessere completo del paziente.</p>
+    <h2 class="text-[1.3rem] font-bold text-[var(--primary)] mb-1">Cosa offriamo</h2>
+    <p class="text-[0.9rem] text-[var(--primary-mid)]">Un approccio integrato che unisce medicina, nutrizione e sport per il benessere completo del paziente.</p>
   </div>
 
   <div class="grid gap-6 mb-8 grid-cols-[repeat(auto-fill,minmax(280px,1fr))]">
 
     <!-- Area Clinica -->
     <div class="group bg-white rounded-[10px] shadow-[0_2px_14px_rgba(17,45,78,0.10)] overflow-hidden flex flex-col transition-all duration-150 hover:-translate-y-1 hover:shadow-[0_8px_24px_rgba(53,88,114,0.15)]">
-      <div class="flex items-center gap-3 px-5 py-4 text-white bg-gradient-to-br from-[#112D4E] to-[#1B4A7A]">
+      <div class="flex items-center gap-3 px-5 py-4 text-white bg-gradient-to-br from-[var(--primary)] to-[var(--primary-mid)]">
         <span class="material-icons text-[1.8rem]">medical_services</span>
         <span class="text-[1.05rem] font-bold tracking-[0.2px]">Area Clinica</span>
       </div>
@@ -191,17 +191,17 @@
              ngSrc="assets/images/visit.webp" alt="Area Clinica" height="2160" width="3840"/>
       </div>
       <ul class="list-none p-0 px-5 py-4 flex-1">
-        <li class="flex items-center gap-[0.4rem] py-[0.35rem] text-[0.88rem] text-[#112D4E] border-b border-[#DBE2EF] last:border-b-0">
-          <span class="material-icons text-[1rem] text-[#3F72AF] shrink-0">medical_services</span> Visita Nutrizionistica
+        <li class="flex items-center gap-[0.4rem] py-[0.35rem] text-[0.88rem] text-[var(--primary)] border-b border-[var(--border)] last:border-b-0">
+          <span class="material-icons text-[1rem] text-[var(--primary-mid)] shrink-0">medical_services</span> Visita Nutrizionistica
         </li>
-        <li class="flex items-center gap-[0.4rem] py-[0.35rem] text-[0.88rem] text-[#112D4E] border-b border-[#DBE2EF] last:border-b-0">
-          <span class="material-icons text-[1rem] text-[#3F72AF] shrink-0">event_available</span> Visita di Controllo
+        <li class="flex items-center gap-[0.4rem] py-[0.35rem] text-[0.88rem] text-[var(--primary)] border-b border-[var(--border)] last:border-b-0">
+          <span class="material-icons text-[1rem] text-[var(--primary-mid)] shrink-0">event_available</span> Visita di Controllo
         </li>
-        <li class="flex items-center gap-[0.4rem] py-[0.35rem] text-[0.88rem] text-[#112D4E] border-b border-[#DBE2EF] last:border-b-0">
-          <span class="material-icons text-[1rem] text-[#3F72AF] shrink-0">directions_run</span> Visita Medico-Sportiva
+        <li class="flex items-center gap-[0.4rem] py-[0.35rem] text-[0.88rem] text-[var(--primary)] border-b border-[var(--border)] last:border-b-0">
+          <span class="material-icons text-[1rem] text-[var(--primary-mid)] shrink-0">directions_run</span> Visita Medico-Sportiva
         </li>
-        <li class="flex items-center gap-[0.4rem] py-[0.35rem] text-[0.88rem] text-[#112D4E] border-b border-[#DBE2EF] last:border-b-0">
-          <span class="material-icons text-[1rem] text-[#3F72AF] shrink-0">assignment</span> Referto Clinico
+        <li class="flex items-center gap-[0.4rem] py-[0.35rem] text-[0.88rem] text-[var(--primary)] border-b border-[var(--border)] last:border-b-0">
+          <span class="material-icons text-[1rem] text-[var(--primary-mid)] shrink-0">assignment</span> Referto Clinico
         </li>
       </ul>
       <button appBtn="sm-primary" class="mx-5 mb-5 self-start"
@@ -212,7 +212,7 @@
 
     <!-- Area Nutrizione -->
     <div class="group bg-white rounded-[10px] shadow-[0_2px_14px_rgba(17,45,78,0.10)] overflow-hidden flex flex-col transition-all duration-150 hover:-translate-y-1 hover:shadow-[0_8px_24px_rgba(53,88,114,0.15)]">
-      <div class="flex items-center gap-3 px-5 py-4 text-white bg-gradient-to-br from-[#112D4E] to-[#1B4A7A]">
+      <div class="flex items-center gap-3 px-5 py-4 text-white bg-gradient-to-br from-[var(--primary)] to-[var(--primary-mid)]">
         <span class="material-icons text-[1.8rem]">restaurant_menu</span>
         <span class="text-[1.05rem] font-bold tracking-[0.2px]">Area Nutrizione</span>
       </div>
@@ -221,17 +221,17 @@
              ngSrc="assets/images/nutrition.webp" alt="Area Nutrizione" height="3444" width="5166"/>
       </div>
       <ul class="list-none p-0 px-5 py-4 flex-1">
-        <li class="flex items-center gap-[0.4rem] py-[0.35rem] text-[0.88rem] text-[#112D4E] border-b border-[#DBE2EF] last:border-b-0">
-          <span class="material-icons text-[1rem] text-[#3F72AF] shrink-0">restaurant_menu</span> Piano Nutrizionale Personalizzato
+        <li class="flex items-center gap-[0.4rem] py-[0.35rem] text-[0.88rem] text-[var(--primary)] border-b border-[var(--border)] last:border-b-0">
+          <span class="material-icons text-[1rem] text-[var(--primary-mid)] shrink-0">restaurant_menu</span> Piano Nutrizionale Personalizzato
         </li>
-        <li class="flex items-center gap-[0.4rem] py-[0.35rem] text-[0.88rem] text-[#112D4E] border-b border-[#DBE2EF] last:border-b-0">
-          <span class="material-icons text-[1rem] text-[#3F72AF] shrink-0">accessibility_new</span> Analisi Composizione Corporea (BIA)
+        <li class="flex items-center gap-[0.4rem] py-[0.35rem] text-[0.88rem] text-[var(--primary)] border-b border-[var(--border)] last:border-b-0">
+          <span class="material-icons text-[1rem] text-[var(--primary-mid)] shrink-0">accessibility_new</span> Analisi Composizione Corporea (BIA)
         </li>
-        <li class="flex items-center gap-[0.4rem] py-[0.35rem] text-[0.88rem] text-[#112D4E] border-b border-[#DBE2EF] last:border-b-0">
-          <span class="material-icons text-[1rem] text-[#3F72AF] shrink-0">colorize</span> Monitoraggio Glicemia (Pungidito)
+        <li class="flex items-center gap-[0.4rem] py-[0.35rem] text-[0.88rem] text-[var(--primary)] border-b border-[var(--border)] last:border-b-0">
+          <span class="material-icons text-[1rem] text-[var(--primary-mid)] shrink-0">colorize</span> Monitoraggio Glicemia (Pungidito)
         </li>
-        <li class="flex items-center gap-[0.4rem] py-[0.35rem] text-[0.88rem] text-[#112D4E] border-b border-[#DBE2EF] last:border-b-0">
-          <span class="material-icons text-[1rem] text-[#3F72AF] shrink-0">menu_book</span> Ricettario Fit Personalizzato
+        <li class="flex items-center gap-[0.4rem] py-[0.35rem] text-[0.88rem] text-[var(--primary)] border-b border-[var(--border)] last:border-b-0">
+          <span class="material-icons text-[1rem] text-[var(--primary-mid)] shrink-0">menu_book</span> Ricettario Fit Personalizzato
         </li>
       </ul>
       <button appBtn="sm-primary" class="mx-5 mb-5 self-start"
@@ -242,7 +242,7 @@
 
     <!-- Area Sport -->
     <div class="group bg-white rounded-[10px] shadow-[0_2px_14px_rgba(17,45,78,0.10)] overflow-hidden flex flex-col transition-all duration-150 hover:-translate-y-1 hover:shadow-[0_8px_24px_rgba(53,88,114,0.15)]">
-      <div class="flex items-center gap-3 px-5 py-4 text-white bg-gradient-to-br from-[#112D4E] to-[#1B4A7A]">
+      <div class="flex items-center gap-3 px-5 py-4 text-white bg-gradient-to-br from-[var(--primary)] to-[var(--primary-mid)]">
         <span class="material-icons text-[1.8rem]">fitness_center</span>
         <span class="text-[1.05rem] font-bold tracking-[0.2px]">Area Sport</span>
       </div>
@@ -251,17 +251,17 @@
              ngSrc="assets/images/gym.webp" alt="Area Sport" height="3289" width="4933"/>
       </div>
       <ul class="list-none p-0 px-5 py-4 flex-1">
-        <li class="flex items-center gap-[0.4rem] py-[0.35rem] text-[0.88rem] text-[#112D4E] border-b border-[#DBE2EF] last:border-b-0">
-          <span class="material-icons text-[1rem] text-[#3F72AF] shrink-0">fitness_center</span> Scheda di Allenamento Personalizzata
+        <li class="flex items-center gap-[0.4rem] py-[0.35rem] text-[0.88rem] text-[var(--primary)] border-b border-[var(--border)] last:border-b-0">
+          <span class="material-icons text-[1rem] text-[var(--primary-mid)] shrink-0">fitness_center</span> Scheda di Allenamento Personalizzata
         </li>
-        <li class="flex items-center gap-[0.4rem] py-[0.35rem] text-[0.88rem] text-[#112D4E] border-b border-[#DBE2EF] last:border-b-0">
-          <span class="material-icons text-[1rem] text-[#3F72AF] shrink-0">self_improvement</span> Personal Training
+        <li class="flex items-center gap-[0.4rem] py-[0.35rem] text-[0.88rem] text-[var(--primary)] border-b border-[var(--border)] last:border-b-0">
+          <span class="material-icons text-[1rem] text-[var(--primary-mid)] shrink-0">self_improvement</span> Personal Training
         </li>
-        <li class="flex items-center gap-[0.4rem] py-[0.35rem] text-[0.88rem] text-[#112D4E] border-b border-[#DBE2EF] last:border-b-0">
-          <span class="material-icons text-[1rem] text-[#3F72AF] shrink-0">healing</span> Riatletizzazione e Recupero Funzionale
+        <li class="flex items-center gap-[0.4rem] py-[0.35rem] text-[0.88rem] text-[var(--primary)] border-b border-[var(--border)] last:border-b-0">
+          <span class="material-icons text-[1rem] text-[var(--primary-mid)] shrink-0">healing</span> Riatletizzazione e Recupero Funzionale
         </li>
-        <li class="flex items-center gap-[0.4rem] py-[0.35rem] text-[0.88rem] text-[#112D4E] border-b border-[#DBE2EF] last:border-b-0">
-          <span class="material-icons text-[1rem] text-[#3F72AF] shrink-0">emoji_events</span> Preparazione Atletica Agonistica
+        <li class="flex items-center gap-[0.4rem] py-[0.35rem] text-[0.88rem] text-[var(--primary)] border-b border-[var(--border)] last:border-b-0">
+          <span class="material-icons text-[1rem] text-[var(--primary-mid)] shrink-0">emoji_events</span> Preparazione Atletica Agonistica
         </li>
       </ul>
       <button appBtn="sm-primary" class="mx-5 mb-5 self-start"

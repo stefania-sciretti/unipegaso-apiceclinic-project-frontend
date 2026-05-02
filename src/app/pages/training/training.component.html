@@ -1,23 +1,23 @@
 <main class="max-w-[1200px] mx-auto my-8 px-6">
   <div class="flex justify-between items-start mb-6">
     <div>
-      <h1 class="text-[1.75rem] font-bold mb-1 text-[#112D4E] flex items-center">
-        <span class="material-icons text-[1.6rem] align-middle mr-[0.3rem] text-[#3F72AF]">fitness_center</span> Allenamento – Luca Siretta
+      <h1 class="text-[1.75rem] font-bold mb-1 text-[var(--primary)] flex items-center">
+        <span class="material-icons text-[1.6rem] align-middle mr-[0.3rem] text-[var(--primary-mid)]">fitness_center</span> Allenamento – Luca Siretta
       </h1>
-      <p class="text-[#3F72AF] text-[0.95rem]">Schede di allenamento personalizzate e coaching fitness</p>
+      <p class="text-[var(--primary-mid)] text-[0.95rem]">Schede di allenamento personalizzate e coaching fitness</p>
     </div>
     <button appBtn="primary" (click)="openCreate()">+ Nuova Scheda</button>
   </div>
 
   <div class="mb-6">
-    <div class="bg-white rounded-[10px] shadow-[0_2px_14px_rgba(17,45,78,0.10)] p-6 border-t-4 border-[#3F72AF] flex items-center gap-6">
-      <div class="w-[72px] h-[72px] rounded-full bg-[#DBE2EF] flex items-center justify-center shrink-0">
-        <span class="material-icons text-[2.5rem] text-[#112D4E]">person</span>
+    <div class="bg-white rounded-[10px] shadow-[0_2px_14px_rgba(17,45,78,0.10)] p-6 border-t-4 border-[var(--primary-mid)] flex items-center gap-6">
+      <div class="w-[72px] h-[72px] rounded-full bg-[var(--border)] flex items-center justify-center shrink-0">
+        <span class="material-icons text-[2.5rem] text-[var(--primary)]">person</span>
       </div>
       <div>
-        <div class="text-[1.4rem] font-bold text-[#112D4E]">Luca Siretta</div>
-        <span class="inline-block px-[0.7rem] py-[0.2rem] rounded-xl text-[0.78rem] font-semibold uppercase tracking-[0.5px] mt-[0.4rem] mb-3 bg-[#d6eaf8] text-[#112D4E]">Personal Trainer ISSA</span>
-        <p class="text-[#3F72AF] text-[0.9rem] leading-[1.6] mt-2">
+        <div class="text-[1.4rem] font-bold text-[var(--primary)]">Luca Siretta</div>
+        <span class="inline-block px-[0.7rem] py-[0.2rem] rounded-xl text-[0.78rem] font-semibold uppercase tracking-[0.5px] mt-[0.4rem] mb-3 bg-sky-100 text-[var(--primary)]">Personal Trainer ISSA</span>
+        <p class="text-[var(--primary-mid)] text-[0.9rem] leading-[1.6] mt-2">
           Certificato ISSA con passione per il functional training. Aiuta i clienti a raggiungere
           i loro obiettivi con schede di allenamento personalizzate, dal principiante all'atleta avanzato.
         </p>
@@ -27,32 +27,36 @@
 
   @if (alertSignal(); as alert) {
     <div class="px-[1.1rem] py-[0.8rem] rounded-[10px] mb-4 text-[0.9rem] flex items-center gap-2 border-l-4"
-         [ngClass]="alert.type==='success' ? 'bg-[#d4f0e0] text-[#1e7a48] border-[#3F72AF]' : 'bg-[#fde8e8] text-[#d95550] border-[#d95550]'">{{ alert.message }}</div>
+         [ngClass]="alert.type==='success' ? 'bg-green-100 text-green-800 border-[var(--primary-mid)]' : 'bg-red-100 text-[var(--danger)] border-[var(--danger)]'">{{ alert.message }}</div>
   }
 
   <div class="bg-white rounded-[10px] shadow-[0_2px_14px_rgba(17,45,78,0.10)] p-6 mb-8">
     <div class="flex justify-between items-center mb-4">
-      <h2 class="text-[1.1rem] font-bold text-[#112D4E]">Schede di Allenamento</h2>
+      <h2 class="text-[1.1rem] font-bold text-[var(--primary)]">Schede di Allenamento</h2>
       <div class="flex items-center gap-3">
-        <select [(ngModel)]="filterPatientId" [ngModelOptions]="{standalone:true}"
-                class="px-3 py-2 border-[1.5px] border-[#DBE2EF] rounded-[10px] text-[0.9rem] outline-none transition-[border-color] duration-200 focus:border-[#3F72AF] bg-white">
+        <select
+          [value]="filterPatientId()"
+          (change)="filterPatientId.set($any($event.target).value)"
+          class="px-3 py-2 border-[1.5px] border-[var(--border)] rounded-[10px] text-[0.9rem] outline-none transition-[border-color] duration-200 focus:border-[var(--primary-mid)] bg-white">
           <option value="">Tutti i pazienti</option>
-          @for (c of patients; track c) {
+          @for (c of patients(); track c.id) {
             <option [value]="c.id">{{ c.firstName }} {{ c.lastName }}</option>
           }
         </select>
-        <select [(ngModel)]="filterActive" [ngModelOptions]="{standalone:true}"
-                class="px-3 py-2 border-[1.5px] border-[#DBE2EF] rounded-[10px] text-[0.9rem] outline-none transition-[border-color] duration-200 focus:border-[#3F72AF] bg-white">
+        <select
+          [value]="filterActive()"
+          (change)="filterActive.set($any($event.target).value)"
+          class="px-3 py-2 border-[1.5px] border-[var(--border)] rounded-[10px] text-[0.9rem] outline-none transition-[border-color] duration-200 focus:border-[var(--primary-mid)] bg-white">
           <option value="">Tutte</option>
           <option value="true">Attive</option>
           <option value="false">Non attive</option>
         </select>
       </div>
     </div>
-    @if (loading) {
-      <div class="text-[#3F72AF] italic py-6 text-center">Caricamento…</div>
+    @if (loading()) {
+      <div class="text-[var(--primary-mid)] italic py-6 text-center">Caricamento…</div>
     }
-    @if (!loading) {
+    @if (!loading()) {
       <div class="overflow-x-auto">
         <table class="w-full border-collapse text-[0.9rem]">
           <thead><tr>
@@ -61,14 +65,14 @@
             }
           </tr></thead>
           <tbody>
-            @if (filtered.length === 0) {
-              <tr><td colspan="7" class="text-[#3F72AF] text-center py-10 text-[0.95rem]">Nessuna scheda trovata.</td></tr>
+            @if (filtered().length === 0) {
+              <tr><td colspan="7" class="text-[var(--primary-mid)] text-center py-10 text-[0.95rem]">Nessuna scheda trovata.</td></tr>
             }
-            @for (p of filtered; track p) {
-              <tr class="hover:[&>td]:bg-[#f0f7ff]">
+            @for (p of filtered(); track p.id) {
+              <tr class="hover:[&>td]:bg-sky-50">
                 <td appTd><strong>{{ p.patientFullName }}</strong></td>
                 <td appTd>
-                  <a class="text-[#112D4E] cursor-pointer font-semibold hover:underline" (click)="openDetail(p)">{{ p.title }}</a>
+                  <a class="text-[var(--primary)] cursor-pointer font-semibold hover:underline" (click)="openDetail(p)">{{ p.title }}</a>
                 </td>
                 <td appTd>{{ p.weeks ? p.weeks + ' sett.' : '–' }}</td>
                 <td appTd>{{ p.sessionsPerWeek ? p.sessionsPerWeek + 'x / sett.' : '–' }}</td>
@@ -91,55 +95,55 @@
   </div>
 </main>
 
-@if (showDetail && selected) {
+@if (showDetail() && selected()) {
   <div class="fixed inset-0 bg-[rgba(30,45,59,0.5)] z-[99999] flex items-center justify-center p-4">
     <div class="bg-white rounded-[10px] shadow-[0_10px_40px_rgba(53,88,114,0.22)] p-8 w-full max-w-[600px] max-h-[90vh] overflow-y-auto">
-      <div class="flex justify-between items-center mb-6 pb-4 border-b-2 border-[#DBE2EF]">
-        <h3 class="text-[1.15rem] text-[#112D4E] font-bold">{{ selected.title }}</h3>
-        <button appBtn="close" (click)="showDetail = false">&times;</button>
+      <div class="flex justify-between items-center mb-6 pb-4 border-b-2 border-[var(--border)]">
+        <h3 class="text-[1.15rem] text-[var(--primary)] font-bold">{{ selected()!.title }}</h3>
+        <button appBtn="close" (click)="showDetail.set(false)">&times;</button>
       </div>
       <div class="flex gap-3 mb-4 flex-wrap">
-        <span class="inline-block bg-[#DBE2EF] text-[#112D4E] px-[0.55rem] py-[0.15rem] rounded-lg text-[0.78rem] font-semibold">{{ selected.patientFullName }}</span>
-        <span class="badge" [class.badge-active]="selected.active" [class.badge-inactive]="!selected.active">{{ selected.active ? 'Attiva' : 'Non attiva' }}</span>
+        <span class="inline-block bg-[var(--border)] text-[var(--primary)] px-[0.55rem] py-[0.15rem] rounded-lg text-[0.78rem] font-semibold">{{ selected()!.patientFullName }}</span>
+        <span class="badge" [class.badge-active]="selected()!.active" [class.badge-inactive]="!selected()!.active">{{ selected()!.active ? 'Attiva' : 'Non attiva' }}</span>
       </div>
-      @if (selected.description) {
+      @if (selected()!.description) {
         <div class="mb-4">
           <p appLabel>Descrizione</p>
-          <p class="text-[#3F72AF] whitespace-pre-line">{{ selected.description }}</p>
+          <p class="text-[var(--primary-mid)] whitespace-pre-line">{{ selected()!.description }}</p>
         </div>
       }
       <div class="grid grid-cols-2 gap-4">
         <div class="mb-4">
           <p appLabel>Durata</p>
-          <p>{{ selected.weeks ? selected.weeks + ' settimane' : '–' }}</p>
+          <p>{{ selected()!.weeks ? selected()!.weeks + ' settimane' : '–' }}</p>
         </div>
         <div class="mb-4">
           <p appLabel>Sessioni / Settimana</p>
-          <p>{{ selected.sessionsPerWeek ? selected.sessionsPerWeek + 'x' : '–' }}</p>
+          <p>{{ selected()!.sessionsPerWeek ? selected()!.sessionsPerWeek + 'x' : '–' }}</p>
         </div>
       </div>
       <div class="mb-4">
         <p appLabel>Specialista</p>
-        <p>{{ selected.specialistFullName }}</p>
+        <p>{{ selected()!.specialistFullName }}</p>
       </div>
       <div class="mb-4">
         <p appLabel>Creata il</p>
-        <p>{{ selected.createdAt | date:'dd MMM yyyy' }}</p>
+        <p>{{ selected()!.createdAt | date:'dd MMM yyyy' }}</p>
       </div>
-      <div class="flex justify-end gap-3 mt-6 pt-4 border-t border-[#DBE2EF]">
-        <button appBtn="outline" (click)="showDetail = false">Chiudi</button>
-        <button appBtn="primary" (click)="showDetail=false; openEdit(selected!)">Modifica</button>
+      <div class="flex justify-end gap-3 mt-6 pt-4 border-t border-[var(--border)]">
+        <button appBtn="outline" (click)="showDetail.set(false)">Chiudi</button>
+        <button appBtn="primary" (click)="showDetail.set(false); openEdit(selected()!)">Modifica</button>
       </div>
     </div>
   </div>
 }
 
-@if (showModal) {
+@if (showModal()) {
   <div class="fixed inset-0 bg-[rgba(30,45,59,0.5)] z-[99999] flex items-center justify-center p-4">
     <div class="bg-white rounded-[10px] shadow-[0_10px_40px_rgba(53,88,114,0.22)] p-8 w-full max-w-[560px] max-h-[90vh] overflow-y-auto">
-      <div class="flex justify-between items-center mb-6 pb-4 border-b-2 border-[#DBE2EF]">
-        <h3 class="text-[1.15rem] text-[#112D4E] font-bold">{{ editingId ? 'Modifica Scheda' : 'Nuova Scheda di Allenamento' }}</h3>
-        <button appBtn="close" (click)="showModal = false">&times;</button>
+      <div class="flex justify-between items-center mb-6 pb-4 border-b-2 border-[var(--border)]">
+        <h3 class="text-[1.15rem] text-[var(--primary)] font-bold">{{ editingId() ? 'Modifica Scheda' : 'Nuova Scheda di Allenamento' }}</h3>
+        <button appBtn="close" (click)="showModal.set(false)">&times;</button>
       </div>
       <form [formGroup]="form" (ngSubmit)="save()">
         <div class="mb-4">
@@ -147,20 +151,20 @@
           <select appFormControl id="trainingPatientId" formControlName="patientId"
                   class="transition-[border-color,box-shadow] duration-200 bg-white">
             <option value="">– Seleziona paziente –</option>
-            @for (c of patients; track c) {
+            @for (c of patients(); track c.id) {
               <option [value]="c.id">{{ c.firstName }} {{ c.lastName }}</option>
             }
           </select>
-          @if (fieldError('patientId') || isInvalid('patientId')) {
-            <div class="text-[#d95550] text-[0.8rem] mt-1">{{ fieldError('patientId') || 'Campo obbligatorio' }}</div>
+          @if (v.fieldError('patientId') || v.isInvalid('patientId')) {
+            <div class="text-[var(--danger)] text-[0.8rem] mt-1">{{ v.fieldError('patientId') || 'Campo obbligatorio' }}</div>
           }
         </div>
         <div class="mb-4">
           <label appLabel for="trainingTitle">Titolo Scheda *</label>
           <input appFormControl id="trainingTitle" formControlName="title" type="text" placeholder="es. Full Body Forza – Fase 1"
                  class="transition-[border-color,box-shadow] duration-200"/>
-          @if (fieldError('title') || isInvalid('title')) {
-            <div class="text-[#d95550] text-[0.8rem] mt-1">{{ fieldError('title') || 'Campo obbligatorio' }}</div>
+          @if (v.fieldError('title') || v.isInvalid('title')) {
+            <div class="text-[var(--danger)] text-[0.8rem] mt-1">{{ v.fieldError('title') || 'Campo obbligatorio' }}</div>
           }
         </div>
         <div class="mb-4">
@@ -173,26 +177,26 @@
             <label appLabel for="trainingWeeks">Durata (settimane)</label>
             <input appFormControl id="trainingWeeks" formControlName="weeks" type="number" placeholder="8"
                    class="transition-[border-color,box-shadow] duration-200"/>
-            @if (fieldError('weeks')) {
-              <div class="text-[#d95550] text-[0.8rem] mt-1">{{ fieldError('weeks') }}</div>
+            @if (v.fieldError('weeks')) {
+              <div class="text-[var(--danger)] text-[0.8rem] mt-1">{{ v.fieldError('weeks') }}</div>
             }
           </div>
           <div class="mb-4">
             <label appLabel for="trainingSessions">Sessioni / Settimana</label>
             <input appFormControl id="trainingSessions" formControlName="sessionsPerWeek" type="number" placeholder="3"
                    class="transition-[border-color,box-shadow] duration-200"/>
-            @if (fieldError('sessionsPerWeek')) {
-              <div class="text-[#d95550] text-[0.8rem] mt-1">{{ fieldError('sessionsPerWeek') }}</div>
+            @if (v.fieldError('sessionsPerWeek')) {
+              <div class="text-[var(--danger)] text-[0.8rem] mt-1">{{ v.fieldError('sessionsPerWeek') }}</div>
             }
           </div>
         </div>
         <div class="mb-4">
-          <label class="flex items-center gap-2 cursor-pointer text-[0.85rem] font-semibold text-[#3F72AF] uppercase tracking-[0.3px]">
+          <label class="flex items-center gap-2 cursor-pointer text-[0.85rem] font-semibold text-[var(--primary-mid)] uppercase tracking-[0.3px]">
             <input type="checkbox" formControlName="active" class="w-auto"/> Scheda attiva
           </label>
         </div>
-        <div class="flex justify-end gap-3 mt-6 pt-4 border-t border-[#DBE2EF]">
-          <button appBtn="outline" type="button" (click)="showModal = false">Annulla</button>
+        <div class="flex justify-end gap-3 mt-6 pt-4 border-t border-[var(--border)]">
+          <button appBtn="outline" type="button" (click)="showModal.set(false)">Annulla</button>
           <button appBtn="primary" type="submit">Salva Scheda</button>
         </div>
       </form>

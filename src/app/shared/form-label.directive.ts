@@ -13,7 +13,7 @@ import { Directive } from '@angular/core';
   standalone: true,
   host: {
     class:
-      'block text-[0.85rem] font-semibold mb-[0.35rem] text-[#3F72AF] uppercase tracking-[0.3px]'
+      'block text-[0.85rem] font-semibold mb-[0.35rem] text-[var(--primary-mid)] uppercase tracking-[0.3px]'
   }
 })
 export class FormLabelDirective {}

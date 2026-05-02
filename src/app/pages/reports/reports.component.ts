@@ -185,11 +185,11 @@ export class ReportsComponent implements OnInit {
   getVisitTypeBadgeClass(visitType: string): string {
     const base = 'inline-block px-[0.65rem] py-[0.2rem] rounded-xl text-[0.75rem] font-bold uppercase tracking-[0.5px]';
     const t = visitType?.toLowerCase() ?? '';
-    if (t.includes('osteopat') || t.includes('riatlet') || t.includes('recupero')) return `${base} bg-[#fef0e0] text-[#b7620e]`;
-    if (t.includes('fitness') || t.includes('personal') || t.includes('allenamento') || t.includes('atletica') || t.includes('agonistic')) return `${base} bg-[#ddeefa] text-[#1a5680]`;
-    if (t.includes('nutriz') && t.includes('sport')) return `${base} bg-[#d4f0e0] text-[#1e7a48]`;
-    if (t.includes('nutriz') || t.includes('piano nutriz') || t.includes('composizione')) return `${base} bg-[#fce4f0] text-[#9b2b6e]`;
-    if (t.includes('medico') || t.includes('sport') || t.includes('idone') || t.includes('bia')) return `${base} bg-[#fde8e8] text-[#c0392b]`;
-    return `${base} bg-[#f0f0f0] text-[#555]`;
+    if (t.includes('osteopat') || t.includes('riatlet') || t.includes('recupero')) return `${base} bg-orange-50 text-orange-700`;
+    if (t.includes('fitness') || t.includes('personal') || t.includes('allenamento') || t.includes('atletica') || t.includes('agonistic')) return `${base} bg-sky-100 text-sky-800`;
+    if (t.includes('nutriz') && t.includes('sport')) return `${base} bg-green-100 text-green-800`;
+    if (t.includes('nutriz') || t.includes('piano nutriz') || t.includes('composizione')) return `${base} bg-pink-100 text-pink-800`;
+    if (t.includes('medico') || t.includes('sport') || t.includes('idone') || t.includes('bia')) return `${base} bg-red-100 text-red-700`;
+    return `${base} bg-slate-100 text-slate-600`;
   }
 }

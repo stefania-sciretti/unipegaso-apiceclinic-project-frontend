@@ -12,7 +12,7 @@ import { Directive } from '@angular/core';
   selector: 'td[appTd]',
   standalone: true,
   host: {
-    class: 'px-4 py-3 border-b border-[#DBE2EF] align-middle'
+    class: 'px-4 py-3 border-b border-[var(--border)] align-middle'
   }
 })
 export class TableTdDirective {}

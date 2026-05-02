@@ -14,10 +14,13 @@ import { TableTdDirective } from '../../shared/table-td.directive';
 import { BtnDirective } from '../../shared/btn.directive';
 import { FormControlDirective } from '../../shared/form-control.directive';
 import { FormLabelDirective } from '../../shared/form-label.directive';
+import { FormValidationHelper } from '../../shared/form-validation.helper';
+import { StatusBadgePipe } from '../../shared/status-badge.pipe';
 
 @Component({
   selector: 'app-glycemia',
-  imports: [ReactiveFormsModule, DatePipe, NgClass, TableThComponent, TableTdDirective, BtnDirective, FormControlDirective, FormLabelDirective],
+  standalone: true,
+  imports: [ReactiveFormsModule, DatePipe, NgClass, TableThComponent, TableTdDirective, BtnDirective, FormControlDirective, FormLabelDirective, StatusBadgePipe],
   templateUrl: './glycemia.component.html'
 })
 export class GlycemiaComponent implements OnInit {
@@ -31,12 +34,12 @@ export class GlycemiaComponent implements OnInit {
     { label: 'Note' },
     { label: 'Azioni' }
   ]);
-  private readonly glycemiaService = inject(GlycemiaService);
-  private readonly patientService  = inject(PatientService);
+  private readonly glycemiaService   = inject(GlycemiaService);
+  private readonly patientService    = inject(PatientService);
   private readonly specialistService = inject(SpecialistService);
-  private readonly alertSvc        = inject(AlertService);
-  private readonly fb              = inject(FormBuilder);
-  private readonly confirmSvc      = inject(ConfirmModalService);
+  private readonly alertSvc          = inject(AlertService);
+  private readonly fb                = inject(FormBuilder);
+  private readonly confirmSvc        = inject(ConfirmModalService);
 
   protected readonly alertSignal = this.alertSvc.alert;
 
@@ -49,28 +52,33 @@ export class GlycemiaComponent implements OnInit {
     ) : this.measurements();
   });
 
-  patients: Patient[] = [];
-  nutritionistId = 0;
-  loading        = false;
-  showModal      = false;
-  editingId: number | null = null;
+  readonly patients       = signal<Patient[]>([]);
+  readonly nutritionistId = signal(0);
+  readonly loading        = signal(false);
+  readonly showModal      = signal(false);
+  readonly editingId      = signal<number | null>(null);
 
-  readonly fieldErrors = signal<Record<string, string>>({});
+  readonly fieldErrors         = signal<Record<string, string>>({});
   readonly classificationRules = signal<GlycemiaContextRule[]>([]);
 
   readonly contexts: { value: GlycemiaContext; label: string }[] = [
-    { value: 'A_DIGIUNO',      label: 'A digiuno'      },
-    { value: 'POST_PASTO_1H', label: 'Post-pasto 1h'  },
-    { value: 'POST_PASTO_2H', label: 'Post-pasto 2h'  },
-    { value: 'RANDOM',       label: 'Casuale'         }
+    { value: 'A_DIGIUNO',     label: 'A digiuno'     },
+    { value: 'POST_PASTO_1H', label: 'Post-pasto 1h' },
+    { value: 'POST_PASTO_2H', label: 'Post-pasto 2h' },
+    { value: 'RANDOM',        label: 'Casuale'        }
   ];
 
-  form!: FormGroup;
+  readonly form: FormGroup = this.fb.group({
+    patientId:  [null,        Validators.required],
+    measuredAt: [this.nowIso(), Validators.required],
+    valueMgDl:  [null,        [Validators.required, Validators.min(20), Validators.max(600)]],
+    context:    ['A_DIGIUNO', Validators.required],
+    notes:      ['']
+  });
 
-  constructor() {}
+  protected readonly v = new FormValidationHelper(this.form, this.fieldErrors);
 
   ngOnInit(): void {
-    this.buildForm();
     this.load();
     this.glycemiaService.getClassificationRules().subscribe({
       next: ({ contexts }) => this.classificationRules.set(contexts)
@@ -78,7 +86,7 @@ export class GlycemiaComponent implements OnInit {
   }
 
   load(): void {
-    this.loading = true;
+    this.loading.set(true);
     forkJoin({
       measurements: this.glycemiaService.getAll(),
       patients:     this.patientService.getAll(),
@@ -86,35 +94,23 @@ export class GlycemiaComponent implements OnInit {
     }).subscribe({
       next: ({ measurements, patients, specialists }) => {
         this.measurements.set(measurements);
-        this.patients       = patients;
-        this.nutritionistId = specialists[0]?.id ?? 1;
-        this.loading        = false;
+        this.patients.set(patients);
+        this.nutritionistId.set(specialists[0]?.id ?? 1);
+        this.loading.set(false);
       },
-      error: () => { this.loading = false; }
-    });
-  }
-
-  buildForm(): void {
-    const now      = new Date();
-    const localIso = new Date(now.getTime() - now.getTimezoneOffset() * 60000).toISOString().slice(0, 16);
-    this.form = this.fb.group({
-      patientId:  [null,       Validators.required],
-      measuredAt: [localIso,   Validators.required],
-      valueMgDl:  [null,       [Validators.required, Validators.min(20), Validators.max(600)]],
-      context:    ['A_DIGIUNO',  Validators.required],
-      notes:      ['']
+      error: () => { this.loading.set(false); }
     });
   }
 
   openCreate(): void {
-    this.editingId = null;
+    this.editingId.set(null);
     this.fieldErrors.set({});
-    this.buildForm();
-    this.showModal = true;
+    this.form.reset({ patientId: null, measuredAt: this.nowIso(), valueMgDl: null, context: 'A_DIGIUNO', notes: '' });
+    this.showModal.set(true);
   }
 
   openEdit(measurement: GlycemiaMeasurement): void {
-    this.editingId = measurement.id;
+    this.editingId.set(measurement.id);
     this.fieldErrors.set({});
     this.form.patchValue({
       patientId:  measurement.patientId,
@@ -123,26 +119,27 @@ export class GlycemiaComponent implements OnInit {
       context:    measurement.context,
       notes:      measurement.notes ?? ''
     });
-    this.showModal = true;
+    this.showModal.set(true);
   }
 
-  closeModal(): void { this.showModal = false; }
+  closeModal(): void { this.showModal.set(false); }
 
   save(): void {
     if (this.form.invalid) { this.form.markAllAsTouched(); return; }
     const value = this.form.value;
     const body: GlycemiaMeasurementRequest = {
-      patientId:  +value.patientId,
-      specialistId: this.nutritionistId,
-      measuredAt: value.measuredAt,
-      valueMgDl:  +value.valueMgDl,
-      context:    value.context,
-      notes:      value.notes || null
+      patientId:    +value.patientId,
+      specialistId: this.nutritionistId(),
+      measuredAt:   value.measuredAt,
+      valueMgDl:    +value.valueMgDl,
+      context:      value.context,
+      notes:        value.notes || null
     };
-    const req$ = this.editingId ? this.glycemiaService.update(this.editingId, body) : this.glycemiaService.create(body);
+    const id = this.editingId();
+    const req$ = id ? this.glycemiaService.update(id, body) : this.glycemiaService.create(body);
     req$.subscribe({
       next: () => {
-        this.alertSvc.show(this.editingId ? 'Misurazione aggiornata' : 'Misurazione registrata');
+        this.alertSvc.show(id ? 'Misurazione aggiornata' : 'Misurazione registrata');
         this.closeModal();
         this.load();
       },
@@ -164,7 +161,7 @@ export class GlycemiaComponent implements OnInit {
   patientName(m: GlycemiaMeasurement): string {
     if (m.patientFirstName || m.patientLastName)
       return `${m.patientLastName} ${m.patientFirstName}`.trim();
-    const p = this.patients.find(pt => pt.id === m.patientId);
+    const p = this.patients().find(pt => pt.id === m.patientId);
     return p ? `${p.firstName} ${p.lastName}` : '–';
   }
 
@@ -172,31 +169,8 @@ export class GlycemiaComponent implements OnInit {
     return this.contexts.find(c => c.value === context)?.label ?? context;
   }
 
-  badgeClass(classification: string): string {
-    const map: Record<string, string> = {
-      NORMALE:    'badge-success',
-      ATTENZIONE: 'badge-warning',
-      ELEVATA:    'badge-danger',
-    };
-    return map[classification] ?? '';
-  }
-
-  classColor(classification: string): string {
-    const base = 'inline-block px-[0.65rem] py-[0.2rem] rounded-xl text-[0.75rem] font-bold uppercase tracking-[0.5px]';
-    const map: Record<string, string> = {
-      NORMALE:    'bg-[#d4f0e0] text-[#1e7a48]',
-      ATTENZIONE: 'bg-[#fef3cd] text-[#856404]',
-      ELEVATA:    'bg-[#fde8e8] text-[#d95550]',
-    };
-    return `${base} ${map[classification] ?? 'bg-[#f0f0f0] text-[#555]'}`;
-  }
-
-  isInvalid(field: string): boolean {
-    const control = this.form.get(field);
-    return !!(control && control.invalid && control.touched);
-  }
-
-  fieldError(field: string): string | null {
-    return this.fieldErrors()[field] ?? null;
+  private nowIso(): string {
+    const now = new Date();
+    return new Date(now.getTime() - now.getTimezoneOffset() * 60000).toISOString().slice(0, 16);
   }
 }

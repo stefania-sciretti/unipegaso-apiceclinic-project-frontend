@@ -1,30 +1,30 @@
 <main class="max-w-[1200px] mx-auto my-8 px-6">
   <div class="flex justify-between items-start mb-6">
     <div>
-      <h1 class="text-[1.75rem] font-bold mb-1 text-[#112D4E] flex items-center">
-        <span class="material-icons text-[1.6rem] align-middle mr-[0.3rem] text-[#3F72AF]">menu_book</span> Ricette Fit
+      <h1 class="text-[1.75rem] font-bold mb-1 text-[var(--primary)] flex items-center">
+        <span class="material-icons text-[1.6rem] align-middle mr-[0.3rem] text-[var(--primary-mid)]">menu_book</span> Ricette Fit
       </h1>
-      <p class="text-[#3F72AF] text-[0.95rem]">Raccolta di ricette salutari</p>
+      <p class="text-[var(--primary-mid)] text-[0.95rem]">Raccolta di ricette salutari</p>
     </div>
     <button appBtn="primary" (click)="openCreate()">+ Nuova Ricetta</button>
   </div>
   @if (alertSignal(); as a) {
     <div class="px-[1.1rem] py-[0.8rem] rounded-[10px] mb-4 text-[0.9rem] flex items-center gap-2 border-l-4"
-         [ngClass]="a.type==='success' ? 'bg-[#d4f0e0] text-[#1e7a48] border-[#3F72AF]' : 'bg-[#fde8e8] text-[#d95550] border-[#d95550]'">{{ a.message }}</div>
+         [ngClass]="a.type==='success' ? 'bg-green-100 text-green-800 border-[var(--primary-mid)]' : 'bg-red-100 text-[var(--danger)] border-[var(--danger)]'">{{ a.message }}</div>
   }
   <div class="bg-white rounded-[10px] shadow-[0_2px_14px_rgba(17,45,78,0.10)] p-6 mb-8">
     <div class="flex items-center gap-3 mb-5 flex-wrap">
       <input type="text" placeholder="Cerca ricette…" (input)="onSearch($event)"
-             class="flex-1 max-w-[280px] px-3 py-2 border-[1.5px] border-[#DBE2EF] rounded-[10px] text-[0.9rem] outline-none transition-[border-color] duration-200 focus:border-[#3F72AF] bg-white"/>
+             class="flex-1 max-w-[280px] px-3 py-2 border-[1.5px] border-[var(--border)] rounded-[10px] text-[0.9rem] outline-none transition-[border-color] duration-200 focus:border-[var(--primary-mid)] bg-white"/>
       <select (change)="onCategory($event)"
-              class="px-3 py-2 border-[1.5px] border-[#DBE2EF] rounded-[10px] text-[0.9rem] outline-none transition-[border-color] duration-200 focus:border-[#3F72AF] bg-white">
+              class="px-3 py-2 border-[1.5px] border-[var(--border)] rounded-[10px] text-[0.9rem] outline-none transition-[border-color] duration-200 focus:border-[var(--primary-mid)] bg-white">
         <option value="">Tutte le categorie</option>
         @for (cat of categories; track cat) {
           <option [value]="cat">{{ cat }}</option>
         }
       </select>
       <!-- View toggle -->
-      <div class="ml-auto flex items-center border border-[#DBE2EF] rounded-[8px] overflow-hidden">
+      <div class="ml-auto flex items-center border border-[var(--border)] rounded-[8px] overflow-hidden">
         <button type="button"
                 [appBtn]="viewMode() === 'grid' ? 'toggle-active' : 'toggle-inactive'"
                 (click)="viewMode.set('grid')"
@@ -34,45 +34,45 @@
         <button type="button"
                 [appBtn]="viewMode() === 'list' ? 'toggle-active' : 'toggle-inactive'"
                 (click)="viewMode.set('list')"
-                class="border-l border-[#DBE2EF]"
+                class="border-l border-[var(--border)]"
                 title="Vista elenco">
           <span class="material-icons text-[1.1rem]">view_list</span>
         </button>
       </div>
     </div>
     @if (loading) {
-      <div class="text-[#3F72AF] italic py-6 text-center">Caricamento…</div>
+      <div class="text-[var(--primary-mid)] italic py-6 text-center">Caricamento…</div>
     }
     @if (!loading) {
       @if (recipes.length === 0) {
-        <div class="text-[#3F72AF] text-center py-10 text-[0.95rem]">Nessuna ricetta trovata.</div>
+        <div class="text-[var(--primary-mid)] text-center py-10 text-[0.95rem]">Nessuna ricetta trovata.</div>
       }
 
       <!-- ── GRID VIEW ── -->
       @if (viewMode() === 'grid' && recipes.length > 0) {
         <div class="grid grid-cols-[repeat(auto-fill,minmax(280px,1fr))] gap-5">
           @for (r of recipes; track r.id) {
-            <div class="flex flex-col bg-white rounded-[10px] shadow-[0_2px_14px_rgba(17,45,78,0.10)] border border-[#DBE2EF] overflow-hidden
+            <div class="flex flex-col bg-white rounded-[10px] shadow-[0_2px_14px_rgba(17,45,78,0.10)] border border-[var(--border)] overflow-hidden
                         transition-[transform,box-shadow] duration-150 hover:-translate-y-[3px] hover:shadow-[0_6px_18px_rgba(53,88,114,0.13)]
                         cursor-pointer"
                  (click)="openDetail(r)"
                  [attr.aria-label]="'Apri dettaglio: ' + r.title"
                  role="button" tabindex="0"
                  (keydown.enter)="openDetail(r)">
-              <div class="px-4 py-2 bg-[#eef4f9] flex items-center justify-between">
-                <span class="text-[0.72rem] font-bold uppercase tracking-[0.6px] text-[#3F72AF]">{{ r.category ?? 'Generale' }}</span>
+              <div class="px-4 py-2 bg-sky-50 flex items-center justify-between">
+                <span class="text-[0.72rem] font-bold uppercase tracking-[0.6px] text-[var(--primary-mid)]">{{ r.category ?? 'Generale' }}</span>
                 @if (r.calories) {
-                  <span class="text-[0.78rem] text-[#3F72AF] font-semibold">{{ r.calories }} kcal</span>
+                  <span class="text-[0.78rem] text-[var(--primary-mid)] font-semibold">{{ r.calories }} kcal</span>
                 }
               </div>
               <div class="flex flex-col flex-1 p-5">
-                <h3 class="text-[1rem] font-bold text-[#112D4E] mb-2 leading-snug">{{ r.title }}</h3>
+                <h3 class="text-[1rem] font-bold text-[var(--primary)] mb-2 leading-snug">{{ r.title }}</h3>
                 @if (r.description) {
-                  <p class="text-[0.85rem] text-[#3F72AF] leading-[1.5] line-clamp-3 flex-1">{{ r.description }}</p>
+                  <p class="text-[0.85rem] text-[var(--primary-mid)] leading-[1.5] line-clamp-3 flex-1">{{ r.description }}</p>
                 } @else {
-                  <p class="text-[0.85rem] text-[#3F72AF] italic flex-1">Nessuna descrizione.</p>
+                  <p class="text-[0.85rem] text-[var(--primary-mid)] italic flex-1">Nessuna descrizione.</p>
                 }
-                <div class="flex gap-2 mt-4 pt-3 border-t border-[#DBE2EF]">
+                <div class="flex gap-2 mt-4 pt-3 border-t border-[var(--border)]">
                   <button appBtn="sm-blue" (click)="$event.stopPropagation(); openEdit(r)">Modifica</button>
                   <button appBtn="sm-danger" (click)="$event.stopPropagation(); delete(r.id)">Elimina</button>
                 </div>
@@ -84,27 +84,27 @@
 
       <!-- ── LIST VIEW ── -->
       @if (viewMode() === 'list' && recipes.length > 0) {
-        <div class="flex flex-col divide-y divide-[#DBE2EF]">
+        <div class="flex flex-col divide-y divide-[var(--border)]">
           @for (r of recipes; track r.id) {
             <div class="flex items-center gap-4 py-3 px-2 rounded-[8px]
-                        hover:bg-[#f0f7ff] transition-colors duration-150 cursor-pointer"
+                        hover:bg-sky-50 transition-colors duration-150 cursor-pointer"
                  (click)="openDetail(r)"
                  role="button" tabindex="0"
                  (keydown.enter)="openDetail(r)">
               <!-- Category pill -->
               <span class="shrink-0 w-[110px] text-center text-[0.7rem] font-bold uppercase tracking-[0.5px]
-                           bg-[#eef4f9] text-[#3F72AF] px-2 py-1 rounded-lg truncate">
+                           bg-sky-50 text-[var(--primary-mid)] px-2 py-1 rounded-lg truncate">
                 {{ r.category ?? 'Generale' }}
               </span>
               <!-- Title + description -->
               <div class="flex-1 min-w-0">
-                <p class="text-[0.92rem] font-bold text-[#112D4E] truncate">{{ r.title }}</p>
+                <p class="text-[0.92rem] font-bold text-[var(--primary)] truncate">{{ r.title }}</p>
                 @if (r.description) {
-                  <p class="text-[0.8rem] text-[#3F72AF] truncate">{{ r.description }}</p>
+                  <p class="text-[0.8rem] text-[var(--primary-mid)] truncate">{{ r.description }}</p>
                 }
               </div>
               <!-- Calories -->
-              <span class="shrink-0 text-[0.8rem] text-[#3F72AF] font-semibold w-[80px] text-right">
+              <span class="shrink-0 text-[0.8rem] text-[var(--primary-mid)] font-semibold w-[80px] text-right">
                 {{ r.calories +' kcal'}}
               </span>
               <!-- Actions -->
@@ -124,15 +124,15 @@
   <div class="fixed inset-0 bg-[rgba(30,45,59,0.5)] z-[99999] flex items-center justify-center p-4">
     <div class="bg-white rounded-[10px] shadow-[0_10px_40px_rgba(53,88,114,0.22)] w-full max-w-[640px] max-h-[90vh] overflow-y-auto">
       <!-- Header -->
-      <div class="flex justify-between items-start p-6 pb-4 border-b-2 border-[#DBE2EF]">
+      <div class="flex justify-between items-start p-6 pb-4 border-b-2 border-[var(--border)]">
         <div>
-          <h3 class="text-[1.2rem] text-[#112D4E] font-bold leading-snug">{{ selected.title }}</h3>
+          <h3 class="text-[1.2rem] text-[var(--primary)] font-bold leading-snug">{{ selected.title }}</h3>
           <div class="flex items-center gap-3 mt-2 flex-wrap">
             @if (selected.category) {
-              <span class="inline-block bg-[#DBE2EF] text-[#112D4E] px-[0.55rem] py-[0.15rem] rounded-lg text-[0.75rem] font-semibold uppercase tracking-[0.4px]">{{ selected.category }}</span>
+              <span class="inline-block bg-[var(--border)] text-[var(--primary)] px-[0.55rem] py-[0.15rem] rounded-lg text-[0.75rem] font-semibold uppercase tracking-[0.4px]">{{ selected.category }}</span>
             }
             @if (selected.calories) {
-              <span class="text-[0.85rem] text-[#3F72AF] font-semibold">🔥 {{ selected.calories }} kcal</span>
+              <span class="text-[0.85rem] text-[var(--primary-mid)] font-semibold">🔥 {{ selected.calories }} kcal</span>
             }
           </div>
         </div>
@@ -143,7 +143,7 @@
         @if (selected.description) {
           <div>
             <p appLabel>Descrizione</p>
-            <p class="text-[0.9rem] text-[#3F72AF] leading-[1.6] mt-1">{{ selected.description }}</p>
+            <p class="text-[0.9rem] text-[var(--primary-mid)] leading-[1.6] mt-1">{{ selected.description }}</p>
           </div>
         }
         @if (selected.ingredients) {
@@ -152,8 +152,8 @@
             <ul class="mt-1 space-y-1">
               @for (line of selected.ingredients.split('\n'); track $index) {
                 @if (line.trim()) {
-                  <li class="flex items-start gap-2 text-[0.88rem] text-[#112D4E]">
-                    <span class="mt-[3px] w-[6px] h-[6px] rounded-full bg-[#3F72AF] shrink-0"></span>
+                  <li class="flex items-start gap-2 text-[0.88rem] text-[var(--primary)]">
+                    <span class="mt-[3px] w-[6px] h-[6px] rounded-full bg-[var(--primary-mid)] shrink-0"></span>
                     {{ line.trim() }}
                   </li>
                 }
@@ -164,12 +164,12 @@
         @if (selected.instructions) {
           <div>
             <p appLabel>Preparazione</p>
-            <p class="text-[0.88rem] text-[#112D4E] whitespace-pre-line leading-[1.7] mt-1">{{ selected.instructions }}</p>
+            <p class="text-[0.88rem] text-[var(--primary)] whitespace-pre-line leading-[1.7] mt-1">{{ selected.instructions }}</p>
           </div>
         }
       </div>
       <!-- Footer -->
-      <div class="flex justify-end gap-3 px-6 pb-6 pt-2 border-t border-[#DBE2EF]">
+      <div class="flex justify-end gap-3 px-6 pb-6 pt-2 border-t border-[var(--border)]">
         <button appBtn="outline" (click)="showDetail = false">Chiudi</button>
         <button appBtn="primary" (click)="showDetail = false; openEdit(selected!)">Modifica</button>
       </div>
@@ -180,8 +180,8 @@
 @if (showModal) {
   <div class="fixed inset-0 bg-[rgba(30,45,59,0.5)] z-[99999] flex items-center justify-center p-4">
     <div class="bg-white rounded-[10px] shadow-[0_10px_40px_rgba(53,88,114,0.22)] p-8 w-full max-w-[600px] max-h-[90vh] overflow-y-auto">
-      <div class="flex justify-between items-center mb-6 pb-4 border-b-2 border-[#DBE2EF]">
-        <h3 class="text-[1.15rem] text-[#112D4E] font-bold">{{ editingId ? 'Modifica Ricetta' : 'Nuova Ricetta' }}</h3>
+      <div class="flex justify-between items-center mb-6 pb-4 border-b-2 border-[var(--border)]">
+        <h3 class="text-[1.15rem] text-[var(--primary)] font-bold">{{ editingId ? 'Modifica Ricetta' : 'Nuova Ricetta' }}</h3>
         <button appBtn="close" (click)="showModal = false">&times;</button>
       </div>
       <form [formGroup]="form" (ngSubmit)="save()">
@@ -190,7 +190,7 @@
           <input appFormControl id="recipeTitle" formControlName="title" type="text" placeholder="es. Smoothie Proteico Verde"
                  class="transition-[border-color,box-shadow] duration-200"/>
           @if (fieldError('title') || isInvalid('title')) {
-            <div class="text-[#d95550] text-[0.8rem] mt-1">{{ fieldError('title') || 'Campo obbligatorio' }}</div>
+            <div class="text-[var(--danger)] text-[0.8rem] mt-1">{{ fieldError('title') || 'Campo obbligatorio' }}</div>
           }
         </div>
         <div class="grid grid-cols-2 gap-4">
@@ -209,7 +209,7 @@
             <input appFormControl id="recipeCalories" formControlName="calories" type="number" placeholder="320"
                    class="transition-[border-color,box-shadow] duration-200"/>
             @if (fieldError('calories')) {
-              <div class="text-[#d95550] text-[0.8rem] mt-1">{{ fieldError('calories') }}</div>
+              <div class="text-[var(--danger)] text-[0.8rem] mt-1">{{ fieldError('calories') }}</div>
             }
           </div>
         </div>
@@ -228,7 +228,7 @@
           <textarea appFormControl id="recipeInstructions" formControlName="instructions" placeholder="Preparazione passo dopo passo…"
                     class="transition-[border-color,box-shadow] duration-200 resize-vertical min-h-[100px]"></textarea>
         </div>
-        <div class="flex justify-end gap-3 mt-6 pt-4 border-t border-[#DBE2EF]">
+        <div class="flex justify-end gap-3 mt-6 pt-4 border-t border-[var(--border)]">
           <button appBtn="outline" type="button" (click)="showModal = false">Annulla</button>
           <button appBtn="primary" type="submit">Salva Ricetta</button>
         </div>

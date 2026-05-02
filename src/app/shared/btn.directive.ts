@@ -4,21 +4,21 @@ export type ButtonVariant = 'primary' | 'outline' | 'sm-primary' | 'sm-danger' |
 
 const VARIANT_CLASSES: Record<ButtonVariant, string> = {
   primary:
-    'px-[1.1rem] py-2 border-0 rounded-[10px] text-[0.9rem] cursor-pointer font-semibold transition-colors duration-[180ms] bg-[#112D4E] text-white hover:bg-[#264560]',
+    'px-[1.1rem] py-2 border-0 rounded-[10px] text-[0.9rem] cursor-pointer font-semibold transition-colors duration-[180ms] bg-[var(--primary)] text-white hover:bg-[var(--primary-mid)]',
   outline:
-    'px-[1.1rem] py-2 rounded-[10px] text-[0.9rem] cursor-pointer font-semibold transition-colors duration-[180ms] bg-transparent border-[1.5px] border-[#112D4E] text-[#112D4E] hover:bg-[#112D4E] hover:text-white',
+    'px-[1.1rem] py-2 rounded-[10px] text-[0.9rem] cursor-pointer font-semibold transition-colors duration-[180ms] bg-transparent border-[1.5px] border-[var(--primary)] text-[var(--primary)] hover:bg-[var(--primary)] hover:text-white',
   'sm-primary':
-    'px-[0.7rem] py-[0.3rem] border-0 rounded-[10px] text-[0.8rem] cursor-pointer font-semibold transition-colors duration-[180ms] bg-[#112D4E] text-white hover:bg-[#264560]',
+    'px-[0.7rem] py-[0.3rem] border-0 rounded-[10px] text-[0.8rem] cursor-pointer font-semibold transition-colors duration-[180ms] bg-[var(--primary)] text-white hover:bg-[var(--primary-mid)]',
   'sm-danger':
-    'px-[0.7rem] py-[0.3rem] border-0 rounded-[10px] text-[0.8rem] cursor-pointer font-semibold transition-colors duration-[180ms] bg-[#d95550] text-white hover:bg-[#b84140]',
+    'px-[0.7rem] py-[0.3rem] border-0 rounded-[10px] text-[0.8rem] cursor-pointer font-semibold transition-colors duration-[180ms] bg-[var(--danger)] text-white hover:bg-red-700',
   'sm-blue':
-    'px-[0.7rem] py-[0.3rem] border-0 rounded-[10px] text-[0.8rem] cursor-pointer font-semibold transition-colors duration-[180ms] bg-[#3F72AF] text-white hover:bg-[#5e96be]',
+    'px-[0.7rem] py-[0.3rem] border-0 rounded-[10px] text-[0.8rem] cursor-pointer font-semibold transition-colors duration-[180ms] bg-[var(--primary-mid)] text-white hover:bg-sky-400',
   close:
-    'bg-transparent border-0 text-[1.4rem] cursor-pointer text-[#3F72AF] leading-none hover:text-[#d95550] transition-colors duration-200',
+    'bg-transparent border-0 text-[1.4rem] cursor-pointer text-[var(--primary-mid)] leading-none hover:text-[var(--danger)] transition-colors duration-200',
   'toggle-active':
-    'px-3 py-[0.45rem] border-0 flex items-center cursor-pointer text-[0.82rem] font-semibold transition-colors duration-150 bg-[#112D4E] text-white',
+    'px-3 py-[0.45rem] border-0 flex items-center cursor-pointer text-[0.82rem] font-semibold transition-colors duration-150 bg-[var(--primary)] text-white',
   'toggle-inactive':
-    'px-3 py-[0.45rem] border-0 flex items-center cursor-pointer text-[0.82rem] font-semibold transition-colors duration-150 bg-white text-[#3F72AF] hover:bg-[#eef4f9]',
+    'px-3 py-[0.45rem] border-0 flex items-center cursor-pointer text-[0.82rem] font-semibold transition-colors duration-150 bg-white text-[var(--primary-mid)] hover:bg-sky-50',
 };
 
 /**
@@ -29,10 +29,8 @@ const VARIANT_CLASSES: Record<ButtonVariant, string> = {
  *   <button appBtn="sm-danger" (click)="delete(id)">Elimina</button>
  *   <button appBtn="close" (click)="closeModal()">&times;</button>
  *
- * Note: The Tailwind class strings here use the existing brand palette (--primary #112D4E,
- * --primary-mid #3F72AF, --danger #d95550). The three new brand constants
- * (COLOR_ACCENT, COLOR_SECONDARY, COLOR_PRIMARY) defined in colors.constants.ts are
- * used for dynamic [ngStyle] role-badge coloring in the appointments component.
+ * Note: All Tailwind class strings use CSS custom properties (--primary, --primary-mid,
+ * --danger) defined in styles.scss. No raw hex values are permitted here.
  */
 @Directive({
   selector: 'button[appBtn]',

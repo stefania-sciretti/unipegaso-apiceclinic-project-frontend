@@ -3,8 +3,8 @@
   <!-- Header -->
   <div class="flex justify-between items-start mb-6 flex-wrap gap-4">
     <div>
-      <h1 class="text-[1.75rem] font-bold mb-1 text-[#112D4E] flex items-center gap-2">
-        <span class="material-icons text-[1.6rem] text-[#3F72AF]">calendar_view_month</span>
+      <h1 class="text-[1.75rem] font-bold mb-1 text-[var(--primary)] flex items-center gap-2">
+        <span class="material-icons text-[1.6rem] text-[var(--primary-mid)]">calendar_view_month</span>
         Calendario Prenotazioni
       </h1>
       <div class="flex items-center gap-4 mt-2">
@@ -28,17 +28,17 @@
 
     <!-- Toggle vista -->
     <div class="flex items-center gap-2">
-      <div class="flex rounded-lg overflow-hidden border border-[#DBE2EF]">
+      <div class="flex rounded-lg overflow-hidden border border-[var(--border)]">
         <button
           class="px-4 py-2 text-sm font-semibold transition-colors duration-150"
-          [ngClass]="viewMode === 'month' ? 'bg-[#112D4E] text-white' : 'bg-white text-[#112D4E] hover:bg-[#f0f4f8]'"
-          (click)="viewMode = 'month'">
+          [ngClass]="viewMode() === 'month' ? 'bg-[var(--primary)] text-white' : 'bg-white text-[var(--primary)] hover:bg-slate-100'"
+          (click)="viewMode.set('month')">
           Mensile
         </button>
         <button
-          class="px-4 py-2 text-sm font-semibold transition-colors duration-150 border-l border-[#DBE2EF]"
-          [ngClass]="viewMode === 'week' ? 'bg-[#112D4E] text-white' : 'bg-white text-[#112D4E] hover:bg-[#f0f4f8]'"
-          (click)="viewMode = 'week'">
+          class="px-4 py-2 text-sm font-semibold transition-colors duration-150 border-l border-[var(--border)]"
+          [ngClass]="viewMode() === 'week' ? 'bg-[var(--primary)] text-white' : 'bg-white text-[var(--primary)] hover:bg-slate-100'"
+          (click)="viewMode.set('week')">
           Settimanale
         </button>
       </div>
@@ -48,51 +48,51 @@
   <!-- Navigazione -->
   <div class="flex items-center gap-3 mb-4">
     <button
-      class="p-1.5 rounded-md hover:bg-[#f0f4f8] transition-colors text-[#112D4E]"
+      class="p-1.5 rounded-md hover:bg-slate-100 border-0 transition-colors text-[var(--primary)]"
       (click)="previousPeriod()">
       <span class="material-icons">chevron_left</span>
     </button>
-    <span class="text-[1.05rem] font-semibold text-[#112D4E] min-w-[180px] text-center capitalize">
-      @if (viewMode === 'month') {
-        {{ currentDate | date:'MMMM yyyy':'':'it-IT' }}
+    <span class="text-[1.05rem] font-semibold text-[var(--primary)] min-w-[180px] text-center capitalize">
+      @if (viewMode() === 'month') {
+        {{ currentDate() | date:'MMMM yyyy':'':'it-IT' }}
       } @else {
-        {{ weekLabel }}
+        {{ weekLabel() }}
       }
     </span>
     <button
-      class="p-1.5 rounded-md hover:bg-[#f0f4f8] transition-colors text-[#112D4E]"
+      class="p-1.5 rounded-md hover:bg-slate-100 border-0 transition-colors text-[var(--primary)]"
       (click)="nextPeriod()">
       <span class="material-icons">chevron_right</span>
     </button>
     <button
-      class="ml-2 px-3 py-1.5 rounded-md text-sm font-semibold border border-[#DBE2EF] text-[#112D4E] hover:bg-[#f0f4f8] transition-colors"
+      class="ml-2 px-3 py-1.5 rounded-md text-sm font-semibold border-0 hover:bg-slate-100 transition-colors"
       (click)="goToToday()">
       Oggi
     </button>
   </div>
 
   <!-- Loading -->
-  @if (loading) {
-    <div class="flex items-center justify-center py-20 text-[#3F72AF] italic">
+  @if (loading()) {
+    <div class="flex items-center justify-center py-20 text-[var(--primary-mid)] italic">
       <span class="material-icons animate-spin mr-2">autorenew</span> Caricamento…
     </div>
   }
 
   <!-- Errore -->
-  @if (!loading && loadError) {
-    <div class="bg-[#fde8e8] text-[#d95550] border-l-4 border-[#d95550] px-5 py-4 rounded-lg">
+  @if (!loading() && loadError()) {
+    <div class="bg-red-100 text-[var(--danger)] border-l-4 border-[var(--danger)] px-5 py-4 rounded-lg">
       Errore nel caricamento delle prenotazioni. Riprova più tardi.
     </div>
   }
 
   <!-- Vista mensile -->
-  @if (!loading && !loadError && viewMode === 'month') {
+  @if (!loading() && !loadError() && viewMode() === 'month') {
     <div class="bg-white rounded-xl shadow-[0_2px_14px_rgba(17,45,78,0.10)] overflow-hidden">
       <!-- Intestazione giorni -->
-      <div class="grid grid-cols-7 border-b border-[#DBE2EF]">
+      <div class="grid grid-cols-7 border-b border-[var(--border)]">
         @for (d of dayLabels; track $index) {
-          <div class="py-3 text-center text-sm font-semibold text-[#3F72AF]"
-               [ngClass]="$index >= 5 ? 'text-[#d95550]' : ''">
+          <div class="py-3 text-center text-sm font-semibold text-[var(--primary-mid)]"
+               [ngClass]="$index >= 5 ? 'text-[var(--danger)]' : ''">
             {{ d }}
           </div>
         }
@@ -100,13 +100,13 @@
       <!-- Celle giorni -->
       <div class="grid grid-cols-7">
         @for (day of getCalendarDays(); track $index) {
-          <div class="min-h-[100px] border-b border-r border-[#DBE2EF] p-1.5 last:border-r-0"
-               [ngClass]="day === 0 ? 'bg-[#f8fafc]' : ''">
+          <div class="min-h-[100px] border-b border-r border-[var(--border)] p-1.5 last:border-r-0"
+               [ngClass]="day === 0 ? 'bg-slate-50' : ''">
             @if (day !== 0) {
               <div class="text-xs font-semibold mb-1 w-6 h-6 flex items-center justify-center rounded-full"
                    [ngClass]="isToday(day)
-                     ? 'bg-[#112D4E] text-white'
-                     : 'text-[#112D4E]'">
+                     ? 'bg-[var(--primary)] text-white'
+                     : 'text-[var(--primary)]'">
                 {{ day }}
               </div>
               @for (event of getEventsForMonthDay(day); track event.id) {
@@ -123,26 +123,26 @@
       </div>
     </div>
 
-    @if (events.length === 0) {
-      <p class="text-center text-[#3F72AF] italic py-8">Nessuna prenotazione trovata.</p>
+    @if (events().length === 0) {
+      <p class="text-center text-[var(--primary-mid)] italic py-8">Nessuna prenotazione trovata.</p>
     }
   }
 
   <!-- Vista settimanale -->
-  @if (!loading && !loadError && viewMode === 'week') {
+  @if (!loading() && !loadError() && viewMode() === 'week') {
     <div class="bg-white rounded-xl shadow-[0_2px_14px_rgba(17,45,78,0.10)] overflow-hidden overflow-x-auto">
       <div class="grid grid-cols-7 min-w-[700px]">
-        @for (date of weekDays; track date.getTime()) {
-          <div class="border-r border-[#DBE2EF] last:border-r-0">
+        @for (date of weekDays(); track date.getTime()) {
+          <div class="border-r border-[var(--border)] last:border-r-0">
             <!-- Intestazione giorno -->
-            <div class="py-3 text-center border-b border-[#DBE2EF]"
-                 [ngClass]="isWeekDayToday(date) ? 'bg-[#eef4f9]' : ''">
+            <div class="py-3 text-center border-b border-[var(--border)]"
+                 [ngClass]="isWeekDayToday(date) ? 'bg-sky-50' : ''">
               <div class="text-xs font-semibold"
-                   [ngClass]="$index >= 5 ? 'text-[#d95550]' : 'text-[#3F72AF]'">
+                   [ngClass]="$index >= 5 ? 'text-[var(--danger)]' : 'text-[var(--primary-mid)]'">
                 {{ dayLabelsLong[$index] }}
               </div>
               <div class="text-lg font-bold flex items-center justify-center mx-auto w-9 h-9 rounded-full mt-0.5"
-                   [ngClass]="isWeekDayToday(date) ? 'bg-[#112D4E] text-white' : 'text-[#112D4E]'">
+                   [ngClass]="isWeekDayToday(date) ? 'bg-[var(--primary)] text-white' : 'text-[var(--primary)]'">
                 {{ date | date:'d' }}
               </div>
             </div>
@@ -160,7 +160,7 @@
                 </button>
               }
               @if (dayEvents.length === 0) {
-                <div class="text-[#c0ccd8] text-[0.7rem] text-center pt-4">–</div>
+                <div class="text-slate-300 text-[0.7rem] text-center pt-4">–</div>
               }
             </div>
           </div>
@@ -172,7 +172,7 @@
 </main>
 
 <!-- Popover dettagli evento -->
-@if (selectedEvent) {
+@if (selectedEvent(); as ev) {
   <div
     class="fixed inset-0 bg-[rgba(30,45,59,0.45)] z-[99999] flex items-center justify-center p-4"
     (click)="closePopover()">
@@ -181,45 +181,45 @@
       (click)="$event.stopPropagation()">
 
       <!-- Header tipo -->
-      <div class="flex items-center gap-3 mb-4 pb-4 border-b border-[#DBE2EF]">
+      <div class="flex items-center gap-3 mb-4 pb-4 border-b border-[var(--border)]">
         <span
           class="inline-flex items-center justify-center w-10 h-10 rounded-full text-white text-sm font-bold"
-          [ngStyle]="{'background-color': eventBgColor(selectedEvent.specialistRole)}">
-          {{ selectedEvent.specialistRole[0] }}
+          [ngStyle]="{'background-color': eventBgColor(ev.specialistRole)}">
+          {{ ev.specialistRole[0] }}
         </span>
         <div>
           <div class="text-xs font-semibold uppercase tracking-wide text-white px-2 py-0.5 rounded"
-               [ngStyle]="{'background-color': eventBgColor(selectedEvent.specialistRole)}">
-            {{ selectedEvent.specialistRole.replace('_', ' ') }}
+               [ngStyle]="{'background-color': eventBgColor(ev.specialistRole)}">
+            {{ ev.specialistRole.replace('_', ' ') }}
           </div>
-          <div class="text-[1rem] font-bold text-[#112D4E]">{{ selectedEvent.serviceType }}</div>
+          <div class="text-[1rem] font-bold text-[var(--primary)]">{{ ev.serviceType }}</div>
         </div>
         <button
-          class="ml-auto text-[#3F72AF] hover:text-[#d95550] bg-transparent border-0 cursor-pointer text-xl leading-none"
+          class="ml-auto text-[var(--primary-mid)] hover:text-[var(--danger)] bg-transparent border-0 cursor-pointer text-xl leading-none"
           (click)="closePopover()">&times;</button>
       </div>
 
       <!-- Dettagli -->
       <dl class="space-y-2 text-sm">
         <div class="flex gap-2">
-          <dt class="text-[#3F72AF] font-semibold w-24 shrink-0">Data e ora</dt>
-          <dd class="text-[#112D4E]">{{ selectedEvent.start | date:"d MMM yyyy 'alle' HH:mm":'':'it-IT' }}</dd>
+          <dt class="text-[var(--primary-mid)] font-semibold w-24 shrink-0">Data e ora</dt>
+          <dd class="text-[var(--primary)]">{{ ev.start | date:"d MMM yyyy 'alle' HH:mm":'':'it-IT' }}</dd>
         </div>
         <div class="flex gap-2">
-          <dt class="text-[#3F72AF] font-semibold w-24 shrink-0">Specialista</dt>
-          <dd class="text-[#112D4E]">{{ selectedEvent.specialistName }}</dd>
+          <dt class="text-[var(--primary-mid)] font-semibold w-24 shrink-0">Specialista</dt>
+          <dd class="text-[var(--primary)]">{{ ev.specialistName }}</dd>
         </div>
         <div class="flex gap-2">
-          <dt class="text-[#3F72AF] font-semibold w-24 shrink-0">Paziente</dt>
-          <dd class="text-[#112D4E]">{{ selectedEvent.patientName }}</dd>
+          <dt class="text-[var(--primary-mid)] font-semibold w-24 shrink-0">Paziente</dt>
+          <dd class="text-[var(--primary)]">{{ ev.patientName }}</dd>
         </div>
         <div class="flex gap-2">
-          <dt class="text-[#3F72AF] font-semibold w-24 shrink-0">Note</dt>
-          <dd class="text-[#112D4E]">{{ selectedEvent.note }}</dd>
+          <dt class="text-[var(--primary-mid)] font-semibold w-24 shrink-0">Note</dt>
+          <dd class="text-[var(--primary)]">{{ ev.note }}</dd>
         </div>
         <div class="flex gap-2">
-          <dt class="text-[#3F72AF] font-semibold w-24 shrink-0">Stato</dt>
-          <dd><span [class]="statusBadgeClass(selectedEvent.status)">{{ statusLabel(selectedEvent.status) }}</span></dd>
+          <dt class="text-[var(--primary-mid)] font-semibold w-24 shrink-0">Stato</dt>
+          <dd><span [class]="ev.status | statusBadge">{{ statusLabel(ev.status) }}</span></dd>
         </div>
       </dl>
     </div>

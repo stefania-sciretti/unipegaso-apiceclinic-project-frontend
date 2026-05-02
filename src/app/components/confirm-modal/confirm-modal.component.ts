@@ -15,22 +15,22 @@ import { ConfirmModalService } from '../../services/confirm-modal.service';
       >
         <div class="bg-white rounded-[10px] shadow-[0_10px_40px_rgba(53,88,114,0.22)] p-8 w-full max-w-[420px]">
           <div class="flex flex-col items-center">
-            <span class="material-icons text-[#d95550] text-[3rem] leading-none" aria-hidden="true">warning_amber</span>
-            <p id="confirm-modal-message" class="text-[#112D4E] text-[1rem] font-semibold mt-3 text-center">
+            <span class="material-icons text-[var(--danger)] text-[3rem] leading-none" aria-hidden="true">warning_amber</span>
+            <p id="confirm-modal-message" class="text-[var(--primary)] text-[1rem] font-semibold mt-3 text-center">
               {{ svc.message() }}
             </p>
           </div>
           <div class="flex justify-between gap-3 mt-6">
             <button
               type="button"
-              class="px-[1.1rem] py-2 rounded-[10px] text-[0.9rem] cursor-pointer font-semibold bg-transparent border-[1.5px] border-[#112D4E] text-[#112D4E] hover:bg-[#112D4E] hover:text-white transition-colors duration-[180ms]"
+              class="px-[1.1rem] py-2 rounded-[10px] text-[0.9rem] cursor-pointer font-semibold bg-transparent border-[1.5px] border-[var(--primary)] text-[var(--primary)] hover:bg-[var(--primary)] hover:text-white transition-colors duration-[180ms]"
               (click)="svc.cancel()"
             >
               Annulla
             </button>
             <button
               type="button"
-              class="px-[1.1rem] py-2 border-0 rounded-[10px] text-[0.9rem] cursor-pointer font-semibold bg-[#d95550] text-white hover:bg-[#b84140] transition-colors duration-[180ms]"
+              class="px-[1.1rem] py-2 border-0 rounded-[10px] text-[0.9rem] cursor-pointer font-semibold bg-[var(--danger)] text-white hover:bg-red-700 transition-colors duration-[180ms]"
               (click)="svc.confirm()"
             >
               Conferma

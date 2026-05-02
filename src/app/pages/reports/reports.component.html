@@ -1,10 +1,10 @@
 <main class="max-w-[1200px] mx-auto my-8 px-6">
   <div class="flex justify-between items-start mb-6">
     <div>
-      <h1 class="text-[1.75rem] font-bold mb-1 text-[#112D4E] flex items-center">
-        <span class="material-icons text-[1.6rem] align-middle mr-[0.3rem] text-[#3F72AF]">assignment</span> Referti
+      <h1 class="text-[1.75rem] font-bold mb-1 text-[var(--primary)] flex items-center">
+        <span class="material-icons text-[1.6rem] align-middle mr-[0.3rem] text-[var(--primary-mid)]">assignment</span> Referti
       </h1>
-      <p class="text-[#3F72AF] text-[0.95rem]">Gestione diagnosi, prescrizioni e note cliniche</p>
+      <p class="text-[var(--primary-mid)] text-[0.95rem]">Gestione diagnosi, prescrizioni e note cliniche</p>
     </div>
     <button appBtn="primary" (click)="openCreate()">+ Nuovo Referto</button>
   </div>
@@ -12,7 +12,7 @@
   @if (alertSignal(); as alert) {
     <div
       class="px-[1.1rem] py-[0.8rem] rounded-[10px] mb-4 text-[0.9rem] flex items-center border-l-4"
-      [ngClass]="alert.type==='success' ? 'bg-[#d4f0e0] text-[#1e7a48] border-[#3F72AF]' : 'bg-[#fde8e8] text-[#d95550] border-[#d95550]'"
+      [ngClass]="alert.type==='success' ? 'bg-green-100 text-green-800 border-[var(--primary-mid)]' : 'bg-red-100 text-[var(--danger)] border-[var(--danger)]'"
     >
       {{ alert.message }}
     </div>
@@ -20,7 +20,7 @@
 
   <div class="bg-white rounded-[10px] shadow-[0_2px_14px_rgba(17,45,78,0.10)] p-6 mb-8">
     @if (loading) {
-      <div class="text-[#3F72AF] italic py-6 text-center">Caricamento in corso…</div>
+      <div class="text-[var(--primary-mid)] italic py-6 text-center">Caricamento in corso…</div>
     }
     @if (!loading) {
       <div class="overflow-x-auto">
@@ -35,11 +35,11 @@
           <tbody>
             @if (reports.length === 0) {
               <tr>
-                <td colspan="7" appTd class="text-[#3F72AF] text-center text-[0.95rem]">Nessun referto trovato.</td>
+                <td colspan="7" appTd class="text-[var(--primary-mid)] text-center text-[0.95rem]">Nessun referto trovato.</td>
               </tr>
             }
             @for (r of reports; track r) {
-              <tr class="hover:[&>td]:bg-[#f0f7ff]">
+              <tr class="hover:[&>td]:bg-sky-50">
                 <td appTd>
                   <div class="flex items-center gap-[6px]">
                     {{ r.patientFullName }}
@@ -52,7 +52,7 @@
                   </span>
                 </td>
                 <td appTd>{{ r.issuedDate | date:'dd MMM yyyy' }}</td>
-                <td appTd class="max-w-[280px] text-[#3F72AF] text-[0.88rem]">{{ r.diagnosis | slice:0:60 }}{{ r.diagnosis.length > 60 ? '…' : '' }}</td>
+                <td appTd class="max-w-[280px] text-[var(--primary-mid)] text-[0.88rem]">{{ r.diagnosis | slice:0:60 }}{{ r.diagnosis.length > 60 ? '…' : '' }}</td>
                 <td appTd class="w-[200px] min-w-[200px] whitespace-nowrap">
                   <div class="flex items-center gap-2">
                     <button appBtn="sm-primary" (click)="openDetail(r)">
@@ -76,8 +76,8 @@
 @if (showFormModal) {
   <div class="fixed inset-0 bg-[rgba(30,45,59,0.5)] z-[99999] flex items-center justify-center p-4">
     <div class="bg-white rounded-[10px] shadow-[0_10px_40px_rgba(53,88,114,0.22)] p-8 w-full max-w-[560px] max-h-[90vh] overflow-y-auto">
-      <div class="flex justify-between items-center mb-6 pb-4 border-b-2 border-[#DBE2EF]">
-        <h3 class="text-[1.15rem] text-[#112D4E] font-bold">{{ editingId ? 'Modifica Referto' : 'Nuovo Referto' }}</h3>
+      <div class="flex justify-between items-center mb-6 pb-4 border-b-2 border-[var(--border)]">
+        <h3 class="text-[1.15rem] text-[var(--primary)] font-bold">{{ editingId ? 'Modifica Referto' : 'Nuovo Referto' }}</h3>
         <button appBtn="close" (click)="closeFormModal()">&times;</button>
       </div>
       <form [formGroup]="form" (ngSubmit)="save()">
@@ -93,10 +93,10 @@
               }
             </select>
             @if (isInvalid('appointmentId')) {
-              <div class="text-[#d95550] text-[0.8rem] mt-1">Seleziona un appuntamento</div>
+              <div class="text-[var(--danger)] text-[0.8rem] mt-1">Seleziona un appuntamento</div>
             }
             @if (completedAppointments.length === 0) {
-              <small class="text-sm text-[#3F72AF]">
+              <small class="text-sm text-[var(--primary-mid)]">
                 Nessun appuntamento completato disponibile senza referto.
               </small>
             }
@@ -112,7 +112,7 @@
           <label appLabel for="reportDiagnosis">Diagnosi *</label>
           <textarea appFormControl id="reportDiagnosis" formControlName="diagnosis" rows="3" placeholder="Diagnosi clinica…"></textarea>
           @if (isInvalid('diagnosis')) {
-            <div class="text-[#d95550] text-[0.8rem] mt-1">Campo obbligatorio</div>
+            <div class="text-[var(--danger)] text-[0.8rem] mt-1">Campo obbligatorio</div>
           }
         </div>
         <div class="mb-4">
@@ -123,7 +123,7 @@
           <label appLabel for="reportDoctorNotes">Note del Medico</label>
           <textarea appFormControl id="reportDoctorNotes" formControlName="doctorNotes" rows="2" placeholder="Note interne del medico…"></textarea>
         </div>
-        <div class="flex justify-end gap-3 mt-6 pt-4 border-t border-[#DBE2EF]">
+        <div class="flex justify-end gap-3 mt-6 pt-4 border-t border-[var(--border)]">
           <button appBtn="outline" type="button" (click)="closeFormModal()">Annulla</button>
           <button appBtn="primary" type="submit">Salva Referto</button>
         </div>
@@ -136,8 +136,8 @@
 @if (showDetailModal && selectedReport) {
   <div class="fixed inset-0 bg-[rgba(30,45,59,0.5)] z-[99999] flex items-center justify-center p-4">
     <div class="bg-white rounded-[10px] shadow-[0_10px_40px_rgba(53,88,114,0.22)] p-8 w-[90vw] max-w-[680px] max-h-[90vh] overflow-y-auto">
-      <div class="flex justify-between items-center mb-6 pb-4 border-b-2 border-[#DBE2EF]">
-        <h3 class="text-[1.15rem] text-[#112D4E] font-bold">
+      <div class="flex justify-between items-center mb-6 pb-4 border-b-2 border-[var(--border)]">
+        <h3 class="text-[1.15rem] text-[var(--primary)] font-bold">
           <span class="material-icons align-middle mr-[6px]">assignment</span>
           Referto #{{ selectedReport.id }}
         </h3>
@@ -171,17 +171,17 @@
       </div>
       <div class="mb-4">
         <p appLabel>Diagnosi</p>
-        <div class="bg-[#F9F7F7] border border-[#DBE2EF] rounded-[10px] px-[0.9rem] py-[0.65rem] text-[0.92rem] leading-[1.55] whitespace-pre-wrap text-[#112D4E] min-h-[2.5rem]">{{ selectedReport.diagnosis }}</div>
+        <div class="bg-[var(--bg)] border border-[var(--border)] rounded-[10px] px-[0.9rem] py-[0.65rem] text-[0.92rem] leading-[1.55] whitespace-pre-wrap text-[var(--primary)] min-h-[2.5rem]">{{ selectedReport.diagnosis }}</div>
       </div>
       <div class="mb-4">
         <p appLabel>Prescrizione</p>
-        <div class="bg-[#F9F7F7] border border-[#DBE2EF] rounded-[10px] px-[0.9rem] py-[0.65rem] text-[0.92rem] leading-[1.55] whitespace-pre-wrap text-[#112D4E] min-h-[2.5rem]">{{ selectedReport.prescription || '–' }}</div>
+        <div class="bg-[var(--bg)] border border-[var(--border)] rounded-[10px] px-[0.9rem] py-[0.65rem] text-[0.92rem] leading-[1.55] whitespace-pre-wrap text-[var(--primary)] min-h-[2.5rem]">{{ selectedReport.prescription || '–' }}</div>
       </div>
       <div class="mb-4">
         <p appLabel>Note del Medico</p>
-        <div class="bg-[#F9F7F7] border border-[#DBE2EF] rounded-[10px] px-[0.9rem] py-[0.65rem] text-[0.92rem] leading-[1.55] whitespace-pre-wrap text-[#112D4E] min-h-[2.5rem]">{{ selectedReport.doctorNotes || '–' }}</div>
+        <div class="bg-[var(--bg)] border border-[var(--border)] rounded-[10px] px-[0.9rem] py-[0.65rem] text-[0.92rem] leading-[1.55] whitespace-pre-wrap text-[var(--primary)] min-h-[2.5rem]">{{ selectedReport.doctorNotes || '–' }}</div>
       </div>
-      <div class="flex justify-end gap-3 mt-6 pt-4 border-t border-[#DBE2EF]">
+      <div class="flex justify-end gap-3 mt-6 pt-4 border-t border-[var(--border)]">
         <button appBtn="outline" (click)="showDetailModal = false">Chiudi</button>
         <button appBtn="primary" (click)="openEdit(selectedReport!); showDetailModal = false">
           <span class="material-icons text-[15px] align-middle">edit</span> Modifica

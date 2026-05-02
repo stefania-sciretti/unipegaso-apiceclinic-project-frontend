@@ -1,12 +1,12 @@
 <main class="max-w-[1200px] mx-auto my-8 px-6">
   <div class="flex justify-between items-start mb-6">
     <div>
-      <h1 class="text-[1.75rem] font-bold mb-1 text-[#112D4E] flex items-center"><span class="material-icons text-[1.6rem] align-middle mr-[0.3rem] text-[#3F72AF]">badge</span> I Nostri Specialisti</h1>
-      <p class="text-[#3F72AF] text-[0.95rem]">I professionisti del tuo benessere</p>
+      <h1 class="text-[1.75rem] font-bold mb-1 text-[var(--primary)] flex items-center"><span class="material-icons text-[1.6rem] align-middle mr-[0.3rem] text-[var(--primary-mid)]">badge</span> I Nostri Specialisti</h1>
+      <p class="text-[var(--primary-mid)] text-[0.95rem]">I professionisti del tuo benessere</p>
     </div>
   </div>
   @if (loading()) {
-    <div class="flex items-center gap-3 py-10 text-[#3F72AF]">
+    <div class="flex items-center gap-3 py-10 text-[var(--primary-mid)]">
       <span class="material-icons animate-spin text-[2rem]">refresh</span>
       <span class="text-[0.95rem]">Caricamento specialisti...</span>
     </div>
@@ -14,15 +14,15 @@
     <div class="grid grid-cols-[repeat(auto-fill,minmax(220px,1fr))] gap-8 py-6 pb-8">
       @for (member of specialists(); track member.route) {
         <div class="flex flex-col items-center gap-4">
-          <button type="button" class="relative w-[180px] h-[180px] rounded-full bg-[#DBE2EF] overflow-hidden flex items-end justify-center shrink-0 cursor-pointer transition-[transform,box-shadow] duration-200 hover:scale-[1.04] hover:shadow-[0_6px_24px_rgba(63,114,175,0.25)] border-0 p-0" (click)="navigateTo(member.route)" (keydown.enter)="navigateTo(member.route)" (keydown.space)="navigateTo(member.route)">
+          <button type="button" class="relative w-[180px] h-[180px] rounded-full bg-[var(--border)] overflow-hidden flex items-end justify-center shrink-0 cursor-pointer transition-[transform,box-shadow] duration-200 hover:scale-[1.04] hover:shadow-[0_6px_24px_rgba(63,114,175,0.25)] border-0 p-0" (click)="navigateTo(member.route)" (keydown.enter)="navigateTo(member.route)" (keydown.space)="navigateTo(member.route)">
             <img class="w-full h-full object-cover block rounded-full" [src]="member.image" [alt]="member.firstName + ' ' + member.lastName"/>
           </button>
           <div class="text-center">
-            <p class="font-bold text-base text-[#3F72AF] mb-1">
+            <p class="font-bold text-base text-[var(--primary-mid)] mb-1">
               {{ member.gender === 'female' ? 'Dott.ssa' : 'Dott.' }}
               {{ member.firstName }} {{ member.lastName }}
             </p>
-            <p class="text-sm text-[#3F72AF]">{{ member.role }}</p>
+            <p class="text-sm text-[var(--primary-mid)]">{{ member.role }}</p>
           </div>
         </div>
       }

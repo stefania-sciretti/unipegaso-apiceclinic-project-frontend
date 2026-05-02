@@ -1,6 +1,6 @@
-import { Component, inject, OnInit, signal } from '@angular/core';
+import { Component, computed, inject, OnInit, signal } from '@angular/core';
 import { NgClass } from '@angular/common';
-import { FormsModule, ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { HttpErrorResponse } from '@angular/common/http';
 import { forkJoin } from 'rxjs';
 import { DietPlanService } from '../../services/diet-plan.service';
@@ -14,10 +14,12 @@ import { TableTdDirective } from '../../shared/table-td.directive';
 import { BtnDirective } from '../../shared/btn.directive';
 import { FormControlDirective } from '../../shared/form-control.directive';
 import { FormLabelDirective } from '../../shared/form-label.directive';
+import { FormValidationHelper } from '../../shared/form-validation.helper';
 
 @Component({
   selector: 'app-nutrition',
-  imports: [FormsModule, ReactiveFormsModule, NgClass, TableThComponent, TableTdDirective, BtnDirective, FormControlDirective, FormLabelDirective],
+  standalone: true,
+  imports: [ReactiveFormsModule, NgClass, TableThComponent, TableTdDirective, BtnDirective, FormControlDirective, FormLabelDirective],
   templateUrl: './nutrition.component.html'
 })
 export class NutritionComponent implements OnInit {
@@ -30,22 +32,29 @@ export class NutritionComponent implements OnInit {
     { label: 'Stato' },
     { label: 'Azioni' }
   ]);
-  private readonly dietPlanService = inject(DietPlanService);
-  private readonly patientService  = inject(PatientService);
+  private readonly dietPlanService   = inject(DietPlanService);
+  private readonly patientService    = inject(PatientService);
   private readonly specialistService = inject(SpecialistService);
-  private readonly alertSvc        = inject(AlertService);
-  private readonly fb              = inject(FormBuilder);
-  private readonly confirmSvc      = inject(ConfirmModalService);
+  private readonly alertSvc          = inject(AlertService);
+  private readonly fb                = inject(FormBuilder);
+  private readonly confirmSvc        = inject(ConfirmModalService);
 
   protected readonly alertSignal = this.alertSvc.alert;
 
-  plans: DietPlan[] = [];
-  patients: Patient[] = [];
-  nutritionistId = 0;
-  loading        = false;
-  showModal      = false;
-  editingId: number | null = null;
-  filterActive   = '';
+  readonly plans          = signal<DietPlan[]>([]);
+  readonly patients       = signal<Patient[]>([]);
+  readonly nutritionistId = signal(0);
+  readonly loading        = signal(false);
+  readonly showModal      = signal(false);
+  readonly editingId      = signal<number | null>(null);
+  readonly filterActive   = signal('');
+
+  readonly filtered = computed(() => {
+    const fa = this.filterActive();
+    if (fa === 'true')  return this.plans().filter(p => p.active);
+    if (fa === 'false') return this.plans().filter(p => !p.active);
+    return this.plans();
+  });
 
   readonly fieldErrors = signal<Record<string, string>>({});
 
@@ -58,7 +67,7 @@ export class NutritionComponent implements OnInit {
     active:        [true]
   });
 
-  constructor() {}
+  protected readonly v = new FormValidationHelper(this.form, this.fieldErrors);
 
   ngOnInit(): void {
     forkJoin({
@@ -66,35 +75,29 @@ export class NutritionComponent implements OnInit {
       patients:    this.patientService.getAll(),
       specialists: this.specialistService.getAll('NUTRITIONIST')
     }).subscribe(({ plans, patients, specialists }) => {
-      this.plans          = plans;
-      this.patients       = patients;
-      this.nutritionistId = specialists[0]?.id ?? 1;
+      this.plans.set(plans);
+      this.patients.set(patients);
+      this.nutritionistId.set(specialists[0]?.id ?? 1);
     });
   }
 
-  get filtered(): DietPlan[] {
-    if (this.filterActive === 'true')  return this.plans.filter(p => p.active);
-    if (this.filterActive === 'false') return this.plans.filter(p => !p.active);
-    return this.plans;
-  }
-
   load(): void {
-    this.loading = true;
+    this.loading.set(true);
     this.dietPlanService.getAll().subscribe({
-      next: (data) => { this.plans = data; this.loading = false; },
-      error: ()    => { this.loading = false; }
+      next: (data) => { this.plans.set(data); this.loading.set(false); },
+      error: ()    => { this.loading.set(false); }
     });
   }
 
   openCreate(): void {
-    this.editingId = null;
+    this.editingId.set(null);
     this.form.reset({ active: true });
     this.fieldErrors.set({});
-    this.showModal = true;
+    this.showModal.set(true);
   }
 
   openEdit(plan: DietPlan): void {
-    this.editingId = plan.id;
+    this.editingId.set(plan.id);
     this.fieldErrors.set({});
     this.form.patchValue({
       patientId:     plan.patientId,
@@ -104,7 +107,7 @@ export class NutritionComponent implements OnInit {
       durationWeeks: plan.durationWeeks,
       active:        plan.active
     });
-    this.showModal = true;
+    this.showModal.set(true);
   }
 
   save(): void {
@@ -112,18 +115,19 @@ export class NutritionComponent implements OnInit {
     const value = this.form.value;
     const body: DietPlanRequest = {
       patientId:     +value.patientId,
-      specialistId:  this.nutritionistId,
+      specialistId:  this.nutritionistId(),
       title:         value.title,
       description:   value.description || null,
       calories:      value.calories || null,
       durationWeeks: value.durationWeeks || null,
       active:        value.active ?? true
     };
-    const req$ = this.editingId ? this.dietPlanService.update(this.editingId, body) : this.dietPlanService.create(body);
+    const id = this.editingId();
+    const req$ = id ? this.dietPlanService.update(id, body) : this.dietPlanService.create(body);
     req$.subscribe({
       next: () => {
-        this.alertSvc.show(this.editingId ? 'Piano aggiornato!' : 'Piano creato!');
-        this.showModal = false;
+        this.alertSvc.show(id ? 'Piano aggiornato!' : 'Piano creato!');
+        this.showModal.set(false);
         this.load();
       },
       error: (err: HttpErrorResponse) => {
@@ -139,14 +143,5 @@ export class NutritionComponent implements OnInit {
         next: () => { this.alertSvc.show('Piano eliminato.'); this.load(); }
       });
     });
-  }
-
-  isInvalid(field: string): boolean {
-    const control = this.form.get(field);
-    return !!(control && control.invalid && control.touched);
-  }
-
-  fieldError(field: string): string | null {
-    return this.fieldErrors()[field] ?? null;
   }
 }

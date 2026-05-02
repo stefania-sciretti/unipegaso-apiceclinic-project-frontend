@@ -129,8 +129,8 @@ export class ServicesComponent {
       return AREA_CONFIGS.map(config => ({
         key:      config.key,
         label:    config.areaName,
-        color:    '#112D4E',
-        bgColor:  '#DBE2EF',
+        color:    'var(--primary)',
+        bgColor:  'var(--primary-light)',
         services: config.services,
         open:     true,
       }));
@@ -141,8 +141,8 @@ export class ServicesComponent {
       .map(config => ({
         key:      config.key,
         label:    config.areaName,
-        color:    '#112D4E',
-        bgColor:  '#DBE2EF',
+        color:    'var(--primary)',
+        bgColor:  'var(--primary-light)',
         services: config.services,
         open:     true,
       }));

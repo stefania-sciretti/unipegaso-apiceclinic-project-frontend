@@ -17,7 +17,7 @@ export interface TableColumn {
   selector: 'th[app-table-th]',
   standalone: true,
   host: {
-    class: 'bg-[#eef4f9] px-4 py-3 text-left font-semibold text-[#112D4E] border-b-2 border-[#DBE2EF] whitespace-nowrap',
+    class: 'bg-sky-50 px-4 py-3 text-left font-semibold text-[var(--primary)] border-b-2 border-[var(--border)] whitespace-nowrap',
     '[class]': 'col().extraClass ?? ""'
   },
   template: '{{ col().label }}'

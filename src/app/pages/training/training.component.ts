@@ -1,6 +1,6 @@
-import { Component, inject, OnInit, signal } from '@angular/core';
+import { Component, computed, inject, OnInit, signal } from '@angular/core';
 import { DatePipe, NgClass } from '@angular/common';
-import { FormsModule, ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { HttpErrorResponse } from '@angular/common/http';
 import { forkJoin } from 'rxjs';
 import { TrainingPlanService } from '../../services/training-plan.service';
@@ -14,10 +14,12 @@ import { TableTdDirective } from '../../shared/table-td.directive';
 import { BtnDirective } from '../../shared/btn.directive';
 import { FormControlDirective } from '../../shared/form-control.directive';
 import { FormLabelDirective } from '../../shared/form-label.directive';
+import { FormValidationHelper } from '../../shared/form-validation.helper';
 
 @Component({
   selector: 'app-training',
-  imports: [FormsModule, ReactiveFormsModule, DatePipe, NgClass, TableThComponent, TableTdDirective, BtnDirective, FormControlDirective, FormLabelDirective],
+  standalone: true,
+  imports: [ReactiveFormsModule, DatePipe, NgClass, TableThComponent, TableTdDirective, BtnDirective, FormControlDirective, FormLabelDirective],
   templateUrl: './training.component.html'
 })
 export class TrainingComponent implements OnInit {
@@ -39,16 +41,24 @@ export class TrainingComponent implements OnInit {
 
   protected readonly alertSignal = this.alertSvc.alert;
 
-  plans: TrainingPlan[] = [];
-  patients: Patient[] = [];
-  personalTrainerId = 0;
-  loading        = false;
-  showModal      = false;
-  showDetail     = false;
-  editingId: number | null      = null;
-  selected: TrainingPlan | null = null;
-  filterActive    = '';
-  filterPatientId = '';
+  readonly plans             = signal<TrainingPlan[]>([]);
+  readonly patients          = signal<Patient[]>([]);
+  readonly personalTrainerId = signal(0);
+  readonly loading           = signal(false);
+  readonly showModal         = signal(false);
+  readonly showDetail        = signal(false);
+  readonly editingId         = signal<number | null>(null);
+  readonly selected          = signal<TrainingPlan | null>(null);
+  readonly filterActive      = signal('');
+  readonly filterPatientId   = signal('');
+
+  readonly filtered = computed(() => {
+    let list = this.plans();
+    if (this.filterActive() === 'true')  list = list.filter(p => p.active);
+    if (this.filterActive() === 'false') list = list.filter(p => !p.active);
+    if (this.filterPatientId()) list = list.filter(p => p.patientId === +this.filterPatientId());
+    return list;
+  });
 
   readonly fieldErrors = signal<Record<string, string>>({});
 
@@ -61,7 +71,7 @@ export class TrainingComponent implements OnInit {
     active:          [true]
   });
 
-  constructor() {}
+  protected readonly v = new FormValidationHelper(this.form, this.fieldErrors);
 
   ngOnInit(): void {
     forkJoin({
@@ -69,39 +79,31 @@ export class TrainingComponent implements OnInit {
       patients:    this.patientService.getAll(),
       specialists: this.specialistService.getAll('PERSONAL_TRAINER')
     }).subscribe(({ plans, patients, specialists }) => {
-      this.plans             = plans;
-      this.patients          = patients;
-      this.personalTrainerId = specialists[0]?.id ?? 2;
+      this.plans.set(plans);
+      this.patients.set(patients);
+      this.personalTrainerId.set(specialists[0]?.id ?? 2);
     });
-  }
-
-  get filtered(): TrainingPlan[] {
-    let list = this.plans;
-    if (this.filterActive === 'true')  list = list.filter(p => p.active);
-    if (this.filterActive === 'false') list = list.filter(p => !p.active);
-    if (this.filterPatientId) list = list.filter(p => p.patientId === +this.filterPatientId);
-    return list;
   }
 
   load(): void {
-    this.loading = true;
+    this.loading.set(true);
     this.trainingPlanService.getAll().subscribe({
-      next: (data) => { this.plans = data; this.loading = false; },
-      error: ()    => { this.loading = false; }
+      next: (data) => { this.plans.set(data); this.loading.set(false); },
+      error: ()    => { this.loading.set(false); }
     });
   }
 
-  openDetail(plan: TrainingPlan): void { this.selected = plan; this.showDetail = true; }
+  openDetail(plan: TrainingPlan): void { this.selected.set(plan); this.showDetail.set(true); }
 
   openCreate(): void {
-    this.editingId = null;
+    this.editingId.set(null);
     this.form.reset({ active: true });
     this.fieldErrors.set({});
-    this.showModal = true;
+    this.showModal.set(true);
   }
 
   openEdit(plan: TrainingPlan): void {
-    this.editingId = plan.id;
+    this.editingId.set(plan.id);
     this.fieldErrors.set({});
     this.form.patchValue({
       patientId:       plan.patientId,
@@ -111,7 +113,7 @@ export class TrainingComponent implements OnInit {
       sessionsPerWeek: plan.sessionsPerWeek,
       active:          plan.active
     });
-    this.showModal = true;
+    this.showModal.set(true);
   }
 
   save(): void {
@@ -119,18 +121,19 @@ export class TrainingComponent implements OnInit {
     const value = this.form.value;
     const body: TrainingPlanRequest = {
       patientId:       +value.patientId,
-      specialistId:    this.personalTrainerId,
+      specialistId:    this.personalTrainerId(),
       title:           value.title,
       description:     value.description || null,
       weeks:           value.weeks || null,
       sessionsPerWeek: value.sessionsPerWeek || null,
       active:          value.active ?? true
     };
-    const req$ = this.editingId ? this.trainingPlanService.update(this.editingId, body) : this.trainingPlanService.create(body);
+    const id = this.editingId();
+    const req$ = id ? this.trainingPlanService.update(id, body) : this.trainingPlanService.create(body);
     req$.subscribe({
       next: () => {
-        this.alertSvc.show(this.editingId ? 'Scheda aggiornata!' : 'Scheda creata!');
-        this.showModal = false;
+        this.alertSvc.show(id ? 'Scheda aggiornata!' : 'Scheda creata!');
+        this.showModal.set(false);
         this.load();
       },
       error: (err: HttpErrorResponse) => {
@@ -146,14 +149,5 @@ export class TrainingComponent implements OnInit {
         next: () => { this.alertSvc.show('Scheda eliminata.'); this.load(); }
       });
     });
-  }
-
-  isInvalid(field: string): boolean {
-    const control = this.form.get(field);
-    return !!(control && control.invalid && control.touched);
-  }
-
-  fieldError(field: string): string | null {
-    return this.fieldErrors()[field] ?? null;
   }
 }

@@ -1,16 +1,16 @@
-<div class="min-h-screen flex items-center justify-center bg-gradient-to-br from-[#112D4E] to-[#3F72AF] p-4">
+<div class="min-h-screen flex items-center justify-center bg-gradient-to-br from-[var(--primary)] to-[var(--primary-mid)] p-4">
   <div class="w-full max-w-[420px] bg-white rounded-2xl shadow-[0_8px_40px_rgba(17,45,78,0.25)] p-8">
 
     <div class="flex items-center gap-3 mb-6">
-      <span class="material-icons text-4xl text-[#3F72AF]">local_hospital</span>
-      <span class="text-[1.4rem] font-bold text-[#112D4E] tracking-wide">Apice Clinic</span>
+      <span class="material-icons text-4xl text-[var(--primary-mid)]">local_hospital</span>
+      <span class="text-[1.4rem] font-bold text-[var(--primary)] tracking-wide">Apice Clinic</span>
     </div>
 
-    <h2 class="text-[1.4rem] font-bold text-[#112D4E] mb-1">{{ isRegistering ? 'Registrati' : 'Accedi al portale' }}</h2>
-    <p class="text-[#3F72AF] text-[0.9rem] mb-6">{{ isRegistering ? 'Crea un nuovo account' : 'Inserisci le tue credenziali per continuare' }}</p>
+    <h2 class="text-[1.4rem] font-bold text-[var(--primary)] mb-1">{{ isRegistering ? 'Registrati' : 'Accedi al portale' }}</h2>
+    <p class="text-[var(--primary-mid)] text-[0.9rem] mb-6">{{ isRegistering ? 'Crea un nuovo account' : 'Inserisci le tue credenziali per continuare' }}</p>
 
     @if (error) {
-      <div class="flex items-center gap-2 px-4 py-3 rounded-lg bg-[#fde8e8] text-[#d95550] text-[0.9rem] mb-4 border-l-4 border-[#d95550]">
+      <div class="flex items-center gap-2 px-4 py-3 rounded-lg bg-red-100 text-[var(--danger)] text-[0.9rem] mb-4 border-l-4 border-[var(--danger)]">
         <span class="material-icons text-[1.1rem]">error_outline</span>
         {{ error }}
       </div>
@@ -19,82 +19,82 @@
     <form [formGroup]="form" (ngSubmit)="submit()" class="flex flex-col gap-4">
 
       <div class="flex flex-col gap-1">
-        <label for="loginUsername" class="text-[0.85rem] font-semibold text-[#112D4E]">Username</label>
-        <div class="flex items-center border-[1.5px] rounded-lg overflow-hidden focus-within:border-[#3F72AF]"
-          [ngClass]="isInvalid('username') ? 'border-[#d95550]' : 'border-[#DBE2EF]'">
-          <span class="material-icons text-[#3F72AF] px-3 text-[1.2rem]">person</span>
+        <label for="loginUsername" class="text-[0.85rem] font-semibold text-[var(--primary)]">Username</label>
+        <div class="flex items-center border-[1.5px] rounded-lg overflow-hidden focus-within:border-[var(--primary-mid)]"
+          [ngClass]="isInvalid('username') ? 'border-[var(--danger)]' : 'border-[var(--border)]'">
+          <span class="material-icons text-[var(--primary-mid)] px-3 text-[1.2rem]">person</span>
           <input id="loginUsername" formControlName="username" type="text" placeholder="es. mario.rossi" autocomplete="username"
-            class="flex-1 py-[0.6rem] pr-3 outline-none text-[0.9rem] text-[#112D4E] bg-transparent"/>
+            class="flex-1 py-[0.6rem] pr-3 outline-none text-[0.9rem] text-[var(--primary)] bg-transparent"/>
         </div>
         @if (isInvalid('username')) {
-          <span class="text-[#d95550] text-[0.78rem]">Campo obbligatorio</span>
+          <span class="text-[var(--danger)] text-[0.78rem]">Campo obbligatorio</span>
         }
       </div>
 
       @if (isRegistering) {
         <div class="flex flex-col gap-1">
-          <label for="loginDisplayName" class="text-[0.85rem] font-semibold text-[#112D4E]">Nome Completo</label>
-          <div class="flex items-center border-[1.5px] rounded-lg overflow-hidden focus-within:border-[#3F72AF]"
-            [ngClass]="isInvalid('displayName') ? 'border-[#d95550]' : 'border-[#DBE2EF]'">
-            <span class="material-icons text-[#3F72AF] px-3 text-[1.2rem]">badge</span>
+          <label for="loginDisplayName" class="text-[0.85rem] font-semibold text-[var(--primary)]">Nome Completo</label>
+          <div class="flex items-center border-[1.5px] rounded-lg overflow-hidden focus-within:border-[var(--primary-mid)]"
+            [ngClass]="isInvalid('displayName') ? 'border-[var(--danger)]' : 'border-[var(--border)]'">
+            <span class="material-icons text-[var(--primary-mid)] px-3 text-[1.2rem]">badge</span>
             <input id="loginDisplayName" formControlName="displayName" type="text" placeholder="es. Mario Rossi" autocomplete="off"
-              class="flex-1 py-[0.6rem] pr-3 outline-none text-[0.9rem] text-[#112D4E] bg-transparent"/>
+              class="flex-1 py-[0.6rem] pr-3 outline-none text-[0.9rem] text-[var(--primary)] bg-transparent"/>
           </div>
           @if (isInvalid('displayName')) {
-            <span class="text-[#d95550] text-[0.78rem]">Campo obbligatorio</span>
+            <span class="text-[var(--danger)] text-[0.78rem]">Campo obbligatorio</span>
           }
         </div>
       }
 
       <div class="flex flex-col gap-1">
-        <label for="loginPassword" class="text-[0.85rem] font-semibold text-[#112D4E]">Password</label>
-        <div class="flex items-center border-[1.5px] rounded-lg overflow-hidden focus-within:border-[#3F72AF]"
-          [ngClass]="isInvalid('password') ? 'border-[#d95550]' : 'border-[#DBE2EF]'">
-          <span class="material-icons text-[#3F72AF] px-3 text-[1.2rem]">lock</span>
+        <label for="loginPassword" class="text-[0.85rem] font-semibold text-[var(--primary)]">Password</label>
+        <div class="flex items-center border-[1.5px] rounded-lg overflow-hidden focus-within:border-[var(--primary-mid)]"
+          [ngClass]="isInvalid('password') ? 'border-[var(--danger)]' : 'border-[var(--border)]'">
+          <span class="material-icons text-[var(--primary-mid)] px-3 text-[1.2rem]">lock</span>
           <input id="loginPassword" formControlName="password" [type]="showPassword ? 'text' : 'password'" placeholder="••••••••"
             [attr.autocomplete]="isRegistering ? 'new-password' : 'current-password'"
-            class="flex-1 py-[0.6rem] outline-none text-[0.9rem] text-[#112D4E] bg-transparent"/>
+            class="flex-1 py-[0.6rem] outline-none text-[0.9rem] text-[var(--primary)] bg-transparent"/>
           <button type="button" (click)="showPassword = !showPassword"
-            class="px-3 text-[#3F72AF] hover:text-[#112D4E] focus:outline-none"
+            class="px-3 text-[var(--primary-mid)] hover:text-[var(--primary)] focus:outline-none"
             [attr.aria-label]="showPassword ? 'Nascondi password' : 'Mostra password'">
             <span class="material-icons text-[1.2rem]">{{ showPassword ? 'visibility_off' : 'visibility' }}</span>
           </button>
         </div>
         @if (isInvalid('password')) {
-          <span class="text-[#d95550] text-[0.78rem]">Campo obbligatorio</span>
+          <span class="text-[var(--danger)] text-[0.78rem]">Campo obbligatorio</span>
         }
       </div>
 
       <button type="submit"
-        class="w-full py-[0.75rem] rounded-xl bg-[#112D4E] text-white font-semibold text-[0.95rem] cursor-pointer transition-colors duration-200 hover:bg-[#1a3f6e] disabled:opacity-60 disabled:cursor-not-allowed mt-1"
+        class="w-full py-[0.75rem] rounded-xl bg-[var(--primary)] text-white font-semibold text-[0.95rem] cursor-pointer transition-colors duration-200 hover:bg-[var(--primary-mid)] disabled:opacity-60 disabled:cursor-not-allowed mt-1"
         [disabled]="loading">
         @if (!loading) { {{ isRegistering ? 'Registrati' : 'Accedi' }} }
         @if (loading) { Caricamento… }
       </button>
     </form>
 
-    <div class="mt-5 text-center text-[0.88rem] text-[#3F72AF]">
+    <div class="mt-5 text-center text-[0.88rem] text-[var(--primary-mid)]">
       @if (!isRegistering) { <span>Non hai un account? </span> }
       @if (isRegistering) { <span>Hai già un account? </span> }
-      <a (click)="toggleMode()" class="font-semibold cursor-pointer underline hover:text-[#112D4E]">
+      <a (click)="toggleMode()" class="font-semibold cursor-pointer underline hover:text-[var(--primary)]">
         {{ isRegistering ? 'Accedi qui' : 'Registrati qui' }}
       </a>
     </div>
 
     @if (!isRegistering) {
       <div class="mt-6 flex flex-col gap-3">
-        <div class="flex items-center gap-3 p-3 rounded-xl bg-[#f8f9fb] border border-[#DBE2EF]">
-          <span class="material-icons text-[#3F72AF]">badge</span>
+        <div class="flex items-center gap-3 p-3 rounded-xl bg-slate-50 border border-[var(--border)]">
+          <span class="material-icons text-[var(--primary-mid)]">badge</span>
           <div>
-            <strong class="text-[0.85rem] text-[#112D4E] block">Medici / Specialisti</strong>
-            <p class="text-[0.78rem] text-[#3F72AF] m-0">Accesso completo alla gestione clinica</p>
+            <strong class="text-[0.85rem] text-[var(--primary)] block">Medici / Specialisti</strong>
+            <p class="text-[0.78rem] text-[var(--primary-mid)] m-0">Accesso completo alla gestione clinica</p>
           </div>
         </div>
-        <div class="flex items-center gap-3 p-3 rounded-xl bg-[#f8f9fb] border border-[#DBE2EF]">
-          <span class="material-icons text-[#3F72AF]">person</span>
+        <div class="flex items-center gap-3 p-3 rounded-xl bg-slate-50 border border-[var(--border)]">
+          <span class="material-icons text-[var(--primary-mid)]">person</span>
           <div>
-            <strong class="text-[0.85rem] text-[#112D4E] block">Pazienti</strong>
-            <p class="text-[0.78rem] text-[#3F72AF] m-0">Accesso al proprio profilo e referti</p>
+            <strong class="text-[0.85rem] text-[var(--primary)] block">Pazienti</strong>
+            <p class="text-[0.78rem] text-[var(--primary-mid)] m-0">Accesso al proprio profilo e referti</p>
           </div>
         </div>
       </div>

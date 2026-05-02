@@ -17,10 +17,14 @@ import { BtnDirective } from '../../shared/btn.directive';
 import { FormControlDirective } from '../../shared/form-control.directive';
 import { FormLabelDirective } from '../../shared/form-label.directive';
 import { COLOR_ACCENT, COLOR_SECONDARY, COLOR_PRIMARY } from '../../shared/constants/colors.constants';
+import { FormValidationHelper } from '../../shared/form-validation.helper';
+import { StatusBadgePipe } from '../../shared/status-badge.pipe';
+import { APPOINTMENT_STATUS_LABELS } from '../../shared/constants/appointment-status.constants';
 
 @Component({
   selector: 'app-appointments',
-  imports: [ReactiveFormsModule, DatePipe, NgClass, NgStyle, MatIconModule, TableThComponent, TableTdDirective, BtnDirective, FormControlDirective, FormLabelDirective],
+  standalone: true,
+  imports: [ReactiveFormsModule, DatePipe, NgClass, NgStyle, MatIconModule, TableThComponent, TableTdDirective, BtnDirective, FormControlDirective, FormLabelDirective, StatusBadgePipe],
   templateUrl: './appointments.component.html'
 })
 export class AppointmentsComponent implements OnInit {
@@ -44,94 +48,79 @@ export class AppointmentsComponent implements OnInit {
 
   protected readonly alertSignal = this.alertSvc.alert;
 
-  appointments: FitnessAppointment[] = [];
-  patients: Patient[]    = [];
-  specialists: Specialist[] = [];
-  loading            = false;
-  filterStatus       = '';
-  showApptModal      = false;
-  showStatusModal    = false;
-  statusEditingId: number | null = null;
+  readonly appointments     = signal<FitnessAppointment[]>([]);
+  readonly patients         = signal<Patient[]>([]);
+  readonly specialists      = signal<Specialist[]>([]);
+  readonly loading          = signal(false);
+  readonly filterStatus     = signal('');
+  readonly showApptModal    = signal(false);
+  readonly showStatusModal  = signal(false);
+  readonly statusEditingId  = signal<number | null>(null);
 
   readonly fieldErrors = signal<Record<string, string>>({});
 
   readonly statuses: AppointmentStatus[] = ['BOOKED', 'CONFIRMED', 'COMPLETED', 'CANCELLED'];
 
-  private readonly statusLabels: Record<string, string> = {
-    BOOKED: 'Prenotato', CONFIRMED: 'Confermato',
-    COMPLETED: 'Completato', CANCELLED: 'Annullato'
-  };
-
   readonly apptForm: FormGroup   = this.fb.group({
-    patientId:   [null, Validators.required],
-    specialistId: ['',  Validators.required],
-    scheduledAt: ['',   Validators.required],
-    serviceType: ['',   Validators.required],
-    notes:       ['']
+    patientId:    [null, Validators.required],
+    specialistId: ['',   Validators.required],
+    scheduledAt:  ['',   Validators.required],
+    serviceType:  ['',   Validators.required],
+    notes:        ['']
   });
   readonly statusForm: FormGroup = this.fb.group({ status: ['', Validators.required] });
 
-  /**
-   * Maps a specialistRole string to a brand hex color.
-   * NUTRITIONIST / DIETOLOGIST  → COLOR_ACCENT    (green  #2EE1A0)
-   * SPORT_DOCTOR / PHYSIOTHERAPIST → COLOR_SECONDARY (blue #2DB1E6)
-   * PERSONAL_TRAINER            → COLOR_PRIMARY   (dark blue #1570B6)
-   */
   readonly roleColorMap = computed<Record<string, string>>(() => ({
-    NUTRITIONIST:      COLOR_ACCENT,
-    DIETOLOGIST:       COLOR_ACCENT,
-    SPORT_DOCTOR:      COLOR_SECONDARY,
-    PHYSIOTHERAPIST:   COLOR_SECONDARY,
-    PERSONAL_TRAINER:  COLOR_PRIMARY,
+    NUTRITIONIST:     COLOR_ACCENT,
+    DIETOLOGIST:      COLOR_ACCENT,
+    SPORT_DOCTOR:     COLOR_SECONDARY,
+    PHYSIOTHERAPIST:  COLOR_SECONDARY,
+    PERSONAL_TRAINER: COLOR_PRIMARY,
   }));
 
-  roleBadgeColor(role: string): string {
-    return this.roleColorMap()[role] ?? COLOR_PRIMARY;
-  }
+  protected readonly v = new FormValidationHelper(this.apptForm, this.fieldErrors);
 
-  constructor() {}
+  roleBadgeColor(role: string): string { return this.roleColorMap()[role] ?? COLOR_PRIMARY; }
 
   ngOnInit(): void {
     this.route.queryParams.subscribe(params => {
-      this.filterStatus = params['status'] ?? '';
-      // Single load: fetches appointments + patients + specialists in parallel once.
+      this.filterStatus.set(params['status'] ?? '');
       this.loadAll();
     });
   }
 
-  /** Single consolidated load: one appointments call + side-data in parallel. */
   loadAll(): void {
-    this.loading = true;
-    const filters: { [key: string]: string } = this.filterStatus ? { status: this.filterStatus } : {};
+    this.loading.set(true);
+    const filters: Record<string, string> = this.filterStatus() ? { status: this.filterStatus() } : {};
     forkJoin({
       appointments: this.appointmentService.getAll(filters),
       patients:     this.patientService.getAll(),
       specialists:  this.specialistService.getAll()
     }).subscribe({
       next: ({ appointments, patients, specialists }) => {
-        this.appointments = appointments;
-        this.patients     = patients;
-        this.specialists  = specialists;
-        this.loading      = false;
+        this.appointments.set(appointments);
+        this.patients.set(patients);
+        this.specialists.set(specialists);
+        this.loading.set(false);
       },
-      error: () => { this.loading = false; }
+      error: () => { this.loading.set(false); }
     });
   }
 
-  /** Lightweight reload after mutations (reuses cached patients/specialists). */
   load(): void {
-    this.loading = true;
-    const filters: { [key: string]: string } = this.filterStatus ? { status: this.filterStatus } : {};
+    this.loading.set(true);
+    const filters: Record<string, string> = this.filterStatus() ? { status: this.filterStatus() } : {};
     this.appointmentService.getAll(filters).subscribe({
-      next: (data) => { this.appointments = data; this.loading = false; },
-      error: ()    => { this.loading = false; }
+      next: (data) => { this.appointments.set(data); this.loading.set(false); },
+      error: ()    => { this.loading.set(false); }
     });
   }
 
   onStatusFilter(e: Event): void {
-    this.filterStatus = (e.target as HTMLSelectElement).value;
+    const value = (e.target as HTMLSelectElement).value;
+    this.filterStatus.set(value);
     this.router.navigate([], {
-      queryParams: this.filterStatus ? { status: this.filterStatus } : {},
+      queryParams: value ? { status: value } : {},
       replaceUrl: true
     });
     this.load();
@@ -140,7 +129,7 @@ export class AppointmentsComponent implements OnInit {
   openCreate(): void {
     this.apptForm.reset();
     this.fieldErrors.set({});
-    this.showApptModal = true;
+    this.showApptModal.set(true);
   }
 
   saveAppointment(): void {
@@ -151,11 +140,11 @@ export class AppointmentsComponent implements OnInit {
       patientId:    +value.patientId,
       specialistId: +value.specialistId,
       scheduledAt,
-      serviceType: value.serviceType,
-      notes:       value.notes || null
+      serviceType:  value.serviceType,
+      notes:        value.notes || null
     };
     this.appointmentService.create(body).subscribe({
-      next: () => { this.alertSvc.show('Appuntamento prenotato!'); this.showApptModal = false; this.load(); },
+      next: () => { this.alertSvc.show('Appuntamento prenotato!'); this.showApptModal.set(false); this.load(); },
       error: (err: HttpErrorResponse) => {
         const fieldErrors = (err.error as ApiError)?.fieldErrors;
         if (fieldErrors) this.fieldErrors.set(fieldErrors);
@@ -164,15 +153,15 @@ export class AppointmentsComponent implements OnInit {
   }
 
   openStatusModal(appointment: FitnessAppointment): void {
-    this.statusEditingId = appointment.id;
+    this.statusEditingId.set(appointment.id);
     this.statusForm.patchValue({ status: appointment.status });
-    this.showStatusModal = true;
+    this.showStatusModal.set(true);
   }
 
   saveStatus(): void {
-    if (!this.statusEditingId) return;
-    this.appointmentService.updateStatus(this.statusEditingId, this.statusForm.value.status).subscribe({
-      next: () => { this.alertSvc.show('Stato aggiornato!'); this.showStatusModal = false; this.load(); }
+    if (!this.statusEditingId()) return;
+    this.appointmentService.updateStatus(this.statusEditingId()!, this.statusForm.value.status).subscribe({
+      next: () => { this.alertSvc.show('Stato aggiornato!'); this.showStatusModal.set(false); this.load(); }
     });
   }
 
@@ -198,25 +187,6 @@ export class AppointmentsComponent implements OnInit {
     PHYSIOTHERAPIST:     'Fisioterapista',
   };
 
-  roleLabel(role: string): string   { return this.roleLabels[role] ?? role; }
-  statusLabel(status: string): string { return this.statusLabels[status] ?? status; }
-  statusClass(status: string): string {
-    const base = 'inline-block px-[0.65rem] py-[0.2rem] rounded-xl text-[0.75rem] font-bold uppercase tracking-[0.5px]';
-    const colors: Record<string, string> = {
-      booked:    'bg-[#ddeefa] text-[#1a5680]',
-      confirmed: 'bg-[#d4f0e0] text-[#1e7a48]',
-      completed: 'bg-[#e8f4fd] text-[#112D4E]',
-      cancelled: 'bg-[#fde8e8] text-[#d95550]',
-    };
-    return `${base} ${colors[status.toLowerCase()] ?? 'bg-[#f0f0f0] text-[#555]'}`;
-  }
-
-  isInvalid(form: FormGroup, field: string): boolean {
-    const control = form.get(field);
-    return !!(control && control.invalid && control.touched);
-  }
-
-  fieldError(field: string): string | null {
-    return this.fieldErrors()[field] ?? null;
-  }
+  roleLabel(role: string): string    { return this.roleLabels[role] ?? role; }
+  statusLabel(status: string): string { return APPOINTMENT_STATUS_LABELS[status] ?? status; }
 }

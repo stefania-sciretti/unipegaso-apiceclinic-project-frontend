@@ -1,42 +1,42 @@
 <main class="max-w-[1200px] mx-auto my-8 px-6">
   @if (isLoading()) {
-    <div class="flex items-center justify-center py-20 gap-3 text-[#3F72AF]">
+    <div class="flex items-center justify-center py-20 gap-3 text-[var(--primary-mid)]">
       <span class="material-icons animate-spin text-[2rem]">refresh</span>
       <span class="text-[0.95rem]">Caricamento profilo...</span>
     </div>
   } @else if (hasError()) {
     <div class="text-center py-20">
-      <span class="material-icons text-[4rem] text-[#DBE2EF] block mb-4">cloud_off</span>
-      <h2 class="text-[1.3rem] font-bold text-[#112D4E] mb-2">Errore di caricamento</h2>
-      <p class="text-[#3F72AF] mb-6">Impossibile recuperare i dati del profilo.</p>
-      <a routerLink="/specialists" class="text-[#3F72AF] no-underline font-semibold text-[0.95rem] inline-flex items-center gap-1 transition-colors hover:text-[#112D4E]">&#8592; Torna agli Specialisti</a>
+      <span class="material-icons text-[4rem] text-[var(--border)] block mb-4">cloud_off</span>
+      <h2 class="text-[1.3rem] font-bold text-[var(--primary)] mb-2">Errore di caricamento</h2>
+      <p class="text-[var(--primary-mid)] mb-6">Impossibile recuperare i dati del profilo.</p>
+      <a routerLink="/specialists" class="text-[var(--primary-mid)] no-underline font-semibold text-[0.95rem] inline-flex items-center gap-1 transition-colors hover:text-[var(--primary)]">&#8592; Torna agli Specialisti</a>
     </div>
   } @else if (member(); as m) {
     <div class="mb-6">
-      <a routerLink="/specialists" class="text-[#3F72AF] no-underline font-semibold text-[0.95rem] inline-flex items-center gap-1 transition-colors hover:text-[#112D4E]">&#8592; Torna agli Specialisti</a>
+      <a routerLink="/specialists" class="text-[var(--primary-mid)] no-underline font-semibold text-[0.95rem] inline-flex items-center gap-1 transition-colors hover:text-[var(--primary)]">&#8592; Torna agli Specialisti</a>
     </div>
 
     <div class="flex flex-col sm:flex-row gap-10 items-center sm:items-start text-center sm:text-left bg-white rounded-[10px] shadow-[0_2px_14px_rgba(17,45,78,0.10)] p-8 mb-8">
-      <div class="shrink-0 w-[180px] h-[180px] rounded-full overflow-hidden bg-[#DBE2EF]">
+      <div class="shrink-0 w-[180px] h-[180px] rounded-full overflow-hidden bg-[var(--border)]">
         <img [src]="m.photo" [alt]="m.name" class="w-full h-full object-cover"/>
       </div>
       <div class="flex-1">
-        <p class="text-[0.9rem] text-[#3F72AF] mb-[0.1rem]">{{ m.title }}</p>
-        <h1 class="text-[1.9rem] font-bold text-[#112D4E] mb-[0.6rem]">{{ m.name }}</h1>
-        <span class="inline-block bg-[#DBE2EF] text-[#3F72AF] font-semibold text-[0.85rem] px-[0.9rem] py-[0.3rem] rounded-full mb-4">{{ m.role }}</span>
-        <p class="text-[#112D4E] leading-[1.7] text-[0.97rem]">{{ m.bio }}</p>
+        <p class="text-[0.9rem] text-[var(--primary-mid)] mb-[0.1rem]">{{ m.title }}</p>
+        <h1 class="text-[1.9rem] font-bold text-[var(--primary)] mb-[0.6rem]">{{ m.name }}</h1>
+        <span class="inline-block bg-[var(--border)] text-[var(--primary-mid)] font-semibold text-[0.85rem] px-[0.9rem] py-[0.3rem] rounded-full mb-4">{{ m.role }}</span>
+        <p class="text-[var(--primary)] leading-[1.7] text-[0.97rem]">{{ m.bio }}</p>
       </div>
     </div>
 
     @if (m.services.length > 0) {
       <div class="mb-8">
-        <h2 class="text-[1.3rem] font-bold text-[#112D4E] mb-5">Servizi offerti</h2>
+        <h2 class="text-[1.3rem] font-bold text-[var(--primary)] mb-5">Servizi offerti</h2>
         <div class="grid grid-cols-[repeat(auto-fill,minmax(260px,1fr))] gap-5">
           @for (s of m.services; track s.title) {
             <div class="bg-white rounded-[10px] shadow-[0_2px_14px_rgba(17,45,78,0.10)] p-6 transition-[transform,box-shadow] duration-200 hover:-translate-y-[3px] hover:shadow-[0_6px_20px_rgba(17,45,78,0.13)]">
-              <span class="material-icons text-[2rem] text-[#3F72AF] mb-[0.6rem] block">{{ s.icon }}</span>
-              <h3 class="text-base font-bold text-[#112D4E] mb-1">{{ s.title }}</h3>
-              <p class="text-[0.875rem] text-[#3F72AF] leading-[1.6]">{{ s.description }}</p>
+              <span class="material-icons text-[2rem] text-[var(--primary-mid)] mb-[0.6rem] block">{{ s.icon }}</span>
+              <h3 class="text-base font-bold text-[var(--primary)] mb-1">{{ s.title }}</h3>
+              <p class="text-[0.875rem] text-[var(--primary-mid)] leading-[1.6]">{{ s.description }}</p>
             </div>
           }
         </div>

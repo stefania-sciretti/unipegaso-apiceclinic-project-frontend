@@ -15,7 +15,7 @@ import { Directive } from '@angular/core';
   standalone: true,
   host: {
     class:
-      'w-full px-[0.8rem] py-[0.55rem] border-[1.5px] border-[#DBE2EF] rounded-lg text-[0.9rem] outline-none focus:border-[#3F72AF] focus:shadow-[0_0_0_3px_rgba(122,170,206,0.2)]'
+      'w-full px-[0.8rem] py-[0.55rem] border-[1.5px] border-[var(--border)] rounded-lg text-[0.9rem] outline-none focus:border-[var(--primary-mid)] focus:shadow-[0_0_0_3px_rgba(122,170,206,0.2)]'
   }
 })
 export class FormControlDirective {}

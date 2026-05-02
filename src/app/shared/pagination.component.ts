@@ -16,10 +16,14 @@ import { Component, input, output, computed } from '@angular/core';
   template: `
     <div class="flex items-center justify-center mt-4 flex-wrap gap-3">
 
+      @if (progressLabel()) {
+        <span class="text-[0.8rem] text-[var(--primary-mid)] font-medium">{{ progressLabel() }}</span>
+      }
+
       <!-- Controlli navigazione -->
       <div class="flex items-center gap-1">
         <button
-          class="px-2 py-1 rounded-[8px] text-[1rem] font-semibold cursor-pointer transition-colors duration-150 border-0 bg-white text-[#3F72AF] hover:bg-[#eef4f9] disabled:opacity-40 disabled:cursor-not-allowed"
+          class="px-2 py-1 rounded-[8px] text-[1rem] font-semibold cursor-pointer transition-colors duration-150 border-0 bg-white text-[var(--primary-mid)] hover:bg-sky-50 disabled:opacity-40 disabled:cursor-not-allowed"
           [disabled]="currentPage() <= 1"
           (click)="pageChange.emit(currentPage() - 1)"
           aria-label="Pagina precedente">
@@ -30,8 +34,8 @@ import { Component, input, output, computed } from '@angular/core';
           <button
             class="px-3 py-1 rounded-[8px] text-[0.82rem] font-semibold cursor-pointer transition-colors duration-150 border-0"
             [class]="page === currentPage()
-              ? 'bg-[#112D4E] text-white'
-              : 'bg-white text-[#3F72AF] hover:bg-[#eef4f9]'"
+              ? 'bg-[var(--primary)] text-white'
+              : 'bg-white text-[var(--primary-mid)] hover:bg-sky-50'"
             (click)="pageChange.emit(page)"
             [attr.aria-current]="page === currentPage() ? 'page' : null">
             {{ page }}
@@ -39,7 +43,7 @@ import { Component, input, output, computed } from '@angular/core';
         }
 
         <button
-          class="px-2 py-1 rounded-[8px] text-[1rem] font-semibold cursor-pointer transition-colors duration-150 border-0 bg-white text-[#3F72AF] hover:bg-[#eef4f9] disabled:opacity-40 disabled:cursor-not-allowed"
+          class="px-2 py-1 rounded-[8px] text-[1rem] font-semibold cursor-pointer transition-colors duration-150 border-0 bg-white text-[var(--primary-mid)] hover:bg-sky-50 disabled:opacity-40 disabled:cursor-not-allowed"
           [disabled]="currentPage() >= totalPages()"
           (click)="pageChange.emit(currentPage() + 1)"
           aria-label="Pagina successiva">
@@ -53,7 +57,7 @@ import { Component, input, output, computed } from '@angular/core';
 export class PaginationComponent {
   readonly currentPage = input.required<number>();
   readonly totalPages  = input.required<number>();
-  readonly progressLabel = input.required<string>();
+  readonly progressLabel = input<string>('');
 
   readonly pageChange = output<number>();
 

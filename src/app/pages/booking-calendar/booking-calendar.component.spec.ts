@@ -91,9 +91,9 @@ describe('BookingCalendarComponent', () => {
       await fixture.whenStable();
       fixture.detectChanges();
 
-      expect(component.events.length).toBeGreaterThan(0);
-      expect(component.events.some(e => e.type === 'fitness')).toBe(true);
-      expect(component.loadError).toBe(false);
+      expect(component.events().length).toBeGreaterThan(0);
+      expect(component.events().some(e => e.type === 'fitness')).toBe(true);
+      expect(component.loadError()).toBe(false);
     });
 
     it('should show clinical data even when fitness API fails', async () => {
@@ -104,9 +104,9 @@ describe('BookingCalendarComponent', () => {
       await fixture.whenStable();
       fixture.detectChanges();
 
-      expect(component.events.length).toBeGreaterThan(0);
-      expect(component.events.some(e => e.type === 'clinical')).toBe(true);
-      expect(component.loadError).toBe(false);
+      expect(component.events().length).toBeGreaterThan(0);
+      expect(component.events().some(e => e.type === 'clinical')).toBe(true);
+      expect(component.loadError()).toBe(false);
     });
 
     it('should set loadError=true only when BOTH APIs fail', async () => {
@@ -117,8 +117,8 @@ describe('BookingCalendarComponent', () => {
       await fixture.whenStable();
       fixture.detectChanges();
 
-      expect(component.loadError).toBe(true);
-      expect(component.events.length).toBe(0);
+      expect(component.loadError()).toBe(true);
+      expect(component.events().length).toBe(0);
     });
 
     it('should not set loadError when both APIs succeed', async () => {
@@ -129,8 +129,8 @@ describe('BookingCalendarComponent', () => {
       await fixture.whenStable();
       fixture.detectChanges();
 
-      expect(component.loadError).toBe(false);
-      expect(component.events.length).toBe(2);
+      expect(component.loadError()).toBe(false);
+      expect(component.events().length).toBe(2);
     });
   });
 });
