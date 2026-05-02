@@ -6,7 +6,7 @@
       </h1>
       <p class="text-[var(--primary-mid)] text-[0.95rem]">Gestione diagnosi, prescrizioni e note cliniche</p>
     </div>
-    <button appBtn="primary" (click)="openCreate()">+ Nuovo Referto</button>
+    <app-button (click)="openCreate()">+ Nuovo Referto</app-button>
   </div>
 
   @if (alertSignal(); as alert) {
@@ -55,12 +55,12 @@
                 <td appTd class="max-w-[280px] text-[var(--primary-mid)] text-[0.88rem]">{{ r.diagnosis | slice:0:60 }}{{ r.diagnosis.length > 60 ? '…' : '' }}</td>
                 <td appTd class="w-[200px] min-w-[200px] whitespace-nowrap">
                   <div class="flex items-center gap-2">
-                    <button appBtn="sm-primary" (click)="openDetail(r)">
+                    <app-button size="sm" (click)="openDetail(r)">
                       <span class="material-icons text-[15px] align-middle">visibility</span> Dettaglio
-                    </button>
-                    <button appBtn="sm-primary" (click)="openEdit(r)">
+                    </app-button>
+                    <app-button size="sm" (click)="openEdit(r)">
                       <span class="material-icons text-[15px] align-middle">edit</span> Modifica
-                    </button>
+                    </app-button>
                   </div>
                 </td>
               </tr>
@@ -78,7 +78,7 @@
     <div class="bg-white rounded-[10px] shadow-[0_10px_40px_rgba(53,88,114,0.22)] p-8 w-full max-w-[560px] max-h-[90vh] overflow-y-auto">
       <div class="flex justify-between items-center mb-6 pb-4 border-b-2 border-[var(--border)]">
         <h3 class="text-[1.15rem] text-[var(--primary)] font-bold">{{ editingId ? 'Modifica Referto' : 'Nuovo Referto' }}</h3>
-        <button appBtn="close" (click)="closeFormModal()">&times;</button>
+        <app-button variant="close" (click)="closeFormModal()">&times;</app-button>
       </div>
       <form [formGroup]="form" (ngSubmit)="save()">
         @if (!editingId) {
@@ -124,8 +124,8 @@
           <textarea appFormControl id="reportDoctorNotes" formControlName="doctorNotes" rows="2" placeholder="Note interne del medico…"></textarea>
         </div>
         <div class="flex justify-end gap-3 mt-6 pt-4 border-t border-[var(--border)]">
-          <button appBtn="outline" type="button" (click)="closeFormModal()">Annulla</button>
-          <button appBtn="primary" type="submit">Salva Referto</button>
+          <app-button variant="secondary" type="button" (click)="closeFormModal()">Annulla</app-button>
+          <app-button type="submit">Salva Referto</app-button>
         </div>
       </form>
     </div>
@@ -141,7 +141,7 @@
           <span class="material-icons align-middle mr-[6px]">assignment</span>
           Referto #{{ selectedReport.id }}
         </h3>
-        <button appBtn="close" (click)="showDetailModal = false">&times;</button>
+        <app-button variant="close" (click)="showDetailModal = false">&times;</app-button>
       </div>
       <div class="grid grid-cols-2 gap-x-6 mb-2">
         <div class="mb-4">
@@ -182,10 +182,10 @@
         <div class="bg-[var(--bg)] border border-[var(--border)] rounded-[10px] px-[0.9rem] py-[0.65rem] text-[0.92rem] leading-[1.55] whitespace-pre-wrap text-[var(--primary)] min-h-[2.5rem]">{{ selectedReport.doctorNotes || '–' }}</div>
       </div>
       <div class="flex justify-end gap-3 mt-6 pt-4 border-t border-[var(--border)]">
-        <button appBtn="outline" (click)="showDetailModal = false">Chiudi</button>
-        <button appBtn="primary" (click)="openEdit(selectedReport!); showDetailModal = false">
+        <app-button variant="secondary" (click)="showDetailModal = false">Chiudi</app-button>
+        <app-button (click)="openEdit(selectedReport!); showDetailModal = false">
           <span class="material-icons text-[15px] align-middle">edit</span> Modifica
-        </button>
+        </app-button>
       </div>
     </div>
   </div>

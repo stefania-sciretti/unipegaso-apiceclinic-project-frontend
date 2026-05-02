@@ -9,7 +9,7 @@ import { ClinicalAppointmentService } from '../../services/clinical-appointment.
 import { ClinicalAppointment } from '../../models/models';
 import { TableThComponent, TableColumn } from '../../shared/table-th.component';
 import { TableTdDirective } from '../../shared/table-td.directive';
-import { BtnDirective } from '../../shared/btn.directive';
+import { ButtonComponent } from '../../components/ui/button/button.component';
 import { FormControlDirective } from '../../shared/form-control.directive';
 import { FormLabelDirective } from '../../shared/form-label.directive';
 
@@ -72,7 +72,7 @@ const MOCK_REPORTS: Report[] = [
 
 @Component({
   selector: 'app-reports',
-  imports: [ReactiveFormsModule, DatePipe, NgClass, SlicePipe, TableThComponent, TableTdDirective, BtnDirective, FormControlDirective, FormLabelDirective],
+  imports: [ReactiveFormsModule, DatePipe, NgClass, SlicePipe, TableThComponent, TableTdDirective, ButtonComponent, FormControlDirective, FormLabelDirective],
   templateUrl: './reports.component.html'
 })
 export class ReportsComponent implements OnInit {
