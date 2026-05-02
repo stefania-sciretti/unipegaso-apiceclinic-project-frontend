@@ -9,7 +9,7 @@ import { AlertService } from '../../services/alert.service';
 import { ConfirmModalService } from '../../services/confirm-modal.service';
 import { TableThComponent, TableColumn } from '../../shared/table-th.component';
 import { TableTdDirective } from '../../shared/table-td.directive';
-import { BtnDirective } from '../../shared/btn.directive';
+import { ButtonComponent } from '../../components/ui/button/button.component';
 import { FormControlDirective } from '../../shared/form-control.directive';
 import { FormLabelDirective } from '../../shared/form-label.directive';
 import { PaginationComponent } from '../../shared/pagination.component';
@@ -18,7 +18,7 @@ import { usePagination } from '../../shared/use-pagination';
 @Component({
   selector: 'app-patients',
   standalone: true,
-  imports: [ReactiveFormsModule, NgClass, DatePipe, TableThComponent, TableTdDirective, BtnDirective, FormControlDirective, FormLabelDirective, PaginationComponent],
+  imports: [ReactiveFormsModule, NgClass, DatePipe, TableThComponent, TableTdDirective, ButtonComponent, FormControlDirective, FormLabelDirective, PaginationComponent],
   templateUrl: './patients.component.html'
 })
 export class PatientsComponent {
