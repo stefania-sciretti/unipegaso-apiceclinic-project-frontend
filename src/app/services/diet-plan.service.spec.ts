@@ -11,9 +11,11 @@ describe('DietPlanService', () => {
   const mockPlan: DietPlan = {
     id: 1,
     patientId: 1,
-    patientFullName: 'John Doe',
+    patientFirstName: 'John',
+    patientLastName: 'Doe',
     specialistId: 2,
-    specialistFullName: 'Jane Smith',
+    specialistFirstName: 'Jane',
+    specialistLastName: 'Smith',
     title: 'Weight Loss Plan',
     description: 'A balanced diet for weight loss',
     calories: 2000,

@@ -2,7 +2,7 @@ import { computed, Directive, input } from '@angular/core';
 
 export type ButtonVariant = 'primary' | 'outline' | 'sm-primary' | 'sm-danger' | 'sm-blue' | 'close' | 'toggle-active' | 'toggle-inactive';
 
-const VARIANT_CLASSES: Record<ButtonVariant, string> = {
+export const VARIANT_CLASSES: Record<ButtonVariant, string> = {
   primary:
     'px-[1.1rem] py-2 border-0 rounded-[10px] text-[0.9rem] cursor-pointer font-semibold transition-colors duration-[180ms] bg-[var(--primary)] text-white hover:bg-[var(--primary-mid)]',
   outline:

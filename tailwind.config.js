@@ -1,7 +1,8 @@
 /** @type {import('tailwindcss').Config} */
 module.exports = {
   content: [
-    "./src/**/*.{html,ts,scss,css}"
+    "./src/**/*.{html,ts,scss,css}",
+    "./node_modules/flowbite/**/*.js"
   ],
   corePlugins: {
     preflight: false,
@@ -9,5 +10,5 @@ module.exports = {
   theme: {
     extend: {},
   },
-  plugins: [],
+  plugins: [require('flowbite/plugin')],
 }

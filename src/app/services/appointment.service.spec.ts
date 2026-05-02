@@ -5,7 +5,7 @@ import { FitnessAppointment } from '../models/models';
 import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
 
 describe('AppointmentService', () => {
-  let service: AppointmentService;
+  let service:  AppointmentService;
   let httpMock: HttpTestingController;
 
   const mockAppointment: FitnessAppointment = {
@@ -19,7 +19,7 @@ describe('AppointmentService', () => {
     TestBed.configureTestingModule({
       providers: [AppointmentService, provideHttpClient(withInterceptorsFromDi()), provideHttpClientTesting()]
     });
-    service = TestBed.inject(AppointmentService);
+    service  = TestBed.inject(AppointmentService);
     httpMock = TestBed.inject(HttpTestingController);
   });
 
@@ -27,21 +27,39 @@ describe('AppointmentService', () => {
 
   it('should be created', () => expect(service).toBeTruthy());
 
-  it('getAll() without filters should call GET /api/appointments', () => {
+  it('getAll() without filters should GET /api/appointments with no params', () => {
     service.getAll().subscribe(list => expect(list.length).toBe(1));
     const req = httpMock.expectOne('/api/appointments');
     expect(req.request.method).toBe('GET');
+    expect(req.request.params.keys().length).toBe(0);
     req.flush([mockAppointment]);
   });
 
-  it('getAll() with status filter should include query param', () => {
+  it('getAll() with status filter should include ?status query param', () => {
     service.getAll({ status: 'BOOKED' }).subscribe();
     const req = httpMock.expectOne(r => r.url === '/api/appointments' && r.params.has('status'));
     expect(req.request.params.get('status')).toBe('BOOKED');
     req.flush([]);
   });
 
-  it('create() should POST to /api/appointments', () => {
+  it('getAll() ignores empty string filter values', () => {
+    service.getAll({ status: '' }).subscribe();
+    const req = httpMock.expectOne('/api/appointments');
+    expect(req.request.params.has('status')).toBeFalse();
+    req.flush([]);
+  });
+
+  it('getById(1) should GET /api/appointments/1', () => {
+    service.getById(1).subscribe(a => {
+      expect(a).toEqual(mockAppointment);
+      expect(a.serviceType).toBe('Personal Training');
+    });
+    const req = httpMock.expectOne('/api/appointments/1');
+    expect(req.request.method).toBe('GET');
+    req.flush(mockAppointment);
+  });
+
+  it('create() should POST to /api/appointments with body', () => {
     const body = {
       patientId: 1, specialistId: 1,
       scheduledAt: '2025-06-01T10:00:00',
@@ -50,6 +68,7 @@ describe('AppointmentService', () => {
     service.create(body).subscribe(a => expect(a.status).toBe('BOOKED'));
     const req = httpMock.expectOne('/api/appointments');
     expect(req.request.method).toBe('POST');
+    expect(req.request.body).toEqual(body);
     req.flush(mockAppointment);
   });
 

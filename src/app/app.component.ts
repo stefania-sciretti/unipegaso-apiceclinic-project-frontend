@@ -1,7 +1,8 @@
-import {Component} from '@angular/core';
+import {Component, OnInit} from '@angular/core';
 import {RouterModule} from '@angular/router';
 import {NavbarComponent} from './components/navbar/navbar.component';
 import {ConfirmModalComponent} from './components/confirm-modal/confirm-modal.component';
+import { initFlowbite } from 'flowbite'; 
 
 @Component({
     selector: 'app-root',
@@ -44,4 +45,8 @@ import {ConfirmModalComponent} from './components/confirm-modal/confirm-modal.co
     <app-confirm-modal></app-confirm-modal>
   `
 })
-export class AppComponent {}
+export class AppComponent implements OnInit {
+  ngOnInit(): void {
+    initFlowbite();
+  }
+}

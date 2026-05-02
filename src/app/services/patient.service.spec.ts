@@ -1,6 +1,7 @@
 import { TestBed } from '@angular/core/testing';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
-import { PatientService, Patient } from './patient.service';
+import { PatientService } from './patient.service';
+import { Patient } from '../models/models';
 import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
 
 describe('PatientService', () => {
@@ -76,7 +77,7 @@ describe('PatientService', () => {
     };
     service.update(1, body).subscribe(p => expect(p.lastName).toBe('Updated'));
     const req = httpMock.expectOne('/api/patients/1');
-    expect(req.request.method).toBe('PATCH');
+    expect(req.request.method).toBe('PUT');
     req.flush({ ...body, id: 1, createdAt: '2024-01-01T00:00:00' });
   });
 

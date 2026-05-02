@@ -8,6 +8,7 @@ import { APPOINTMENT_STATUS_LABELS } from '../../shared/constants/appointment-st
 
 interface BookingEvent {
   id: number;
+  type: 'fitness' | 'clinical';
   specialistRole: string;
   title: string;
   start: Date;
@@ -66,36 +67,31 @@ export class BookingCalendarComponent implements OnInit {
     this.load();
   }
 
+  private readonly clinicalRoles = new Set(['SPORT_DOCTOR', 'PHYSIOTHERAPIST']);
+
   load(): void {
     this.loading.set(true);
     this.loadError.set(false);
 
     this.appointmentSvc.getAll().pipe(
-      catchError(() => {
-        this.loadError.set(true);
-        return of([]);
-      })
+      catchError(() => { this.loadError.set(true); return of([]); })
     ).subscribe({
       next: (appointments) => {
         this.events.set(
-          appointments
-            .map(a => ({
-              id:             a.id,
-              specialistRole: a.specialistRole,
-              title:          a.serviceType,
-              start:          new Date(a.scheduledAt),
-              specialistName: a.specialistFullName,
-              patientName:    a.patientFullName,
-              serviceType:    a.serviceType,
-              note:           a.notes,
-              status:         a.status
-            }))
-            .sort((a, b) => a.start.getTime() - b.start.getTime())
+          appointments.map(a => ({
+            id:             a.id,
+            type:           this.clinicalRoles.has(a.specialistRole) ? 'clinical' as const : 'fitness' as const,
+            specialistRole: a.specialistRole,
+            title:          a.serviceType,
+            start:          new Date(a.scheduledAt),
+            specialistName: a.specialistFullName,
+            patientName:    a.patientFullName,
+            serviceType:    a.serviceType,
+            note:           a.notes,
+            status:         a.status
+          }))
+          .sort((a, b) => a.start.getTime() - b.start.getTime())
         );
-        this.loading.set(false);
-      },
-      error: () => {
-        this.loadError.set(true);
         this.loading.set(false);
       }
     });
