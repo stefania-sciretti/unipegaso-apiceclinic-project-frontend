@@ -19,14 +19,14 @@
         <!-- Area Selector Dropdown -->
         @if (!selectedArea) {
           <div class="relative">
-            <button class="flex items-center gap-3 w-full px-[1.125rem] py-[0.875rem] bg-white/15 border border-white/30 rounded-lg text-white cursor-pointer transition-all duration-200 text-[0.95rem] font-medium hover:bg-white/25 hover:border-white/50"
-                    type="button"
-                    (click)="showAreaDropdown = !showAreaDropdown">
+            <app-button variant="ghost-light" type="button"
+              extraClass="w-full gap-3 px-[1.125rem] py-[0.875rem] text-[0.95rem] font-medium justify-between rounded-lg"
+              (click)="showAreaDropdown = !showAreaDropdown">
               <span class="material-icons text-[1.2rem]">calendar_today</span>
               <span>Seleziona servizio</span>
-              <span class="material-icons text-[1.2rem] ml-auto transition-transform duration-200"
+              <span class="material-icons text-[1.2rem] transition-transform duration-200"
                     [class.rotate-180]="showAreaDropdown">expand_more</span>
-            </button>
+            </app-button>
             @if (showAreaDropdown) {
               <div class="absolute top-[calc(100%+0.5rem)] left-0 right-0 bg-white rounded-lg shadow-[0_8px_24px_rgba(0,0,0,0.2)] z-[1000] overflow-hidden min-w-full max-h-[400px] overflow-y-auto">
                 @for (area of serviceAreas; track area) {
@@ -45,10 +45,9 @@
         <!-- Service List (when area selected) -->
         @if (selectedArea) {
           <div class="flex flex-col gap-3">
-            <button class="flex items-center gap-2 px-4 py-[0.6rem] bg-white/15 border border-white/30 rounded-md text-white cursor-pointer text-[0.9rem] font-medium transition-all duration-200 hover:bg-white/25"
-                    (click)="backToAreas()">
+            <app-button variant="ghost-light" extraClass="gap-2 px-4 py-[0.6rem] text-[0.9rem]" (click)="backToAreas()">
               <span class="material-icons text-[1rem]">arrow_back</span> Torna alle aree
-            </button>
+            </app-button>
             <div class="flex flex-col gap-2 max-h-[300px] overflow-y-auto pr-2">
               @for (service of selectedArea.services; track service) {
                 <button
@@ -163,12 +162,12 @@
       }
 
       <!-- Booking Button -->
-      <button
-        class="flex items-center justify-center gap-3 px-8 py-4 bg-gradient-to-br from-[var(--primary)] to-[var(--primary-mid)] border-none rounded-lg text-white text-[1.05rem] font-bold cursor-pointer transition-all duration-300 whitespace-nowrap shadow-[0_4px_15px_rgba(17,45,78,0.3)] tracking-wide uppercase disabled:opacity-50 disabled:cursor-not-allowed hover:[&:not(:disabled)]:from-[var(--primary-mid)] hover:[&:not(:disabled)]:to-[var(--accent)] hover:[&:not(:disabled)]:-translate-y-0.5 hover:[&:not(:disabled)]:shadow-[0_6px_20px_rgba(17,45,78,0.4)]"
+      <app-button
         [disabled]="!selectedService || !selectedDate || !selectedTime"
+        extraClass="gap-3 px-8 py-4 text-[1.05rem] uppercase tracking-wide whitespace-nowrap rounded-lg"
         (click)="bookAppointment()">
         <span class="material-icons text-[1.3rem]">check</span> Prenota
-      </button>
+      </app-button>
     </div>
   </div>
 
@@ -204,10 +203,9 @@
           <span class="material-icons text-[1rem] text-[var(--primary-mid)] shrink-0">assignment</span> Referto Clinico
         </li>
       </ul>
-      <button appBtn="sm-primary" class="mx-5 mb-5 self-start"
-              (click)="navigate('/services')">
+      <app-button size="sm" extraClass="mx-5 mb-5 self-start" (click)="navigate('/services')">
         Vedi tutte le prestazioni →
-      </button>
+      </app-button>
     </div>
 
     <!-- Area Nutrizione -->
@@ -234,10 +232,9 @@
           <span class="material-icons text-[1rem] text-[var(--primary-mid)] shrink-0">menu_book</span> Ricettario Fit Personalizzato
         </li>
       </ul>
-      <button appBtn="sm-primary" class="mx-5 mb-5 self-start"
-              (click)="navigate('/nutrition')">
+      <app-button size="sm" extraClass="mx-5 mb-5 self-start" (click)="navigate('/nutrition')">
         Vedi piani nutrizionali →
-      </button>
+      </app-button>
     </div>
 
     <!-- Area Sport -->
@@ -264,10 +261,9 @@
           <span class="material-icons text-[1rem] text-[var(--primary-mid)] shrink-0">emoji_events</span> Preparazione Atletica Agonistica
         </li>
       </ul>
-      <button appBtn="sm-primary" class="mx-5 mb-5 self-start"
-              (click)="navigate('/training')">
+      <app-button size="sm" extraClass="mx-5 mb-5 self-start" (click)="navigate('/training')">
         Vedi schede allenamento →
-      </button>
+      </app-button>
     </div>
 
   </div>

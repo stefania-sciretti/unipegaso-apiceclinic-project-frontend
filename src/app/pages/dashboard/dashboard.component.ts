@@ -5,7 +5,7 @@ import { Router } from '@angular/router';
 import { AppointmentService } from '../../services/appointment.service';
 import { AuthService } from '../../services/auth.service';
 import { BookingService, PendingBooking } from '../../services/booking.service';
-import { BtnDirective } from '../../shared/btn.directive';
+import { ButtonComponent } from '../../components/ui/button/button.component';
 
 interface Service {
   id: string;
@@ -30,7 +30,7 @@ interface Doctor {
 
 @Component({
   selector: 'app-dashboard',
-  imports: [CommonModule, NgOptimizedImage, BtnDirective],
+  imports: [CommonModule, NgOptimizedImage, ButtonComponent],
   templateUrl: './dashboard.component.html'
 })
 export class DashboardComponent {
