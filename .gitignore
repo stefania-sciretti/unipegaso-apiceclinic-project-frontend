@@ -2,3 +2,7 @@
 /dist
 /.angular
 .env
+
+# --- AI agents ---
+.claude
+.github
