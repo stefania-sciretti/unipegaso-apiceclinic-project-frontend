@@ -80,7 +80,7 @@ describe('BookingCalendarComponent', () => {
     }];
     const clinicalData = [{
       id: 2, visitType: 'Consultation', scheduledAt: new Date(),
-      doctorFullName: 'Dr. Smith', patientFullName: 'Jane Patient', status: 'CONFIRMED'
+      specialistFullName: 'Dr. Smith', patientFullName: 'Jane Patient', status: 'CONFIRMED'
     }];
 
     it('should show fitness data even when clinical API fails', async () => {

@@ -6,7 +6,7 @@ export interface Report {
   id: number;
   appointmentId: number;
   patientFullName: string;
-  doctorFullName: string;
+  specialistFullName: string;
   visitType: string;
   scheduledAt: string;
   issuedDate: string;

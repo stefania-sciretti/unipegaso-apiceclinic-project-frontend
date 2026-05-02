@@ -1,4 +1,4 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, inject, OnInit, signal } from '@angular/core';
 import { DatePipe, NgClass, SlicePipe } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { of } from 'rxjs';
@@ -7,11 +7,16 @@ import { Report, ReportService } from '../../services/report.service';
 import { AlertService } from '../../services/alert.service';
 import { ClinicalAppointmentService } from '../../services/clinical-appointment.service';
 import { ClinicalAppointment } from '../../models/models';
+import { TableThComponent, TableColumn } from '../../shared/table-th.component';
+import { TableTdDirective } from '../../shared/table-td.directive';
+import { BtnDirective } from '../../shared/btn.directive';
+import { FormControlDirective } from '../../shared/form-control.directive';
+import { FormLabelDirective } from '../../shared/form-label.directive';
 
 const MOCK_REPORTS: Report[] = [
   {
     id: 1, appointmentId: 3,
-    patientFullName: 'Anna Francis', doctorFullName: 'Mihai Lavretti',
+    patientFullName: 'Anna Francis', specialistFullName: 'Mihai Lavretti',
     visitType: 'Seduta Osteopatica', scheduledAt: '2025-04-07T10:00:00', issuedDate: '2025-04-07',
     diagnosis: 'Contrattura muscolare cervicale con limitazione funzionale della rotazione. Blocco vertebrale C4-C5.',
     prescription: 'Manipolazione osteopatica eseguita in seduta. Si consigliano 3 sedute di follow-up a cadenza settimanale.',
@@ -20,7 +25,7 @@ const MOCK_REPORTS: Report[] = [
   },
   {
     id: 2, appointmentId: 5,
-    patientFullName: 'Alessandru Davini', doctorFullName: 'Luca Siretta',
+    patientFullName: 'Alessandru Davini', specialistFullName: 'Luca Siretta',
     visitType: 'Valutazione Fitness', scheduledAt: '2025-04-12T09:00:00', issuedDate: '2025-04-12',
     diagnosis: 'Buon livello di fitness generale. Lieve debolezza del core e della catena posteriore.',
     prescription: 'Piano di allenamento personalizzato assegnato – 3 sedute/settimana con focus su rinforzo core e mobilità.',
@@ -29,7 +34,7 @@ const MOCK_REPORTS: Report[] = [
   },
   {
     id: 3, appointmentId: 8,
-    patientFullName: 'Elena Debuo', doctorFullName: 'Simona Ruberti',
+    patientFullName: 'Elena Debuo', specialistFullName: 'Simona Ruberti',
     visitType: 'Visita Nutrizionistica', scheduledAt: '2025-04-15T11:00:00', issuedDate: '2025-04-15',
     diagnosis: 'Sovrappeso lieve (BMI 27.3). Alimentazione sbilanciata con eccesso di carboidrati raffinati e deficit proteico.',
     prescription: 'Piano nutrizionale personalizzato con 1.600 kcal/die. Aumento dell\'apporto proteico a 1.4g/kg. Riduzione degli zuccheri semplici.',
@@ -38,7 +43,7 @@ const MOCK_REPORTS: Report[] = [
   },
   {
     id: 4, appointmentId: 12,
-    patientFullName: 'Marco Lavecri', doctorFullName: 'Sandro Scrigoni',
+    patientFullName: 'Marco Lavecri', specialistFullName: 'Sandro Scrigoni',
     visitType: 'Visita Medico-Sportiva', scheduledAt: '2025-04-17T09:30:00', issuedDate: '2025-04-17',
     diagnosis: 'Idoneità sportiva non agonistica confermata. ECG nella norma. PA 118/75 mmHg. Lieve rigidità della fascia ileotibiale destra.',
     prescription: 'Certificato di idoneità sportiva rilasciato. Stretching mirato alla fascia ileotibiale consigliato prima e dopo l\'allenamento.',
@@ -47,7 +52,7 @@ const MOCK_REPORTS: Report[] = [
   },
   {
     id: 5, appointmentId: 15,
-    patientFullName: 'Erica Guella', doctorFullName: 'Cristiana Maratti',
+    patientFullName: 'Erica Guella', specialistFullName: 'Cristiana Maratti',
     visitType: 'Consulenza Nutrizionale Sportiva', scheduledAt: '2025-04-20T14:00:00', issuedDate: '2025-04-20',
     diagnosis: 'Atleta agonista con carenza di carboidrati nel pre-gara. Apporto calorico totale inadeguato rispetto al carico di allenamento.',
     prescription: 'Piano alimentare periodizzato: +300 kcal nei giorni di allenamento intenso. Supplementazione con maltodestrine nel pre-gara. Idratazione: 35 ml/kg/die.',
@@ -56,7 +61,7 @@ const MOCK_REPORTS: Report[] = [
   },
   {
     id: 6, appointmentId: 18,
-    patientFullName: 'Nadia Pietri', doctorFullName: 'Mihai Lavretti',
+    patientFullName: 'Nadia Pietri', specialistFullName: 'Mihai Lavretti',
     visitType: 'Riatletizzazione e Recupero Funzionale', scheduledAt: '2025-04-22T10:30:00', issuedDate: '2025-04-22',
     diagnosis: 'Esito di distorsione alla caviglia sinistra (grado II). Riduzione del ROM in dorsiflessione. Forza del tibiale anteriore ridotta.',
     prescription: 'Programma di riatletizzazione in 3 fasi: propriocezione, rinforzo muscolare, ritorno al gesto atletico. Durata stimata 6 settimane.',
@@ -67,10 +72,19 @@ const MOCK_REPORTS: Report[] = [
 
 @Component({
   selector: 'app-reports',
-  imports: [ReactiveFormsModule, DatePipe, NgClass, SlicePipe],
+  imports: [ReactiveFormsModule, DatePipe, NgClass, SlicePipe, TableThComponent, TableTdDirective, BtnDirective, FormControlDirective, FormLabelDirective],
   templateUrl: './reports.component.html'
 })
 export class ReportsComponent implements OnInit {
+
+  readonly tableColumns = signal<TableColumn[]>([
+    { label: 'Paziente' },
+    { label: 'Specialista' },
+    { label: 'Tipo Visita' },
+    { label: 'Data Emissione' },
+    { label: 'Diagnosi (sintesi)' },
+    { label: 'Azioni', extraClass: 'w-[200px] min-w-[200px]' }
+  ]);
   private readonly reportService              = inject(ReportService);
   private readonly clinicalAppointmentService = inject(ClinicalAppointmentService);
   private readonly alertSvc                   = inject(AlertService);

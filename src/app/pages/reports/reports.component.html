@@ -2,11 +2,11 @@
   <div class="flex justify-between items-start mb-6">
     <div>
       <h1 class="text-[1.75rem] font-bold mb-1 text-[#112D4E] flex items-center">
-        <span class="material-icons text-[1.6rem] align-middle mr-[0.3rem] text-[#3F72AF]">assignment</span> Referti Medici
+        <span class="material-icons text-[1.6rem] align-middle mr-[0.3rem] text-[#3F72AF]">assignment</span> Referti
       </h1>
       <p class="text-[#3F72AF] text-[0.95rem]">Gestione diagnosi, prescrizioni e note cliniche</p>
     </div>
-    <button class="px-[1.1rem] py-2 border-0 rounded-[10px] text-[0.9rem] cursor-pointer font-semibold transition-colors duration-[180ms] bg-[#112D4E] text-white hover:bg-[#264560]" (click)="openCreate()">+ Nuovo Referto</button>
+    <button appBtn="primary" (click)="openCreate()">+ Nuovo Referto</button>
   </div>
 
   @if (alertSignal(); as alert) {
@@ -27,44 +27,38 @@
         <table class="w-full border-collapse text-[0.9rem]">
           <thead>
             <tr>
-              <th class="bg-[#eef4f9] px-4 py-3 text-left font-semibold text-[#112D4E] border-b-2 border-[#DBE2EF] whitespace-nowrap">#</th>
-              <th class="bg-[#eef4f9] px-4 py-3 text-left font-semibold text-[#112D4E] border-b-2 border-[#DBE2EF] whitespace-nowrap">Paziente</th>
-              <th class="bg-[#eef4f9] px-4 py-3 text-left font-semibold text-[#112D4E] border-b-2 border-[#DBE2EF] whitespace-nowrap">Medico</th>
-              <th class="bg-[#eef4f9] px-4 py-3 text-left font-semibold text-[#112D4E] border-b-2 border-[#DBE2EF] whitespace-nowrap">Tipo Visita</th>
-              <th class="bg-[#eef4f9] px-4 py-3 text-left font-semibold text-[#112D4E] border-b-2 border-[#DBE2EF] whitespace-nowrap">Data Emissione</th>
-              <th class="bg-[#eef4f9] px-4 py-3 text-left font-semibold text-[#112D4E] border-b-2 border-[#DBE2EF] whitespace-nowrap">Diagnosi (sintesi)</th>
-              <th class="bg-[#eef4f9] px-4 py-3 text-left font-semibold text-[#112D4E] border-b-2 border-[#DBE2EF] whitespace-nowrap w-[200px] min-w-[200px]">Azioni</th>
+              @for (col of tableColumns(); track col.label) {
+                <th app-table-th [col]="col"></th>
+              }
             </tr>
           </thead>
           <tbody>
             @if (reports.length === 0) {
               <tr>
-                <td colspan="7" class="px-4 py-3 border-b border-[#DBE2EF] align-middle text-[#3F72AF] text-center py-10 text-[0.95rem]">Nessun referto trovato.</td>
+                <td colspan="7" appTd class="text-[#3F72AF] text-center text-[0.95rem]">Nessun referto trovato.</td>
               </tr>
             }
             @for (r of reports; track r) {
               <tr class="hover:[&>td]:bg-[#f0f7ff]">
-                <td class="px-4 py-3 border-b border-[#DBE2EF] align-middle"><strong>{{ r.id }}</strong></td>
-                <td class="px-4 py-3 border-b border-[#DBE2EF] align-middle">
+                <td appTd>
                   <div class="flex items-center gap-[6px]">
-                    <span class="material-icons text-[18px] text-[#3F72AF]">person</span>
                     {{ r.patientFullName }}
                   </div>
                 </td>
-                <td class="px-4 py-3 border-b border-[#DBE2EF] align-middle">{{ r.doctorFullName }}</td>
-                <td class="px-4 py-3 border-b border-[#DBE2EF] align-middle">
+                <td appTd>{{ r.specialistFullName }}</td>
+                <td appTd>
                   <span class="badge" [ngClass]="getVisitTypeBadgeClass(r.visitType)">
                     {{ r.visitType }}
                   </span>
                 </td>
-                <td class="px-4 py-3 border-b border-[#DBE2EF] align-middle">{{ r.issuedDate | date:'dd MMM yyyy' }}</td>
-                <td class="px-4 py-3 border-b border-[#DBE2EF] align-middle max-w-[280px] text-[#3F72AF] text-[0.88rem]">{{ r.diagnosis | slice:0:60 }}{{ r.diagnosis.length > 60 ? '…' : '' }}</td>
-                <td class="w-[200px] min-w-[200px] whitespace-nowrap align-middle px-4 py-3 border-b border-[#DBE2EF]">
+                <td appTd>{{ r.issuedDate | date:'dd MMM yyyy' }}</td>
+                <td appTd class="max-w-[280px] text-[#3F72AF] text-[0.88rem]">{{ r.diagnosis | slice:0:60 }}{{ r.diagnosis.length > 60 ? '…' : '' }}</td>
+                <td appTd class="w-[200px] min-w-[200px] whitespace-nowrap">
                   <div class="flex items-center gap-2">
-                    <button class="px-[0.7rem] py-[0.3rem] text-[0.8rem] border-0 rounded-[10px] cursor-pointer font-semibold transition-colors duration-[180ms] bg-[#112D4E] text-white hover:bg-[#264560]" (click)="openDetail(r)">
+                    <button appBtn="sm-primary" (click)="openDetail(r)">
                       <span class="material-icons text-[15px] align-middle">visibility</span> Dettaglio
                     </button>
-                    <button class="px-[0.7rem] py-[0.3rem] text-[0.8rem] border-0 rounded-[10px] cursor-pointer font-semibold transition-colors duration-[180ms] bg-[#e5992c] text-white hover:bg-[#c47f20]" (click)="openEdit(r)">
+                    <button appBtn="sm-primary" (click)="openEdit(r)">
                       <span class="material-icons text-[15px] align-middle">edit</span> Modifica
                     </button>
                   </div>
@@ -84,17 +78,17 @@
     <div class="bg-white rounded-[10px] shadow-[0_10px_40px_rgba(53,88,114,0.22)] p-8 w-full max-w-[560px] max-h-[90vh] overflow-y-auto">
       <div class="flex justify-between items-center mb-6 pb-4 border-b-2 border-[#DBE2EF]">
         <h3 class="text-[1.15rem] text-[#112D4E] font-bold">{{ editingId ? 'Modifica Referto' : 'Nuovo Referto' }}</h3>
-        <button class="bg-transparent border-0 text-[1.4rem] cursor-pointer text-[#3F72AF] leading-none hover:text-[#d95550] transition-colors duration-200" (click)="closeFormModal()">&times;</button>
+        <button appBtn="close" (click)="closeFormModal()">&times;</button>
       </div>
       <form [formGroup]="form" (ngSubmit)="save()">
         @if (!editingId) {
           <div class="mb-4">
-            <label for="reportAppointmentId" class="block text-[0.85rem] font-semibold mb-[0.35rem] text-[#3F72AF] uppercase tracking-[0.3px]">Appuntamento *</label>
-            <select id="reportAppointmentId" class="w-full px-[0.8rem] py-[0.55rem] border-[1.5px] border-[#DBE2EF] rounded-lg text-[0.9rem] outline-none focus:border-[#3F72AF] focus:shadow-[0_0_0_3px_rgba(122,170,206,0.2)]" formControlName="appointmentId">
+            <label appLabel for="reportAppointmentId">Appuntamento *</label>
+            <select appFormControl id="reportAppointmentId" formControlName="appointmentId">
               <option [ngValue]="null" disabled>— Seleziona un appuntamento completato —</option>
               @for (a of completedAppointments; track a) {
                 <option [ngValue]="a.id">
-                  #{{ a.id }} – {{ a.patientFullName }} con {{ a.doctorFullName }} ({{ a.scheduledAt | date:'dd/MM/yyyy' }}) – {{ a.visitType }}
+                  #{{ a.id }} – {{ a.patientFullName }} con {{ a.specialistFullName }} ({{ a.scheduledAt | date:'dd/MM/yyyy' }}) – {{ a.visitType }}
                 </option>
               }
             </select>
@@ -110,28 +104,28 @@
         }
         @if (editingId) {
           <div class="mb-4">
-            <p class="block text-[0.85rem] font-semibold mb-[0.35rem] text-[#3F72AF] uppercase tracking-[0.3px]">Appuntamento</p>
-            <input class="w-full px-[0.8rem] py-[0.55rem] border-[1.5px] border-[#DBE2EF] rounded-lg text-[0.9rem] outline-none focus:border-[#3F72AF] focus:shadow-[0_0_0_3px_rgba(122,170,206,0.2)]" type="text" [value]="'Appuntamento #' + form.get('appointmentId')?.value + ' – ' + selectedReport?.patientFullName + ' / ' + selectedReport?.visitType" disabled/>
+            <p appLabel>Appuntamento</p>
+            <input appFormControl type="text" [value]="'Appuntamento #' + form.get('appointmentId')?.value + ' – ' + selectedReport?.patientFullName + ' / ' + selectedReport?.visitType" disabled/>
           </div>
         }
         <div class="mb-4">
-          <label for="reportDiagnosis" class="block text-[0.85rem] font-semibold mb-[0.35rem] text-[#3F72AF] uppercase tracking-[0.3px]">Diagnosi *</label>
-          <textarea id="reportDiagnosis" class="w-full px-[0.8rem] py-[0.55rem] border-[1.5px] border-[#DBE2EF] rounded-lg text-[0.9rem] outline-none focus:border-[#3F72AF] focus:shadow-[0_0_0_3px_rgba(122,170,206,0.2)]" formControlName="diagnosis" rows="3" placeholder="Diagnosi clinica…"></textarea>
+          <label appLabel for="reportDiagnosis">Diagnosi *</label>
+          <textarea appFormControl id="reportDiagnosis" formControlName="diagnosis" rows="3" placeholder="Diagnosi clinica…"></textarea>
           @if (isInvalid('diagnosis')) {
             <div class="text-[#d95550] text-[0.8rem] mt-1">Campo obbligatorio</div>
           }
         </div>
         <div class="mb-4">
-          <label for="reportPrescription" class="block text-[0.85rem] font-semibold mb-[0.35rem] text-[#3F72AF] uppercase tracking-[0.3px]">Prescrizione</label>
-          <textarea id="reportPrescription" class="w-full px-[0.8rem] py-[0.55rem] border-[1.5px] border-[#DBE2EF] rounded-lg text-[0.9rem] outline-none focus:border-[#3F72AF] focus:shadow-[0_0_0_3px_rgba(122,170,206,0.2)]" formControlName="prescription" rows="2" placeholder="Farmaci prescritti, terapie…"></textarea>
+          <label appLabel for="reportPrescription">Prescrizione</label>
+          <textarea appFormControl id="reportPrescription" formControlName="prescription" rows="2" placeholder="Farmaci prescritti, terapie…"></textarea>
         </div>
         <div class="mb-4">
-          <label for="reportDoctorNotes" class="block text-[0.85rem] font-semibold mb-[0.35rem] text-[#3F72AF] uppercase tracking-[0.3px]">Note del Medico</label>
-          <textarea id="reportDoctorNotes" class="w-full px-[0.8rem] py-[0.55rem] border-[1.5px] border-[#DBE2EF] rounded-lg text-[0.9rem] outline-none focus:border-[#3F72AF] focus:shadow-[0_0_0_3px_rgba(122,170,206,0.2)]" formControlName="doctorNotes" rows="2" placeholder="Note interne del medico…"></textarea>
+          <label appLabel for="reportDoctorNotes">Note del Medico</label>
+          <textarea appFormControl id="reportDoctorNotes" formControlName="doctorNotes" rows="2" placeholder="Note interne del medico…"></textarea>
         </div>
         <div class="flex justify-end gap-3 mt-6 pt-4 border-t border-[#DBE2EF]">
-          <button type="button" class="px-[1.1rem] py-2 rounded-[10px] text-[0.9rem] cursor-pointer font-semibold transition-colors duration-[180ms] bg-transparent border-[1.5px] border-[#112D4E] text-[#112D4E] hover:bg-[#112D4E] hover:text-white" (click)="closeFormModal()">Annulla</button>
-          <button type="submit" class="px-[1.1rem] py-2 border-0 rounded-[10px] text-[0.9rem] cursor-pointer font-semibold transition-colors duration-[180ms] bg-[#112D4E] text-white hover:bg-[#264560]">Salva Referto</button>
+          <button appBtn="outline" type="button" (click)="closeFormModal()">Annulla</button>
+          <button appBtn="primary" type="submit">Salva Referto</button>
         </div>
       </form>
     </div>
@@ -141,25 +135,25 @@
 <!-- Modale: Dettaglio Referto -->
 @if (showDetailModal && selectedReport) {
   <div class="fixed inset-0 bg-[rgba(30,45,59,0.5)] z-[99999] flex items-center justify-center p-4">
-    <div class="bg-white rounded-[10px] shadow-[0_10px_40px_rgba(53,88,114,0.22)] p-8 w-full max-w-[680px] w-[90vw] max-h-[90vh] overflow-y-auto">
+    <div class="bg-white rounded-[10px] shadow-[0_10px_40px_rgba(53,88,114,0.22)] p-8 w-[90vw] max-w-[680px] max-h-[90vh] overflow-y-auto">
       <div class="flex justify-between items-center mb-6 pb-4 border-b-2 border-[#DBE2EF]">
         <h3 class="text-[1.15rem] text-[#112D4E] font-bold">
           <span class="material-icons align-middle mr-[6px]">assignment</span>
           Referto #{{ selectedReport.id }}
         </h3>
-        <button class="bg-transparent border-0 text-[1.4rem] cursor-pointer text-[#3F72AF] leading-none hover:text-[#d95550] transition-colors duration-200" (click)="showDetailModal = false">&times;</button>
+        <button appBtn="close" (click)="showDetailModal = false">&times;</button>
       </div>
       <div class="grid grid-cols-2 gap-x-6 mb-2">
         <div class="mb-4">
-          <p class="block text-[0.85rem] font-semibold mb-[0.35rem] text-[#3F72AF] uppercase tracking-[0.3px]">Paziente</p>
+          <p appLabel>Paziente</p>
           <p><strong>{{ selectedReport.patientFullName }}</strong></p>
         </div>
         <div class="mb-4">
-          <p class="block text-[0.85rem] font-semibold mb-[0.35rem] text-[#3F72AF] uppercase tracking-[0.3px]">Medico</p>
-          <p>{{ selectedReport.doctorFullName }}</p>
+          <p appLabel>Specialista</p>
+          <p>{{ selectedReport.specialistFullName }}</p>
         </div>
         <div class="mb-4">
-          <p class="block text-[0.85rem] font-semibold mb-[0.35rem] text-[#3F72AF] uppercase tracking-[0.3px]">Tipo Visita</p>
+          <p appLabel>Tipo Visita</p>
           <p>
             <span class="badge" [ngClass]="getVisitTypeBadgeClass(selectedReport.visitType)">
               {{ selectedReport.visitType }}
@@ -167,29 +161,29 @@
           </p>
         </div>
         <div class="mb-4">
-          <p class="block text-[0.85rem] font-semibold mb-[0.35rem] text-[#3F72AF] uppercase tracking-[0.3px]">Data Appuntamento</p>
+          <p appLabel>Data Appuntamento</p>
           <p>{{ selectedReport.scheduledAt | date:'dd MMM yyyy – HH:mm' }}</p>
         </div>
         <div class="mb-4">
-          <p class="block text-[0.85rem] font-semibold mb-[0.35rem] text-[#3F72AF] uppercase tracking-[0.3px]">Data Emissione Referto</p>
+          <p appLabel>Data Emissione Referto</p>
           <p>{{ selectedReport.issuedDate | date:'dd MMM yyyy' }}</p>
         </div>
       </div>
       <div class="mb-4">
-        <p class="block text-[0.85rem] font-semibold mb-[0.35rem] text-[#3F72AF] uppercase tracking-[0.3px]">Diagnosi</p>
+        <p appLabel>Diagnosi</p>
         <div class="bg-[#F9F7F7] border border-[#DBE2EF] rounded-[10px] px-[0.9rem] py-[0.65rem] text-[0.92rem] leading-[1.55] whitespace-pre-wrap text-[#112D4E] min-h-[2.5rem]">{{ selectedReport.diagnosis }}</div>
       </div>
       <div class="mb-4">
-        <p class="block text-[0.85rem] font-semibold mb-[0.35rem] text-[#3F72AF] uppercase tracking-[0.3px]">Prescrizione</p>
+        <p appLabel>Prescrizione</p>
         <div class="bg-[#F9F7F7] border border-[#DBE2EF] rounded-[10px] px-[0.9rem] py-[0.65rem] text-[0.92rem] leading-[1.55] whitespace-pre-wrap text-[#112D4E] min-h-[2.5rem]">{{ selectedReport.prescription || '–' }}</div>
       </div>
       <div class="mb-4">
-        <p class="block text-[0.85rem] font-semibold mb-[0.35rem] text-[#3F72AF] uppercase tracking-[0.3px]">Note del Medico</p>
+        <p appLabel>Note del Medico</p>
         <div class="bg-[#F9F7F7] border border-[#DBE2EF] rounded-[10px] px-[0.9rem] py-[0.65rem] text-[0.92rem] leading-[1.55] whitespace-pre-wrap text-[#112D4E] min-h-[2.5rem]">{{ selectedReport.doctorNotes || '–' }}</div>
       </div>
       <div class="flex justify-end gap-3 mt-6 pt-4 border-t border-[#DBE2EF]">
-        <button class="px-[1.1rem] py-2 rounded-[10px] text-[0.9rem] cursor-pointer font-semibold transition-colors duration-[180ms] bg-transparent border-[1.5px] border-[#112D4E] text-[#112D4E] hover:bg-[#112D4E] hover:text-white" (click)="showDetailModal = false">Chiudi</button>
-        <button class="px-[1.1rem] py-2 border-0 rounded-[10px] text-[0.9rem] cursor-pointer font-semibold transition-colors duration-[180ms] bg-[#e5992c] text-white hover:bg-[#c47f20]" (click)="openEdit(selectedReport!); showDetailModal = false">
+        <button appBtn="outline" (click)="showDetailModal = false">Chiudi</button>
+        <button appBtn="primary" (click)="openEdit(selectedReport!); showDetailModal = false">
           <span class="material-icons text-[15px] align-middle">edit</span> Modifica
         </button>
       </div>

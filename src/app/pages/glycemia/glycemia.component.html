@@ -4,7 +4,7 @@
       <h1 class="text-[1.75rem] font-bold mb-1 text-[#112D4E] flex items-center"><span class="material-icons text-[1.6rem] align-middle mr-[0.3rem] text-[#3F72AF]">colorize</span> Misurazioni Glicemia</h1>
       <p class="text-[#3F72AF] text-[0.95rem]">Monitoraggio glicemico tramite pungidito — gestito da Simona</p>
     </div>
-    <button class="px-[1.1rem] py-2 border-0 rounded-[10px] text-[0.9rem] cursor-pointer font-semibold transition-colors duration-[180ms] bg-[#112D4E] text-white hover:bg-[#264560]" (click)="openCreate()">+ Nuova Misurazione</button>
+    <button appBtn="primary" (click)="openCreate()">+ Nuova Misurazione</button>
   </div>
   @if (alertSignal(); as alert) {
     <div
@@ -13,14 +13,14 @@
     >{{ alert.message }}</div>
   }
   <div class="bg-white rounded-[10px] shadow-[0_2px_14px_rgba(17,45,78,0.10)] p-4 mb-4">
-    <div class="flex gap-4 items-center flex-wrap">
-      <label for="glycemiaPatientFilter" class="font-semibold">Filtra per paziente:</label>
-      <select id="glycemiaPatientFilter" [(ngModel)]="filterPatientId" (change)="load()" class="min-w-[200px] px-[0.8rem] py-[0.55rem] border-[1.5px] border-[#DBE2EF] rounded-lg text-[0.9rem] outline-none focus:border-[#3F72AF]">
-        <option value="">Tutti i pazienti</option>
-        @for (c of patients; track c) {
-          <option [value]="c.id">{{ c.firstName }} {{ c.lastName }}</option>
-        }
-      </select>
+    <div class="relative max-w-sm">
+      <span class="material-icons absolute left-3 top-1/2 -translate-y-1/2 text-[#3F72AF] text-[1.1rem] pointer-events-none">search</span>
+      <input appFormControl
+             type="text"
+             placeholder="Cerca paziente…"
+             [value]="searchQuery()"
+             (input)="searchQuery.set($any($event.target).value)"
+             class="pl-9"/>
     </div>
   </div>
   @if (loading) {
@@ -31,32 +31,28 @@
       <div class="overflow-x-auto">
         <table class="w-full border-collapse text-[0.9rem]">
           <thead><tr>
-            <th class="bg-[#eef4f9] px-4 py-3 text-left font-semibold text-[#112D4E] border-b-2 border-[#DBE2EF] whitespace-nowrap">#</th>
-            <th class="bg-[#eef4f9] px-4 py-3 text-left font-semibold text-[#112D4E] border-b-2 border-[#DBE2EF] whitespace-nowrap">Paziente</th>
-            <th class="bg-[#eef4f9] px-4 py-3 text-left font-semibold text-[#112D4E] border-b-2 border-[#DBE2EF] whitespace-nowrap">Data/Ora</th>
-            <th class="bg-[#eef4f9] px-4 py-3 text-left font-semibold text-[#112D4E] border-b-2 border-[#DBE2EF] whitespace-nowrap">Valore (mg/dL)</th>
-            <th class="bg-[#eef4f9] px-4 py-3 text-left font-semibold text-[#112D4E] border-b-2 border-[#DBE2EF] whitespace-nowrap">Contesto</th>
-            <th class="bg-[#eef4f9] px-4 py-3 text-left font-semibold text-[#112D4E] border-b-2 border-[#DBE2EF] whitespace-nowrap">Classificazione</th>
-            <th class="bg-[#eef4f9] px-4 py-3 text-left font-semibold text-[#112D4E] border-b-2 border-[#DBE2EF] whitespace-nowrap">Note</th>
-            <th class="bg-[#eef4f9] px-4 py-3 text-left font-semibold text-[#112D4E] border-b-2 border-[#DBE2EF] whitespace-nowrap">Azioni</th>
+            @for (col of tableColumns(); track col.label) {
+              <th app-table-th [col]="col"></th>
+            }
           </tr></thead>
           <tbody>
-            @if (measurements.length === 0) {
-              <tr><td colspan="8" class="text-[#3F72AF] text-center py-10 text-[0.95rem]">Nessuna misurazione registrata.</td></tr>
+            @if (filteredMeasurements().length === 0) {
+              <tr><td colspan="7" appTd class="text-[#3F72AF] text-center py-10 text-[0.95rem]">
+                {{ searchQuery() ? 'Nessun risultato per "' + searchQuery() + '".' : 'Nessuna misurazione registrata.' }}
+              </td></tr>
             }
-            @for (m of measurements; track m) {
+            @for (m of filteredMeasurements(); track m.id) {
               <tr class="hover:[&>td]:bg-[#f0f7ff]">
-                <td class="px-4 py-3 border-b border-[#DBE2EF] align-middle">{{ m.id }}</td>
-                <td class="px-4 py-3 border-b border-[#DBE2EF] align-middle">{{ m.patientFullName }}</td>
-                <td class="px-4 py-3 border-b border-[#DBE2EF] align-middle">{{ m.measuredAt | date:'dd/MM/yyyy HH:mm' }}</td>
-                <td class="px-4 py-3 border-b border-[#DBE2EF] align-middle font-bold text-[1.1rem]">{{ m.valueMgDl }}</td>
-                <td class="px-4 py-3 border-b border-[#DBE2EF] align-middle">{{ contextLabel(m.context) }}</td>
-                <td class="px-4 py-3 border-b border-[#DBE2EF] align-middle"><span class="badge" [ngClass]="classColor(m.classification)">{{ m.classification }}</span></td>
-                <td class="px-4 py-3 border-b border-[#DBE2EF] align-middle">{{ m.notes ?? '–' }}</td>
-                <td class="px-4 py-3 border-b border-[#DBE2EF] align-middle">
+                <td appTd>{{ patientName(m) }}</td>
+                <td appTd>{{ m.measuredAt | date:'dd/MM/yyyy HH:mm' }}</td>
+                <td appTd class="font-bold text-[1.1rem]">{{ m.valueMgDl }}</td>
+                <td appTd>{{ contextLabel(m.context) }}</td>
+                <td appTd><span class="badge" [ngClass]="classColor(m.classification)">{{ m.classification }}</span></td>
+                <td appTd>{{ m.notes ?? '–' }}</td>
+                <td appTd>
                   <div class="flex gap-2 flex-nowrap items-center">
-                    <button class="px-[0.7rem] py-[0.3rem] border-0 rounded-[10px] text-[0.8rem] cursor-pointer font-semibold transition-colors duration-[180ms] bg-[#112D4E] text-white hover:bg-[#264560]" (click)="openEdit(m)"><span class="material-icons text-[1rem]">edit</span></button>
-                    <button class="px-[0.7rem] py-[0.3rem] border-0 rounded-[10px] text-[0.8rem] cursor-pointer font-semibold transition-colors duration-[180ms] bg-[#d95550] text-white hover:bg-[#b84140]" (click)="delete(m.id)"><span class="material-icons text-[1rem]">delete</span></button>
+                    <button appBtn="sm-primary" (click)="openEdit(m)"><span class="material-icons text-[1rem]">edit</span></button>
+                    <button appBtn="sm-danger" (click)="delete(m.id)"><span class="material-icons text-[1rem]">delete</span></button>
                   </div>
                 </td>
               </tr>
@@ -70,18 +66,14 @@
     <div class="bg-white rounded-[10px] shadow-[0_2px_14px_rgba(17,45,78,0.10)] p-4 mt-6">
       <h4 class="mb-3 flex items-center gap-2"><span class="material-icons text-[1.1rem] align-middle">bar_chart</span> Legenda Classificazione Glicemica (linee guida ADA/OMS)</h4>
       <div class="flex gap-6 flex-wrap">
-        <div>
-          <strong>A digiuno:</strong>
-          <span class="badge badge-success ml-2">&lt; 100 mg/dL = NORMALE</span>
-          <span class="badge badge-warning ml-2">100–125 = ATTENZIONE</span>
-          <span class="badge badge-danger ml-2">≥ 126 = ELEVATA</span>
-        </div>
-        <div>
-          <strong>Post-pasto 2h:</strong>
-          <span class="badge badge-success ml-2">&lt; 140 mg/dL = NORMALE</span>
-          <span class="badge badge-warning ml-2">140–199 = ATTENZIONE</span>
-          <span class="badge badge-danger ml-2">≥ 200 = ELEVATA</span>
-        </div>
+        @for (ctx of classificationRules(); track ctx.context) {
+          <div>
+            <strong>{{ ctx.label }}:</strong>
+            @for (t of ctx.thresholds; track t.classification) {
+              <span class="badge ml-2" [ngClass]="badgeClass(t.classification)">{{ t.label }}</span>
+            }
+          </div>
+        }
       </div>
     </div>
   }
@@ -92,33 +84,32 @@
     <div class="bg-white rounded-[10px] shadow-[0_10px_40px_rgba(53,88,114,0.22)] p-8 w-full max-w-[520px] max-h-[90vh] overflow-y-auto">
       <div class="flex justify-between items-center mb-6 pb-4 border-b-2 border-[#DBE2EF]">
         <h3 class="text-[1.15rem] text-[#112D4E] font-bold">{{ editingId ? 'Modifica Misurazione' : 'Nuova Misurazione Glicemia' }}</h3>
-        <button class="bg-transparent border-0 text-[1.4rem] cursor-pointer text-[#3F72AF] leading-none hover:text-[#d95550] transition-colors duration-200" (click)="closeModal()">&times;</button>
+        <button appBtn="close" (click)="closeModal()">&times;</button>
       </div>
       <form [formGroup]="form" (ngSubmit)="save()">
         <div class="mb-4">
-          <label for="glycemiaPatientId" class="block text-[0.85rem] font-semibold mb-[0.35rem] text-[#3F72AF] uppercase tracking-[0.3px]">Paziente *</label>
-          <select id="glycemiaPatientId" formControlName="patientId" class="w-full px-[0.8rem] py-[0.55rem] border-[1.5px] border-[#DBE2EF] rounded-lg text-[0.9rem] outline-none focus:border-[#3F72AF] focus:shadow-[0_0_0_3px_rgba(122,170,206,0.2)]">
+          <label appLabel for="glycemiaPatientId">Paziente *</label>
+          <select appFormControl id="glycemiaPatientId" formControlName="patientId" class="bg-white">
             <option [ngValue]="null" disabled>Seleziona paziente…</option>
             @for (c of patients; track c.id) {
               <option [value]="c.id">{{ c.firstName }} {{ c.lastName }}</option>
             }
           </select>
-          @if (isInvalid('patientId')) {
-            <div class="text-[#d95550] text-[0.8rem] mt-1">Obbligatorio</div>
+          @if (fieldError('patientId') || isInvalid('patientId')) {
+            <div class="text-[#d95550] text-[0.8rem] mt-1">{{ fieldError('patientId') || 'Obbligatorio' }}</div>
           }
         </div>
         <div class="grid grid-cols-2 gap-4">
           <div class="mb-4">
-            <label for="glycemiaDate" class="block text-[0.85rem] font-semibold mb-[0.35rem] text-[#3F72AF] uppercase tracking-[0.3px]">Data e Ora *</label>
-            <input id="glycemiaDate" type="datetime-local" formControlName="measuredAt"
-                   class="w-full px-[0.8rem] py-[0.55rem] border-[1.5px] border-[#DBE2EF] rounded-lg text-[0.9rem] outline-none focus:border-[#3F72AF] focus:shadow-[0_0_0_3px_rgba(122,170,206,0.2)]"/>
-            @if (isInvalid('measuredAt')) {
-              <div class="text-[#d95550] text-[0.8rem] mt-1">Obbligatorio</div>
+            <label appLabel for="glycemiaDate">Data e Ora *</label>
+            <input appFormControl id="glycemiaDate" type="datetime-local" formControlName="measuredAt"/>
+            @if (fieldError('measuredAt') || isInvalid('measuredAt')) {
+              <div class="text-[#d95550] text-[0.8rem] mt-1">{{ fieldError('measuredAt') || 'Obbligatorio' }}</div>
             }
           </div>
           <div class="mb-4">
-            <label for="glycemiaContext" class="block text-[0.85rem] font-semibold mb-[0.35rem] text-[#3F72AF] uppercase tracking-[0.3px]">Contesto *</label>
-            <select id="glycemiaContext" formControlName="context" class="w-full px-[0.8rem] py-[0.55rem] border-[1.5px] border-[#DBE2EF] rounded-lg text-[0.9rem] outline-none focus:border-[#3F72AF] focus:shadow-[0_0_0_3px_rgba(122,170,206,0.2)]">
+            <label appLabel for="glycemiaContext">Contesto *</label>
+            <select appFormControl id="glycemiaContext" formControlName="context" class="bg-white">
               @for (ctx of contexts; track ctx.value) {
                 <option [value]="ctx.value">{{ ctx.label }}</option>
               }
@@ -126,19 +117,19 @@
           </div>
         </div>
         <div class="mb-4">
-          <label for="glycemiaValue" class="block text-[0.85rem] font-semibold mb-[0.35rem] text-[#3F72AF] uppercase tracking-[0.3px]">Valore Glicemia (mg/dL) *</label>
-          <input id="glycemiaValue" type="number" formControlName="valueMgDl" placeholder="es: 95" min="20" max="600" step="0.1" class="w-full px-[0.8rem] py-[0.55rem] border-[1.5px] border-[#DBE2EF] rounded-lg text-[0.9rem] outline-none focus:border-[#3F72AF] focus:shadow-[0_0_0_3px_rgba(122,170,206,0.2)]"/>
-          @if (isInvalid('valueMgDl')) {
-            <div class="text-[#d95550] text-[0.8rem] mt-1">Obbligatorio, valore tra 20 e 600</div>
+          <label appLabel for="glycemiaValue">Valore Glicemia (mg/dL) *</label>
+          <input appFormControl id="glycemiaValue" type="number" formControlName="valueMgDl" placeholder="es: 95" min="20" max="600" step="0.1"/>
+          @if (fieldError('valueMgDl') || isInvalid('valueMgDl')) {
+            <div class="text-[#d95550] text-[0.8rem] mt-1">{{ fieldError('valueMgDl') || 'Obbligatorio, valore tra 20 e 600' }}</div>
           }
         </div>
         <div class="mb-4">
-          <label for="glycemiaNotes" class="block text-[0.85rem] font-semibold mb-[0.35rem] text-[#3F72AF] uppercase tracking-[0.3px]">Note</label>
-          <textarea id="glycemiaNotes" formControlName="notes" rows="2" placeholder="Note aggiuntive…" class="w-full px-[0.8rem] py-[0.55rem] border-[1.5px] border-[#DBE2EF] rounded-lg text-[0.9rem] outline-none focus:border-[#3F72AF] focus:shadow-[0_0_0_3px_rgba(122,170,206,0.2)]"></textarea>
+          <label appLabel for="glycemiaNotes">Note</label>
+          <textarea appFormControl id="glycemiaNotes" formControlName="notes" rows="2" placeholder="Note aggiuntive…"></textarea>
         </div>
         <div class="flex justify-end gap-3 mt-4">
-          <button type="button" class="px-[1.1rem] py-2 border-0 rounded-[10px] text-[0.9rem] cursor-pointer font-semibold transition-colors duration-[180ms] bg-[#3F72AF] text-white hover:bg-[#5e96be]" (click)="closeModal()">Annulla</button>
-          <button type="submit" class="px-[1.1rem] py-2 border-0 rounded-[10px] text-[0.9rem] cursor-pointer font-semibold transition-colors duration-[180ms] bg-[#112D4E] text-white hover:bg-[#264560]">{{ editingId ? 'Salva Modifiche' : 'Registra' }}</button>
+          <button appBtn="outline" type="button" (click)="closeModal()">Annulla</button>
+          <button appBtn="primary" type="submit">{{ editingId ? 'Salva Modifiche' : 'Registra' }}</button>
         </div>
       </form>
     </div>

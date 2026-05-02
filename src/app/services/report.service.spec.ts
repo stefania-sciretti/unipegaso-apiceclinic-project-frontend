@@ -9,7 +9,7 @@ describe('ReportService', () => {
 
   const mockReport: Report = {
     id: 1, appointmentId: 1,
-    patientFullName: 'Anna Rossi', doctorFullName: 'Laura Smith',
+    patientFullName: 'Anna Rossi', specialistFullName: 'Laura Smith',
     visitType: 'Visita Cardiologica',
     scheduledAt: '2026-06-01T10:00:00',
     issuedDate: '2026-06-01',

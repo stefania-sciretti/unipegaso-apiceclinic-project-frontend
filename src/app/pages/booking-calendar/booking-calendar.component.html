@@ -8,11 +8,20 @@
         Calendario Prenotazioni
       </h1>
       <div class="flex items-center gap-4 mt-2">
-        <span class="flex items-center gap-1.5 text-sm text-[#3F72AF] font-medium">
-          <span class="inline-block w-3 h-3 rounded-full bg-[#3F72AF]"></span> Fitness
+        <span class="flex items-center gap-1.5 text-sm font-medium"
+              [ngStyle]="{'color': eventBgColor('PERSONAL_TRAINER')}">
+          <span class="inline-block w-3 h-3 rounded-full"
+                [ngStyle]="{'background-color': eventBgColor('PERSONAL_TRAINER')}"></span> Trainer
         </span>
-        <span class="flex items-center gap-1.5 text-sm text-[#4CAF50] font-medium">
-          <span class="inline-block w-3 h-3 rounded-full bg-[#4CAF50]"></span> Clinica
+        <span class="flex items-center gap-1.5 text-sm font-medium"
+              [ngStyle]="{'color': eventBgColor('SPORT_DOCTOR')}">
+          <span class="inline-block w-3 h-3 rounded-full"
+                [ngStyle]="{'background-color': eventBgColor('SPORT_DOCTOR')}"></span> Clinico
+        </span>
+        <span class="flex items-center gap-1.5 text-sm font-medium"
+              [ngStyle]="{'color': eventBgColor('NUTRITIONIST')}">
+          <span class="inline-block w-3 h-3 rounded-full"
+                [ngStyle]="{'background-color': eventBgColor('NUTRITIONIST')}"></span> Alimentazione
         </span>
       </div>
     </div>
@@ -102,8 +111,8 @@
               </div>
               @for (event of getEventsForMonthDay(day); track event.id) {
                 <button
-                  class="w-full text-left text-[0.7rem] font-medium px-1.5 py-0.5 rounded mb-0.5 truncate transition-opacity hover:opacity-80 cursor-pointer border-0"
-                  [ngClass]="eventColorClass(event.type)"
+                  class="w-full text-left text-[0.7rem] font-medium px-1.5 py-0.5 rounded mb-0.5 truncate transition-opacity hover:opacity-80 cursor-pointer border-0 text-white"
+                  [ngStyle]="{'background-color': eventBgColor(event.specialistRole)}"
                   (click)="openEvent(event)">
                   {{ event.start | date:'HH:mm' }} {{ event.title }}
                 </button>
@@ -142,8 +151,8 @@
               @let dayEvents = getEventsForWeekDay(date);
               @for (event of dayEvents; track event.id) {
                 <button
-                  class="w-full text-left text-[0.72rem] font-medium px-2 py-1.5 rounded mb-1 transition-opacity hover:opacity-80 cursor-pointer border-0"
-                  [ngClass]="eventColorClass(event.type)"
+                  class="w-full text-left text-[0.72rem] font-medium px-2 py-1.5 rounded mb-1 transition-opacity hover:opacity-80 cursor-pointer border-0 text-white"
+                  [ngStyle]="{'background-color': eventBgColor(event.specialistRole)}"
                   (click)="openEvent(event)">
                   <div class="font-semibold">{{ event.start | date:'HH:mm' }}</div>
                   <div class="truncate">{{ event.title }}</div>
@@ -175,13 +184,13 @@
       <div class="flex items-center gap-3 mb-4 pb-4 border-b border-[#DBE2EF]">
         <span
           class="inline-flex items-center justify-center w-10 h-10 rounded-full text-white text-sm font-bold"
-          [ngClass]="selectedEvent.type === 'fitness' ? 'bg-[#3F72AF]' : 'bg-[#4CAF50]'">
-          {{ selectedEvent.type === 'fitness' ? 'F' : 'C' }}
+          [ngStyle]="{'background-color': eventBgColor(selectedEvent.specialistRole)}">
+          {{ selectedEvent.specialistRole[0] }}
         </span>
         <div>
-          <div class="text-xs font-semibold uppercase tracking-wide"
-               [ngClass]="selectedEvent.type === 'fitness' ? 'text-[#3F72AF]' : 'text-[#4CAF50]'">
-            {{ selectedEvent.type === 'fitness' ? 'Fitness' : 'Clinica' }}
+          <div class="text-xs font-semibold uppercase tracking-wide text-white px-2 py-0.5 rounded"
+               [ngStyle]="{'background-color': eventBgColor(selectedEvent.specialistRole)}">
+            {{ selectedEvent.specialistRole.replace('_', ' ') }}
           </div>
           <div class="text-[1rem] font-bold text-[#112D4E]">{{ selectedEvent.serviceType }}</div>
         </div>
@@ -203,6 +212,10 @@
         <div class="flex gap-2">
           <dt class="text-[#3F72AF] font-semibold w-24 shrink-0">Paziente</dt>
           <dd class="text-[#112D4E]">{{ selectedEvent.patientName }}</dd>
+        </div>
+        <div class="flex gap-2">
+          <dt class="text-[#3F72AF] font-semibold w-24 shrink-0">Note</dt>
+          <dd class="text-[#112D4E]">{{ selectedEvent.note }}</dd>
         </div>
         <div class="flex gap-2">
           <dt class="text-[#3F72AF] font-semibold w-24 shrink-0">Stato</dt>

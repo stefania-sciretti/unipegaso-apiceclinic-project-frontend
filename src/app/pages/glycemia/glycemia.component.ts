@@ -1,41 +1,67 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, computed, inject, OnInit, signal } from '@angular/core';
 import { DatePipe, NgClass } from '@angular/common';
-import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
+import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { HttpErrorResponse } from '@angular/common/http';
 import { forkJoin } from 'rxjs';
 import { GlycemiaService } from '../../services/glycemia.service';
 import { PatientService } from '../../services/patient.service';
 import { SpecialistService } from '../../services/specialist.service';
 import { AlertService } from '../../services/alert.service';
-import { Patient, GlycemiaContext, GlycemiaMeasurement, GlycemiaMeasurementRequest } from '../../models/models';
+import { ConfirmModalService } from '../../services/confirm-modal.service';
+import { Patient, GlycemiaContext, GlycemiaMeasurement, GlycemiaMeasurementRequest, GlycemiaContextRule, ApiError } from '../../models/models';
+import { TableThComponent, TableColumn } from '../../shared/table-th.component';
+import { TableTdDirective } from '../../shared/table-td.directive';
+import { BtnDirective } from '../../shared/btn.directive';
+import { FormControlDirective } from '../../shared/form-control.directive';
+import { FormLabelDirective } from '../../shared/form-label.directive';
 
 @Component({
   selector: 'app-glycemia',
-  imports: [
-    FormsModule, ReactiveFormsModule, DatePipe, NgClass
-  ],
+  imports: [ReactiveFormsModule, DatePipe, NgClass, TableThComponent, TableTdDirective, BtnDirective, FormControlDirective, FormLabelDirective],
   templateUrl: './glycemia.component.html'
 })
 export class GlycemiaComponent implements OnInit {
+
+  readonly tableColumns = signal<TableColumn[]>([
+    { label: 'Paziente' },
+    { label: 'Data/Ora' },
+    { label: 'Valore (mg/dL)' },
+    { label: 'Contesto' },
+    { label: 'Classificazione' },
+    { label: 'Note' },
+    { label: 'Azioni' }
+  ]);
   private readonly glycemiaService = inject(GlycemiaService);
   private readonly patientService  = inject(PatientService);
   private readonly specialistService = inject(SpecialistService);
   private readonly alertSvc        = inject(AlertService);
   private readonly fb              = inject(FormBuilder);
+  private readonly confirmSvc      = inject(ConfirmModalService);
 
   protected readonly alertSignal = this.alertSvc.alert;
 
-  measurements: GlycemiaMeasurement[] = [];
+  readonly measurements         = signal<GlycemiaMeasurement[]>([]);
+  readonly searchQuery          = signal('');
+  readonly filteredMeasurements = computed(() => {
+    const q = this.searchQuery().toLowerCase().trim();
+    return q ? this.measurements().filter(m =>
+      `${m.patientLastName} ${m.patientFirstName}`.toLowerCase().includes(q)
+    ) : this.measurements();
+  });
+
   patients: Patient[] = [];
   nutritionistId = 0;
   loading        = false;
   showModal      = false;
   editingId: number | null = null;
-  filterPatientId: number | '' = '';
+
+  readonly fieldErrors = signal<Record<string, string>>({});
+  readonly classificationRules = signal<GlycemiaContextRule[]>([]);
 
   readonly contexts: { value: GlycemiaContext; label: string }[] = [
-    { value: 'FASTING',      label: 'A digiuno'      },
-    { value: 'POST_MEAL_1H', label: 'Post-pasto 1h'  },
-    { value: 'POST_MEAL_2H', label: 'Post-pasto 2h'  },
+    { value: 'A_DIGIUNO',      label: 'A digiuno'      },
+    { value: 'POST_PASTO_1H', label: 'Post-pasto 1h'  },
+    { value: 'POST_PASTO_2H', label: 'Post-pasto 2h'  },
     { value: 'RANDOM',       label: 'Casuale'         }
   ];
 
@@ -46,18 +72,20 @@ export class GlycemiaComponent implements OnInit {
   ngOnInit(): void {
     this.buildForm();
     this.load();
+    this.glycemiaService.getClassificationRules().subscribe({
+      next: ({ contexts }) => this.classificationRules.set(contexts)
+    });
   }
 
   load(): void {
     this.loading = true;
-    const patientId = this.filterPatientId === '' ? undefined : +this.filterPatientId;
     forkJoin({
-      measurements: this.glycemiaService.getAll(patientId),
+      measurements: this.glycemiaService.getAll(),
       patients:     this.patientService.getAll(),
       specialists:  this.specialistService.getAll('NUTRITIONIST')
     }).subscribe({
       next: ({ measurements, patients, specialists }) => {
-        this.measurements   = measurements;
+        this.measurements.set(measurements);
         this.patients       = patients;
         this.nutritionistId = specialists[0]?.id ?? 1;
         this.loading        = false;
@@ -73,19 +101,21 @@ export class GlycemiaComponent implements OnInit {
       patientId:  [null,       Validators.required],
       measuredAt: [localIso,   Validators.required],
       valueMgDl:  [null,       [Validators.required, Validators.min(20), Validators.max(600)]],
-      context:    ['FASTING',  Validators.required],
+      context:    ['A_DIGIUNO',  Validators.required],
       notes:      ['']
     });
   }
 
   openCreate(): void {
     this.editingId = null;
+    this.fieldErrors.set({});
     this.buildForm();
     this.showModal = true;
   }
 
   openEdit(measurement: GlycemiaMeasurement): void {
     this.editingId = measurement.id;
+    this.fieldErrors.set({});
     this.form.patchValue({
       patientId:  measurement.patientId,
       measuredAt: measurement.measuredAt.slice(0, 16),
@@ -116,19 +146,39 @@ export class GlycemiaComponent implements OnInit {
         this.closeModal();
         this.load();
       },
-      error: () => { this.alertSvc.show('Errore durante il salvataggio', 'error'); }
+      error: (err: HttpErrorResponse) => {
+        const fieldErrors = (err.error as ApiError)?.fieldErrors;
+        if (fieldErrors) this.fieldErrors.set(fieldErrors);
+      }
     });
   }
 
   delete(id: number): void {
-    if (!confirm('Eliminare questa misurazione?')) return;
-    this.glycemiaService.delete(id).subscribe({
-      next: () => { this.alertSvc.show('Misurazione eliminata'); this.load(); }
+    this.confirmSvc.open('Eliminare questa misurazione?', () => {
+      this.glycemiaService.delete(id).subscribe({
+        next: () => { this.alertSvc.show('Misurazione eliminata'); this.load(); }
+      });
     });
+  }
+
+  patientName(m: GlycemiaMeasurement): string {
+    if (m.patientFirstName || m.patientLastName)
+      return `${m.patientLastName} ${m.patientFirstName}`.trim();
+    const p = this.patients.find(pt => pt.id === m.patientId);
+    return p ? `${p.firstName} ${p.lastName}` : '–';
   }
 
   contextLabel(context: string): string {
     return this.contexts.find(c => c.value === context)?.label ?? context;
+  }
+
+  badgeClass(classification: string): string {
+    const map: Record<string, string> = {
+      NORMALE:    'badge-success',
+      ATTENZIONE: 'badge-warning',
+      ELEVATA:    'badge-danger',
+    };
+    return map[classification] ?? '';
   }
 
   classColor(classification: string): string {
@@ -144,5 +194,9 @@ export class GlycemiaComponent implements OnInit {
   isInvalid(field: string): boolean {
     const control = this.form.get(field);
     return !!(control && control.invalid && control.touched);
+  }
+
+  fieldError(field: string): string | null {
+    return this.fieldErrors()[field] ?? null;
   }
 }

@@ -6,9 +6,7 @@
       </h1>
       <p class="text-[#3F72AF] text-[0.95rem]">Gestione anagrafica pazienti</p>
     </div>
-    <button
-      class="px-[1.1rem] py-2 border-0 rounded-[10px] text-[0.9rem] cursor-pointer font-semibold transition-colors duration-[180ms] bg-[#112D4E] text-white hover:bg-[#264560]"
-      (click)="openCreate()">+ Nuovo Paziente</button>
+    <button appBtn="primary" (click)="openCreate()">+ Nuovo Paziente</button>
   </div>
   @if (alertSignal(); as alert) {
     <div
@@ -35,34 +33,25 @@
       <div class="overflow-x-auto">
         <table class="w-full border-collapse text-[0.9rem]">
           <thead><tr>
-            <th class="bg-[#eef4f9] px-4 py-3 text-left font-semibold text-[#112D4E] border-b-2 border-[#DBE2EF] whitespace-nowrap">#</th>
-            <th class="bg-[#eef4f9] px-4 py-3 text-left font-semibold text-[#112D4E] border-b-2 border-[#DBE2EF] whitespace-nowrap">Nome e Cognome</th>
-            <th class="bg-[#eef4f9] px-4 py-3 text-left font-semibold text-[#112D4E] border-b-2 border-[#DBE2EF] whitespace-nowrap">Codice Fiscale</th>
-            <th class="bg-[#eef4f9] px-4 py-3 text-left font-semibold text-[#112D4E] border-b-2 border-[#DBE2EF] whitespace-nowrap">Data di Nascita</th>
-            <th class="bg-[#eef4f9] px-4 py-3 text-left font-semibold text-[#112D4E] border-b-2 border-[#DBE2EF] whitespace-nowrap">Email</th>
-            <th class="bg-[#eef4f9] px-4 py-3 text-left font-semibold text-[#112D4E] border-b-2 border-[#DBE2EF] whitespace-nowrap">Telefono</th>
-            <th class="bg-[#eef4f9] px-4 py-3 text-left font-semibold text-[#112D4E] border-b-2 border-[#DBE2EF] whitespace-nowrap">Azioni</th>
+            @for (col of tableColumns(); track col.label) {
+              <th app-table-th [col]="col"></th>
+            }
           </tr></thead>
           <tbody>
             @if (patients().length === 0) {
               <tr><td colspan="7" class="text-[#3F72AF] text-center py-10 text-[0.95rem]">Nessun paziente trovato.</td></tr>
             }
-            @for (p of patients(); track p.id) {
+            @for (p of pg.pagedItems(); track p.id) {
               <tr class="hover:[&>td]:bg-[#f0f7ff]">
-                <td class="px-4 py-3 border-b border-[#DBE2EF] align-middle">{{ p.id }}</td>
-                <td class="px-4 py-3 border-b border-[#DBE2EF] align-middle">{{ p.firstName }} {{ p.lastName }}</td>
-                <td class="px-4 py-3 border-b border-[#DBE2EF] align-middle"><code class="bg-[#eef4fa] rounded px-[6px] py-[2px] text-[0.85rem] text-[#112D4E]">{{ p.fiscalCode }}</code></td>
-                <td class="px-4 py-3 border-b border-[#DBE2EF] align-middle">{{ p.birthDate | date:'dd MMM yyyy' }}</td>
-                <td class="px-4 py-3 border-b border-[#DBE2EF] align-middle">{{ p.email }}</td>
-                <td class="px-4 py-3 border-b border-[#DBE2EF] align-middle">{{ p.phone ?? '–' }}</td>
-                <td class="px-4 py-3 border-b border-[#DBE2EF] align-middle">
+                <td appTd>{{ p.lastName }} {{ p.firstName }}</td>
+                <td appTd><code class="bg-[#eef4fa] rounded px-[6px] py-[2px] text-[0.85rem] text-[#112D4E]">{{ p.fiscalCode }}</code></td>
+                <td appTd>{{ p.birthDate | date:'dd MMM yyyy' }}</td>
+                <td appTd>{{ p.email }}</td>
+                <td appTd>{{ p.phone ?? '–' }}</td>
+                <td appTd>
                   <div class="flex gap-2 flex-nowrap items-center">
-                    <button
-                      class="px-[0.7rem] py-[0.3rem] text-[0.8rem] border-0 rounded-[10px] cursor-pointer font-semibold transition-colors duration-[180ms] bg-[#112D4E] text-white hover:bg-[#264560]"
-                      (click)="openEdit(p)">Modifica</button>
-                    <button
-                      class="px-[0.7rem] py-[0.3rem] text-[0.8rem] border-0 rounded-[10px] cursor-pointer font-semibold transition-colors duration-[180ms] bg-[#d95550] text-white hover:bg-[#b84140]"
-                      (click)="delete(p.id)">Elimina</button>
+                    <button appBtn="sm-primary" (click)="openEdit(p)">Modifica</button>
+                    <button appBtn="sm-danger" (click)="delete(p.id)">Elimina</button>
                   </div>
                 </td>
               </tr>
@@ -70,6 +59,14 @@
           </tbody>
         </table>
       </div>
+      <!-- Paginazione con contatore dinamico -->
+      @if (pg.totalPages() > 1) {
+        <app-pagination
+          [currentPage]="pg.currentPage()"
+          [totalPages]="pg.totalPages()"
+          [progressLabel]="pg.progressLabel()"
+          (pageChange)="pg.goToPage($event)" />
+      }
     }
   </div>
 </main>
@@ -79,92 +76,85 @@
     <div class="bg-white rounded-[10px] shadow-[0_10px_40px_rgba(53,88,114,0.22)] p-8 w-full max-w-[560px] max-h-[90vh] overflow-y-auto">
       <div class="flex justify-between items-center mb-6 pb-4 border-b-2 border-[#DBE2EF]">
         <h3 class="text-[1.15rem] text-[#112D4E] font-bold">{{ editingId() ? 'Modifica Paziente' : 'Nuovo Paziente' }}</h3>
-        <button
-          class="bg-transparent border-0 text-[1.4rem] cursor-pointer text-[#3F72AF] leading-none hover:text-[#d95550] transition-colors duration-200"
-          (click)="closeModal()">&times;</button>
+        <button appBtn="close" (click)="closeModal()">&times;</button>
       </div>
       <form [formGroup]="form" (ngSubmit)="save()">
         <div class="grid grid-cols-2 gap-4">
           <div class="mb-4">
-            <label for="firstName" class="block text-[0.85rem] font-semibold mb-[0.35rem] text-[#3F72AF] uppercase tracking-[0.3px]">Nome *</label>
-            <input
+            <label appLabel for="firstName">Nome *</label>
+            <input appFormControl
               id="firstName"
               formControlName="firstName"
               type="text"
               placeholder="Mario"
-              class="w-full px-[0.8rem] py-[0.55rem] border-[1.5px] border-[#DBE2EF] rounded-lg text-[0.9rem] outline-none transition-[border-color,box-shadow] duration-200 focus:border-[#3F72AF] focus:shadow-[0_0_0_3px_rgba(122,170,206,0.2)]"/>
+              class="transition-[border-color,box-shadow] duration-200"/>
             @if (isInvalid('firstName')) {
               <div class="text-[#d95550] text-[0.8rem] mt-1">Campo obbligatorio</div>
             }
           </div>
           <div class="mb-4">
-            <label for="lastName" class="block text-[0.85rem] font-semibold mb-[0.35rem] text-[#3F72AF] uppercase tracking-[0.3px]">Cognome *</label>
-            <input
+            <label appLabel for="lastName">Cognome *</label>
+            <input appFormControl
               id="lastName"
               formControlName="lastName"
               type="text"
               placeholder="Rossi"
-              class="w-full px-[0.8rem] py-[0.55rem] border-[1.5px] border-[#DBE2EF] rounded-lg text-[0.9rem] outline-none transition-[border-color,box-shadow] duration-200 focus:border-[#3F72AF] focus:shadow-[0_0_0_3px_rgba(122,170,206,0.2)]"/>
+              class="transition-[border-color,box-shadow] duration-200"/>
             @if (isInvalid('lastName')) {
               <div class="text-[#d95550] text-[0.8rem] mt-1">Campo obbligatorio</div>
             }
           </div>
         </div>
         <div class="mb-4">
-          <label for="fiscalCode" class="block text-[0.85rem] font-semibold mb-[0.35rem] text-[#3F72AF] uppercase tracking-[0.3px]">Codice Fiscale * (16 caratteri)</label>
-          <input
+          <label appLabel for="fiscalCode">Codice Fiscale * (16 caratteri)</label>
+          <input appFormControl
             id="fiscalCode"
             formControlName="fiscalCode"
             type="text"
             maxlength="16"
             placeholder="RSSMRA80A01H501Z"
-            class="w-full px-[0.8rem] py-[0.55rem] border-[1.5px] border-[#DBE2EF] rounded-lg text-[0.9rem] outline-none transition-[border-color,box-shadow] duration-200 focus:border-[#3F72AF] focus:shadow-[0_0_0_3px_rgba(122,170,206,0.2)] uppercase"/>
+            class="transition-[border-color,box-shadow] duration-200 uppercase"/>
           @if (isInvalid('fiscalCode')) {
             <div class="text-[#d95550] text-[0.8rem] mt-1">Deve essere esattamente 16 caratteri</div>
           }
         </div>
         <div class="grid grid-cols-2 gap-4">
           <div class="mb-4">
-            <label for="birthDate" class="block text-[0.85rem] font-semibold mb-[0.35rem] text-[#3F72AF] uppercase tracking-[0.3px]">Data di Nascita *</label>
-            <input
+            <label appLabel for="birthDate">Data di Nascita *</label>
+            <input appFormControl
               id="birthDate"
               formControlName="birthDate"
               type="date"
-              class="w-full px-[0.8rem] py-[0.55rem] border-[1.5px] border-[#DBE2EF] rounded-lg text-[0.9rem] outline-none transition-[border-color,box-shadow] duration-200 focus:border-[#3F72AF] focus:shadow-[0_0_0_3px_rgba(122,170,206,0.2)]"/>
+              class="transition-[border-color,box-shadow] duration-200"/>
             @if (isInvalid('birthDate')) {
               <div class="text-[#d95550] text-[0.8rem] mt-1">Campo obbligatorio</div>
             }
           </div>
           <div class="mb-4">
-            <label for="phone" class="block text-[0.85rem] font-semibold mb-[0.35rem] text-[#3F72AF] uppercase tracking-[0.3px]">Telefono</label>
-            <input
+            <label appLabel for="phone">Telefono</label>
+            <input appFormControl
               id="phone"
               formControlName="phone"
               type="tel"
               placeholder="+39 333 1234567"
-              class="w-full px-[0.8rem] py-[0.55rem] border-[1.5px] border-[#DBE2EF] rounded-lg text-[0.9rem] outline-none transition-[border-color,box-shadow] duration-200 focus:border-[#3F72AF] focus:shadow-[0_0_0_3px_rgba(122,170,206,0.2)]"/>
+              class="transition-[border-color,box-shadow] duration-200"/>
           </div>
         </div>
         <div class="mb-4">
-          <label for="email" class="block text-[0.85rem] font-semibold mb-[0.35rem] text-[#3F72AF] uppercase tracking-[0.3px]">Email *</label>
-          <input
+          <label appLabel for="email">Email *</label>
+          <input appFormControl
             id="email"
             formControlName="email"
             type="email"
             placeholder="mario.rossi@email.it"
-            class="w-full px-[0.8rem] py-[0.55rem] border-[1.5px] border-[#DBE2EF] rounded-lg text-[0.9rem] outline-none transition-[border-color,box-shadow] duration-200 focus:border-[#3F72AF] focus:shadow-[0_0_0_3px_rgba(122,170,206,0.2)]"/>
+            class="transition-[border-color,box-shadow] duration-200"/>
           @if (isInvalid('email')) {
             <div class="text-[#d95550] text-[0.8rem] mt-1">Email non valida</div>
           }
         </div>
         <div class="flex justify-end gap-3 mt-6 pt-4 border-t border-[#DBE2EF]">
-          <button
-            type="button"
-            class="px-[1.1rem] py-2 rounded-[10px] text-[0.9rem] cursor-pointer font-semibold transition-colors duration-[180ms] bg-transparent border-[1.5px] border-[#112D4E] text-[#112D4E] hover:bg-[#112D4E] hover:text-white"
-            (click)="closeModal()">Annulla</button>
-          <button
-            type="submit"
-            class="px-[1.1rem] py-2 border-0 rounded-[10px] text-[0.9rem] cursor-pointer font-semibold transition-colors duration-[180ms] bg-[#112D4E] text-white hover:bg-[#264560]">Salva</button>
+          <button appBtn="outline" type="button" (click)="closeModal()">Annulla</button>
+          <button appBtn="primary" type="submit">Salva</button>
         </div>
       </form>
     </div>

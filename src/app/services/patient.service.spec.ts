@@ -68,7 +68,7 @@ describe('PatientService', () => {
     req.flush({ ...body, id: 2, createdAt: '2024-01-01T00:00:00' });
   });
 
-  it('update() should call PUT /api/patients/:id', () => {
+  it('update() should call PATCH /api/patients/:id', () => {
     const body = {
       firstName: 'John', lastName: 'Updated',
       fiscalCode: 'DOEJHN80A01H501Z', birthDate: '1980-01-01',
@@ -76,7 +76,7 @@ describe('PatientService', () => {
     };
     service.update(1, body).subscribe(p => expect(p.lastName).toBe('Updated'));
     const req = httpMock.expectOne('/api/patients/1');
-    expect(req.request.method).toBe('PUT');
+    expect(req.request.method).toBe('PATCH');
     req.flush({ ...body, id: 1, createdAt: '2024-01-01T00:00:00' });
   });
 

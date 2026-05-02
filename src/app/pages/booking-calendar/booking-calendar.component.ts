@@ -1,30 +1,30 @@
 import { Component, inject, OnInit } from '@angular/core';
-import { DatePipe, NgClass } from '@angular/common';
-import { catchError, forkJoin, of } from 'rxjs';
+import { DatePipe, NgClass, NgStyle } from '@angular/common';
+import { catchError, of } from 'rxjs';
 import { AppointmentService } from '../../services/appointment.service';
-import { ClinicalAppointmentService } from '../../services/clinical-appointment.service';
+import { COLOR_PRIMARY, COLOR_SECONDARY, COLOR_ACCENT } from '../../shared/constants/colors.constants';
 
 interface BookingEvent {
   id: number;
-  type: 'fitness' | 'clinical';
+  specialistRole: string;
   title: string;
   start: Date;
   specialistName: string;
   patientName: string;
   serviceType: string;
+  note?: string;
   status: string;
 }
 
 @Component({
   selector: 'app-booking-calendar',
   standalone: true,
-  imports: [DatePipe, NgClass],
+  imports: [DatePipe, NgClass, NgStyle],
   providers: [DatePipe],
   templateUrl: './booking-calendar.component.html'
 })
 export class BookingCalendarComponent implements OnInit {
   private readonly appointmentSvc = inject(AppointmentService);
-  private readonly clinicalSvc    = inject(ClinicalAppointmentService);
   private readonly datePipe       = inject(DatePipe);
   private readonly today          = new Date();
 
@@ -34,8 +34,6 @@ export class BookingCalendarComponent implements OnInit {
   loading = true;
   loadError = false;
   selectedEvent: BookingEvent | null = null;
-  fitnessError = false;
-  clinicalError = false;
 
   private readonly statusLabels: Record<string, string> = {
     BOOKED: 'Prenotato', CONFIRMED: 'Confermato',
@@ -53,55 +51,28 @@ export class BookingCalendarComponent implements OnInit {
   load(): void {
     this.loading = true;
     this.loadError = false;
-    this.fitnessError = false;
-    this.clinicalError = false;
 
-    const fitness$ = this.appointmentSvc.getAll().pipe(
+    this.appointmentSvc.getAll().pipe(
       catchError(() => {
-        this.fitnessError = true;
+        this.loadError = true;
         return of([]);
       })
-    );
-
-    const clinical$ = this.clinicalSvc.getAll().pipe(
-      catchError(() => {
-        this.clinicalError = true;
-        return of([]);
-      })
-    );
-
-    forkJoin({
-      fitness: fitness$,
-      clinical: clinical$
-    }).subscribe({
-      next: ({ fitness, clinical }) => {
-        const fitnessEvents: BookingEvent[] = fitness.map(a => ({
-          id: a.id,
-          type: 'fitness' as const,
-          title: `${a.serviceType}`,
-          start: new Date(a.scheduledAt),
-          specialistName: a.specialistFullName,
-          patientName: a.patientFullName,
-          serviceType: a.serviceType,
-          status: a.status
-        }));
-
-        const clinicalEvents: BookingEvent[] = clinical.map(a => ({
-          id: a.id,
-          type: 'clinical' as const,
-          title: `${a.visitType}`,
-          start: new Date(a.scheduledAt),
-          specialistName: a.doctorFullName,
-          patientName: a.patientFullName,
-          serviceType: a.visitType,
-          status: a.status
-        }));
-
-        this.events = [...fitnessEvents, ...clinicalEvents]
+    ).subscribe({
+      next: (appointments) => {
+        this.events = appointments
+          .map(a => ({
+            id: a.id,
+            specialistRole: a.specialistRole,
+            title: a.serviceType,
+            start: new Date(a.scheduledAt),
+            specialistName: a.specialistFullName,
+            patientName: a.patientFullName,
+            serviceType: a.serviceType,
+            note: a.notes,
+            status: a.status
+          }))
           .sort((a, b) => a.start.getTime() - b.start.getTime());
-        
-        // Only set loadError if BOTH APIs failed
-        this.loadError = this.fitnessError && this.clinicalError;
+
         this.loading = false;
       },
       error: () => {
@@ -208,10 +179,26 @@ export class BookingCalendarComponent implements OnInit {
 
   statusLabel(s: string): string { return this.statusLabels[s] ?? s; }
 
-  eventColorClass(type: 'fitness' | 'clinical'): string {
-    return type === 'fitness'
-      ? 'bg-[#3F72AF] text-white'
-      : 'bg-[#4CAF50] text-white';
+  /**
+   * Returns the background hex color for a calendar event chip based on
+   * the specialist role stored on the appointment:
+   *   PERSONAL_TRAINER              → COLOR_PRIMARY   (#1570B6) — "Trainer"
+   *   SPORT_DOCTOR | PHYSIOTHERAPIST → COLOR_SECONDARY (#2DB1E6) — "Clinico"
+   *   NUTRITIONIST | DIETOLOGIST    → COLOR_ACCENT    (#2EE1A0) — "Alimentazione"
+   */
+  eventBgColor(specialistRole: string): string {
+    switch (specialistRole) {
+      case 'PERSONAL_TRAINER':
+        return COLOR_PRIMARY;
+      case 'SPORT_DOCTOR':
+      case 'PHYSIOTHERAPIST':
+        return COLOR_SECONDARY;
+      case 'NUTRITIONIST':
+      case 'DIETOLOGIST':
+        return COLOR_ACCENT;
+      default:
+        return COLOR_SECONDARY;
+    }
   }
 
   statusBadgeClass(status: string): string {

@@ -2,28 +2,11 @@
   <div class="flex justify-between items-start mb-6">
     <div>
       <h1 class="text-[1.75rem] font-bold mb-1 text-[#112D4E] flex items-center">
-        <span class="material-icons text-[1.6rem] align-middle mr-[0.3rem] text-[#3F72AF]">restaurant_menu</span> Nutrizione – Simona Ruberti
+        <span class="material-icons text-[1.6rem] align-middle mr-[0.3rem] text-[#3F72AF]">restaurant_menu</span> Piani Alimentari
       </h1>
       <p class="text-[#3F72AF] text-[0.95rem]">Piani dietetici personalizzati e consulenza nutrizionale</p>
     </div>
-    <button class="px-[1.1rem] py-2 border-0 rounded-[10px] text-[0.9rem] cursor-pointer font-semibold transition-colors duration-[180ms] bg-[#3F72AF] text-white hover:bg-[#3a9569]"
-            (click)="openCreate()">+ Nuovo Piano Dieta</button>
-  </div>
-
-  <div class="mb-6">
-    <div class="bg-white rounded-[10px] shadow-[0_2px_14px_rgba(17,45,78,0.10)] p-6 border-t-4 border-[#3F72AF] flex items-center gap-6">
-      <div class="w-[72px] h-[72px] rounded-full bg-[#DBE2EF] flex items-center justify-center shrink-0">
-        <span class="material-icons text-[2.5rem] text-[#112D4E]">person</span>
-      </div>
-      <div>
-        <div class="text-[1.4rem] font-bold text-[#112D4E]">Simona Ruberti</div>
-        <span class="inline-block px-[0.7rem] py-[0.2rem] rounded-xl text-[0.78rem] font-semibold uppercase tracking-[0.5px] mt-[0.4rem] mb-3 bg-[#d4f0e0] text-[#1e7a48]">Nutrizionista Certificata</span>
-        <p class="text-[#3F72AF] text-[0.9rem] leading-[1.6] mt-2">
-          Nutrizionista certificata con 10 anni di esperienza in diete sportive e benessere.
-          Specializzata in piani alimentari personalizzati e supporto psicologico alimentare.
-        </p>
-      </div>
-    </div>
+    <button appBtn="primary" (click)="openCreate()">+ Nuovo Piano Dieta</button>
   </div>
 
   @if (alertSignal(); as alert) {
@@ -33,7 +16,6 @@
 
   <div class="bg-white rounded-[10px] shadow-[0_2px_14px_rgba(17,45,78,0.10)] p-6 mb-8">
     <div class="flex justify-between items-center mb-4">
-      <h2 class="text-[1.1rem] font-bold text-[#112D4E]">Piani Dieta</h2>
       <div class="flex items-center gap-3">
         <label for="nutritionFilter" class="text-[0.88rem] font-semibold text-[#3F72AF]">Filtro:</label>
         <select id="nutritionFilter" [(ngModel)]="filterActive" [ngModelOptions]="{standalone:true}"
@@ -51,13 +33,9 @@
       <div class="overflow-x-auto">
         <table class="w-full border-collapse text-[0.9rem]">
           <thead><tr>
-            <th class="bg-[#eef4f9] px-4 py-3 text-left font-semibold text-[#112D4E] border-b-2 border-[#DBE2EF] whitespace-nowrap">#</th>
-            <th class="bg-[#eef4f9] px-4 py-3 text-left font-semibold text-[#112D4E] border-b-2 border-[#DBE2EF] whitespace-nowrap">Paziente</th>
-            <th class="bg-[#eef4f9] px-4 py-3 text-left font-semibold text-[#112D4E] border-b-2 border-[#DBE2EF] whitespace-nowrap">Titolo</th>
-            <th class="bg-[#eef4f9] px-4 py-3 text-left font-semibold text-[#112D4E] border-b-2 border-[#DBE2EF] whitespace-nowrap">Calorie</th>
-            <th class="bg-[#eef4f9] px-4 py-3 text-left font-semibold text-[#112D4E] border-b-2 border-[#DBE2EF] whitespace-nowrap">Durata</th>
-            <th class="bg-[#eef4f9] px-4 py-3 text-left font-semibold text-[#112D4E] border-b-2 border-[#DBE2EF] whitespace-nowrap">Stato</th>
-            <th class="bg-[#eef4f9] px-4 py-3 text-left font-semibold text-[#112D4E] border-b-2 border-[#DBE2EF] whitespace-nowrap">Azioni</th>
+            @for (col of tableColumns(); track col.label) {
+              <th app-table-th [col]="col"></th>
+            }
           </tr></thead>
           <tbody>
             @if (filtered.length === 0) {
@@ -65,20 +43,17 @@
             }
             @for (p of filtered; track p) {
               <tr class="hover:[&>td]:bg-[#f0f7ff]">
-                <td class="px-4 py-3 border-b border-[#DBE2EF] align-middle">{{ p.id }}</td>
-                <td class="px-4 py-3 border-b border-[#DBE2EF] align-middle"><strong>{{ p.patientFirstName }} {{ p.patientLastName }}</strong></td>
-                <td class="px-4 py-3 border-b border-[#DBE2EF] align-middle">{{ p.title }}</td>
-                <td class="px-4 py-3 border-b border-[#DBE2EF] align-middle">{{ p.calories ? p.calories + ' kcal' : '–' }}</td>
-                <td class="px-4 py-3 border-b border-[#DBE2EF] align-middle">{{ p.durationWeeks ? p.durationWeeks + ' sett.' : '–' }}</td>
-                <td class="px-4 py-3 border-b border-[#DBE2EF] align-middle">
+                <td appTd><strong>{{ p.patientLastName }} {{ p.patientFirstName }}</strong></td>
+                <td appTd>{{ p.title }}</td>
+                <td appTd>{{ p.calories ? p.calories + ' kcal' : '–' }}</td>
+                <td appTd>{{ p.durationWeeks ? p.durationWeeks + ' sett.' : '–' }}</td>
+                <td appTd>
                   <span class="badge" [class.badge-active]="p.active" [class.badge-inactive]="!p.active">{{ p.active ? 'Attivo' : 'Non attivo' }}</span>
                 </td>
-                <td class="px-4 py-3 border-b border-[#DBE2EF] align-middle">
+                <td appTd>
                   <div class="flex gap-2 flex-nowrap items-center">
-                    <button class="px-[0.7rem] py-[0.3rem] border-0 rounded-[10px] text-[0.8rem] cursor-pointer font-semibold transition-colors duration-[180ms] bg-[#3F72AF] text-white hover:bg-[#5e96be]"
-                            (click)="openEdit(p)">Modifica</button>
-                    <button class="px-[0.7rem] py-[0.3rem] border-0 rounded-[10px] text-[0.8rem] cursor-pointer font-semibold transition-colors duration-[180ms] bg-[#d95550] text-white hover:bg-[#b84140]"
-                            (click)="delete(p.id)">Elimina</button>
+                    <button appBtn="sm-blue" (click)="openEdit(p)">Modifica</button>
+                    <button appBtn="sm-danger" (click)="delete(p.id)">Elimina</button>
                   </div>
                 </td>
               </tr>
@@ -95,46 +70,51 @@
     <div class="bg-white rounded-[10px] shadow-[0_10px_40px_rgba(53,88,114,0.22)] p-8 w-full max-w-[560px] max-h-[90vh] overflow-y-auto">
       <div class="flex justify-between items-center mb-6 pb-4 border-b-2 border-[#DBE2EF]">
         <h3 class="text-[1.15rem] text-[#112D4E] font-bold">{{ editingId ? 'Modifica Piano Dieta' : 'Nuovo Piano Dieta' }}</h3>
-        <button class="bg-transparent border-0 text-[1.4rem] cursor-pointer text-[#3F72AF] leading-none hover:text-[#d95550] transition-colors duration-200"
-                (click)="showModal = false">&times;</button>
+        <button appBtn="close" (click)="showModal = false">&times;</button>
       </div>
       <form [formGroup]="form" (ngSubmit)="save()">
         <div class="mb-4">
-          <label for="nutritionPatientId" class="block text-[0.85rem] font-semibold mb-[0.35rem] text-[#3F72AF] uppercase tracking-[0.3px]">Paziente *</label>
-          <select id="nutritionPatientId" formControlName="patientId"
-                  class="w-full px-[0.8rem] py-[0.55rem] border-[1.5px] border-[#DBE2EF] rounded-lg text-[0.9rem] outline-none transition-[border-color,box-shadow] duration-200 focus:border-[#3F72AF] focus:shadow-[0_0_0_3px_rgba(122,170,206,0.2)] bg-white">
+          <label appLabel for="nutritionPatientId">Paziente *</label>
+          <select appFormControl id="nutritionPatientId" formControlName="patientId"
+                  class="transition-[border-color,box-shadow] duration-200 bg-white">
             <option value="">– Seleziona paziente –</option>
             @for (c of patients; track c) {
               <option [value]="c.id">{{ c.firstName }} {{ c.lastName }}</option>
             }
           </select>
-          @if (isInvalid('patientId')) {
-            <div class="text-[#d95550] text-[0.8rem] mt-1">Campo obbligatorio</div>
+          @if (fieldError('patientId') || isInvalid('patientId')) {
+            <div class="text-[#d95550] text-[0.8rem] mt-1">{{ fieldError('patientId') || 'Campo obbligatorio' }}</div>
           }
         </div>
         <div class="mb-4">
-          <label for="nutritionTitle" class="block text-[0.85rem] font-semibold mb-[0.35rem] text-[#3F72AF] uppercase tracking-[0.3px]">Titolo Piano *</label>
-          <input id="nutritionTitle" formControlName="title" type="text" placeholder="es. Piano Dimagrante Estivo"
-                 class="w-full px-[0.8rem] py-[0.55rem] border-[1.5px] border-[#DBE2EF] rounded-lg text-[0.9rem] outline-none transition-[border-color,box-shadow] duration-200 focus:border-[#3F72AF] focus:shadow-[0_0_0_3px_rgba(122,170,206,0.2)]"/>
-          @if (isInvalid('title')) {
-            <div class="text-[#d95550] text-[0.8rem] mt-1">Campo obbligatorio</div>
+          <label appLabel for="nutritionTitle">Titolo Piano *</label>
+          <input appFormControl id="nutritionTitle" formControlName="title" type="text" placeholder="es. Piano Dimagrante Estivo"
+                 class="transition-[border-color,box-shadow] duration-200"/>
+          @if (fieldError('title') || isInvalid('title')) {
+            <div class="text-[#d95550] text-[0.8rem] mt-1">{{ fieldError('title') || 'Campo obbligatorio' }}</div>
           }
         </div>
         <div class="mb-4">
-          <label for="nutritionDesc" class="block text-[0.85rem] font-semibold mb-[0.35rem] text-[#3F72AF] uppercase tracking-[0.3px]">Descrizione</label>
-          <textarea id="nutritionDesc" formControlName="description" placeholder="Descrivi gli obiettivi e l'approccio del piano…"
-                    class="w-full px-[0.8rem] py-[0.55rem] border-[1.5px] border-[#DBE2EF] rounded-lg text-[0.9rem] outline-none transition-[border-color,box-shadow] duration-200 focus:border-[#3F72AF] focus:shadow-[0_0_0_3px_rgba(122,170,206,0.2)] resize-vertical min-h-[85px]"></textarea>
+          <label appLabel for="nutritionDesc">Descrizione</label>
+          <textarea appFormControl id="nutritionDesc" formControlName="description" placeholder="Descrivi gli obiettivi e l'approccio del piano…"
+                    class="transition-[border-color,box-shadow] duration-200 resize-vertical min-h-[85px]"></textarea>
         </div>
         <div class="grid grid-cols-2 gap-4">
           <div class="mb-4">
-            <label for="nutritionCalories" class="block text-[0.85rem] font-semibold mb-[0.35rem] text-[#3F72AF] uppercase tracking-[0.3px]">Calorie Giornaliere (kcal)</label>
-            <input id="nutritionCalories" formControlName="calories" type="number" placeholder="1800"
-                   class="w-full px-[0.8rem] py-[0.55rem] border-[1.5px] border-[#DBE2EF] rounded-lg text-[0.9rem] outline-none transition-[border-color,box-shadow] duration-200 focus:border-[#3F72AF] focus:shadow-[0_0_0_3px_rgba(122,170,206,0.2)]"/>
+            <label appLabel for="nutritionCalories">Calorie Giornaliere (kcal)</label>
+            <input appFormControl id="nutritionCalories" formControlName="calories" type="number" placeholder="1800"
+                   class="transition-[border-color,box-shadow] duration-200"/>
+            @if (fieldError('calories')) {
+              <div class="text-[#d95550] text-[0.8rem] mt-1">{{ fieldError('calories') }}</div>
+            }
           </div>
           <div class="mb-4">
-            <label for="nutritionDuration" class="block text-[0.85rem] font-semibold mb-[0.35rem] text-[#3F72AF] uppercase tracking-[0.3px]">Durata (settimane)</label>
-            <input id="nutritionDuration" formControlName="durationWeeks" type="number" placeholder="8"
-                   class="w-full px-[0.8rem] py-[0.55rem] border-[1.5px] border-[#DBE2EF] rounded-lg text-[0.9rem] outline-none transition-[border-color,box-shadow] duration-200 focus:border-[#3F72AF] focus:shadow-[0_0_0_3px_rgba(122,170,206,0.2)]"/>
+            <label appLabel for="nutritionDuration">Durata (settimane)</label>
+            <input appFormControl id="nutritionDuration" formControlName="durationWeeks" type="number" placeholder="8"
+                   class="transition-[border-color,box-shadow] duration-200"/>
+            @if (fieldError('durationWeeks')) {
+              <div class="text-[#d95550] text-[0.8rem] mt-1">{{ fieldError('durationWeeks') }}</div>
+            }
           </div>
         </div>
         <div class="mb-4">
@@ -143,11 +123,8 @@
           </label>
         </div>
         <div class="flex justify-end gap-3 mt-6 pt-4 border-t border-[#DBE2EF]">
-          <button type="button"
-                  class="px-[1.1rem] py-2 rounded-[10px] text-[0.9rem] cursor-pointer font-semibold transition-colors duration-[180ms] bg-transparent border-[1.5px] border-[#112D4E] text-[#112D4E] hover:bg-[#112D4E] hover:text-white"
-                  (click)="showModal = false">Annulla</button>
-          <button type="submit"
-                  class="px-[1.1rem] py-2 border-0 rounded-[10px] text-[0.9rem] cursor-pointer font-semibold transition-colors duration-[180ms] bg-[#3F72AF] text-white hover:bg-[#3a9569]">Salva Piano</button>
+          <button appBtn="outline" type="button" (click)="showModal = false">Annulla</button>
+          <button appBtn="primary" type="submit">Salva Piano</button>
         </div>
       </form>
     </div>

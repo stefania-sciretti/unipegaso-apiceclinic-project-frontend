@@ -6,8 +6,7 @@
       </h1>
       <p class="text-[#3F72AF] text-[0.95rem]">Gestione prenotazioni</p>
     </div>
-    <button class="px-[1.1rem] py-2 border-0 rounded-[10px] text-[0.9rem] cursor-pointer font-semibold transition-colors duration-[180ms] bg-[#112D4E] text-white hover:bg-[#264560]"
-            (click)="openCreate()">+ Nuovo Appuntamento</button>
+    <button appBtn="primary" (click)="openCreate()">+ Nuovo Appuntamento</button>
   </div>
   @if (alertSignal(); as alert) {
     <div class="px-[1.1rem] py-[0.8rem] rounded-[10px] mb-4 text-[0.9rem] flex items-center gap-2 border-l-4"
@@ -30,13 +29,9 @@
       <div class="overflow-x-auto">
         <table class="w-full border-collapse text-[0.9rem]" aria-label="Elenco appuntamenti">
           <thead><tr>
-            <th class="bg-[#eef4f9] px-4 py-3 text-left font-semibold text-[#112D4E] border-b-2 border-[#DBE2EF] whitespace-nowrap">#</th>
-            <th class="bg-[#eef4f9] px-4 py-3 text-left font-semibold text-[#112D4E] border-b-2 border-[#DBE2EF] whitespace-nowrap">Data e Ora</th>
-            <th class="bg-[#eef4f9] px-4 py-3 text-left font-semibold text-[#112D4E] border-b-2 border-[#DBE2EF] whitespace-nowrap">Paziente</th>
-            <th class="bg-[#eef4f9] px-4 py-3 text-left font-semibold text-[#112D4E] border-b-2 border-[#DBE2EF] whitespace-nowrap">Specialista</th>
-            <th class="bg-[#eef4f9] px-4 py-3 text-left font-semibold text-[#112D4E] border-b-2 border-[#DBE2EF] whitespace-nowrap">Servizio</th>
-            <th class="bg-[#eef4f9] px-4 py-3 text-left font-semibold text-[#112D4E] border-b-2 border-[#DBE2EF] whitespace-nowrap">Stato</th>
-            <th class="bg-[#eef4f9] px-4 py-3 text-left font-semibold text-[#112D4E] border-b-2 border-[#DBE2EF] whitespace-nowrap w-[200px] min-w-[200px]">Azioni</th>
+            @for (col of tableColumns(); track col.label) {
+              <th app-table-th [col]="col"></th>
+            }
           </tr></thead>
           <tbody>
             @if (appointments.length === 0) {
@@ -44,19 +39,22 @@
             }
             @for (a of appointments; track a.id) {
               <tr class="hover:[&>td]:bg-[#f0f7ff]">
-                <td class="px-4 py-3 border-b border-[#DBE2EF] align-middle">{{ a.id }}</td>
-                <td class="px-4 py-3 border-b border-[#DBE2EF] align-middle">{{ a.scheduledAt | date:'dd MMM yyyy HH:mm' }}</td>
-                <td class="px-4 py-3 border-b border-[#DBE2EF] align-middle">{{ a.patientFullName }}</td>
-                <td class="px-4 py-3 border-b border-[#DBE2EF] align-middle">{{ a.specialistFullName }}<br/><small class="text-[#3F72AF]">{{ roleLabel(a.specialistRole) }}</small></td>
-                <td class="px-4 py-3 border-b border-[#DBE2EF] align-middle">{{ a.serviceType }}</td>
-                <td class="px-4 py-3 border-b border-[#DBE2EF] align-middle"><span [class]="statusClass(a.status)">{{ statusLabel(a.status) }}</span></td>
-                <td class="w-[200px] min-w-[200px] whitespace-nowrap px-4 py-3 border-b border-[#DBE2EF] align-middle">
+                <td appTd>{{ a.patientFullName }}</td>
+                <td appTd>{{ a.scheduledAt | date:'dd MMM yyyy HH:mm' }}</td>
+                <td appTd>
+                  {{ a.specialistFullName }}<br/>
+                  <span class="inline-block px-[0.55rem] py-[0.1rem] rounded-full text-white text-[0.72rem] font-semibold mt-[2px]"
+                        [ngStyle]="{'background-color': roleBadgeColor(a.specialistRole)}">
+                    {{ roleLabel(a.specialistRole) }}
+                  </span>
+                </td>
+                <td appTd>{{ a.serviceType }}</td>
+                <td appTd><span [class]="statusClass(a.status)">{{ statusLabel(a.status) }}</span></td>
+                <td appTd class="w-[200px] min-w-[200px] whitespace-nowrap">
                   <div class="flex items-center gap-2">
-                    <button class="px-[0.7rem] py-[0.3rem] border-0 rounded-[10px] text-[0.8rem] cursor-pointer font-semibold transition-colors duration-[180ms] bg-[#e5992c] text-white hover:bg-[#c47f20]"
-                            (click)="openStatusModal(a)">Stato</button>
+                    <button appBtn="sm-primary" (click)="openStatusModal(a)">Modifica</button>
                     @if (canCancel(a)) {
-                      <button class="px-[0.7rem] py-[0.3rem] border-0 rounded-[10px] text-[0.8rem] cursor-pointer font-semibold transition-colors duration-[180ms] bg-[#d95550] text-white hover:bg-[#b84140]"
-                              (click)="cancel(a.id)">Annulla</button>
+                      <button appBtn="sm-danger" (click)="cancel(a.id)">Annulla</button>
                     }
                   </div>
                 </td>
@@ -74,15 +72,14 @@
     <div class="bg-white rounded-[10px] shadow-[0_10px_40px_rgba(53,88,114,0.22)] p-8 w-full max-w-[560px] max-h-[90vh] overflow-y-auto">
       <div class="flex justify-between items-center mb-6 pb-4 border-b-2 border-[#DBE2EF]">
         <h3 id="apptModalTitle" class="text-[1.15rem] text-[#112D4E] font-bold">Nuovo Appuntamento</h3>
-        <button class="bg-transparent border-0 text-[1.4rem] cursor-pointer text-[#3F72AF] leading-none hover:text-[#d95550] transition-colors duration-200"
-                aria-label="Chiudi" (click)="showApptModal = false">&times;</button>
+        <button appBtn="close" aria-label="Chiudi" (click)="showApptModal = false">&times;</button>
       </div>
       <form [formGroup]="apptForm" (ngSubmit)="saveAppointment()" aria-labelledby="apptModalTitle">
         <div class="mb-4">
-          <label for="patientId" class="block text-[0.85rem] font-semibold mb-[0.35rem] text-[#3F72AF] uppercase tracking-[0.3px]">Paziente *</label>
+          <label appLabel for="patientId">Paziente *</label>
           <div class="select-wrapper">
-            <select id="patientId" formControlName="patientId"
-                    class="w-full px-[0.8rem] py-[0.55rem] border-[1.5px] border-[#DBE2EF] rounded-lg text-[0.9rem] outline-none transition-[border-color,box-shadow] duration-200 focus:border-[#3F72AF] focus:shadow-[0_0_0_3px_rgba(122,170,206,0.2)] appearance-none pr-9 bg-white cursor-pointer"
+            <select appFormControl id="patientId" formControlName="patientId"
+                    class="transition-[border-color,box-shadow] duration-200 appearance-none pr-9 bg-white cursor-pointer"
                     [class.placeholder-active]="!apptForm.get('patientId')?.value">
               <option value="" disabled selected hidden>– Seleziona paziente –</option>
               @for (c of patients; track c.id) {
@@ -91,15 +88,15 @@
             </select>
             <mat-icon class="select-arrow">keyboard_arrow_down</mat-icon>
           </div>
-            @if (isInvalid(apptForm,'patientId')) {
-              <div class="text-[#d95550] text-[0.8rem] mt-1">Campo obbligatorio</div>
+            @if (fieldError('patientId') || isInvalid(apptForm,'patientId')) {
+              <div class="text-[#d95550] text-[0.8rem] mt-1">{{ fieldError('patientId') || 'Campo obbligatorio' }}</div>
             }
           </div>
           <div class="mb-4">
-            <label for="specialistId" class="block text-[0.85rem] font-semibold mb-[0.35rem] text-[#3F72AF] uppercase tracking-[0.3px]">Specialista *</label>
+            <label appLabel for="specialistId">Specialista *</label>
             <div class="select-wrapper">
-              <select id="specialistId" formControlName="specialistId"
-                      class="w-full px-[0.8rem] py-[0.55rem] border-[1.5px] border-[#DBE2EF] rounded-lg text-[0.9rem] outline-none transition-[border-color,box-shadow] duration-200 focus:border-[#3F72AF] focus:shadow-[0_0_0_3px_rgba(122,170,206,0.2)] appearance-none pr-9 bg-white cursor-pointer"
+              <select appFormControl id="specialistId" formControlName="specialistId"
+                      class="transition-[border-color,box-shadow] duration-200 appearance-none pr-9 bg-white cursor-pointer"
                       [class.placeholder-active]="!apptForm.get('specialistId')?.value">
                 <option value="" disabled selected hidden>– Seleziona specialista –</option>
                 @for (t of specialists; track t.id) {
@@ -108,37 +105,34 @@
               </select>
               <mat-icon class="select-arrow">keyboard_arrow_down</mat-icon>
             </div>
-            @if (isInvalid(apptForm,'specialistId')) {
-              <div class="text-[#d95550] text-[0.8rem] mt-1">Campo obbligatorio</div>
+            @if (fieldError('specialistId') || isInvalid(apptForm,'specialistId')) {
+              <div class="text-[#d95550] text-[0.8rem] mt-1">{{ fieldError('specialistId') || 'Campo obbligatorio' }}</div>
             }
           </div>
           <div class="mb-4">
-            <label for="scheduledAt" class="block text-[0.85rem] font-semibold mb-[0.35rem] text-[#3F72AF] uppercase tracking-[0.3px]">Data e Ora *</label>
-            <input id="scheduledAt" type="datetime-local" formControlName="scheduledAt"
-                   class="w-full px-[0.8rem] py-[0.55rem] border-[1.5px] border-[#DBE2EF] rounded-lg text-[0.9rem] outline-none transition-[border-color,box-shadow] duration-200 focus:border-[#3F72AF] focus:shadow-[0_0_0_3px_rgba(122,170,206,0.2)]"/>
-            @if (isInvalid(apptForm,'scheduledAt')) {
-              <div class="text-[#d95550] text-[0.8rem] mt-1">Campo obbligatorio</div>
+            <label appLabel for="scheduledAt">Data e Ora *</label>
+            <input appFormControl id="scheduledAt" type="datetime-local" formControlName="scheduledAt"
+                   class="transition-[border-color,box-shadow] duration-200"/>
+            @if (fieldError('scheduledAt') || isInvalid(apptForm,'scheduledAt')) {
+              <div class="text-[#d95550] text-[0.8rem] mt-1">{{ fieldError('scheduledAt') || 'Campo obbligatorio' }}</div>
             }
           </div>
           <div class="mb-4">
-            <label for="serviceType" class="block text-[0.85rem] font-semibold mb-[0.35rem] text-[#3F72AF] uppercase tracking-[0.3px]">Tipo di Servizio *</label>
-            <input id="serviceType" formControlName="serviceType" type="text" placeholder="es. Consulenza Nutrizionale"
-                   class="w-full px-[0.8rem] py-[0.55rem] border-[1.5px] border-[#DBE2EF] rounded-lg text-[0.9rem] outline-none transition-[border-color,box-shadow] duration-200 focus:border-[#3F72AF] focus:shadow-[0_0_0_3px_rgba(122,170,206,0.2)]"/>
-            @if (isInvalid(apptForm,'serviceType')) {
-              <div class="text-[#d95550] text-[0.8rem] mt-1">Campo obbligatorio</div>
+            <label appLabel for="serviceType">Tipo di Servizio *</label>
+            <input appFormControl id="serviceType" formControlName="serviceType" type="text" placeholder="es. Consulenza Nutrizionale"
+                   class="transition-[border-color,box-shadow] duration-200"/>
+            @if (fieldError('serviceType') || isInvalid(apptForm,'serviceType')) {
+              <div class="text-[#d95550] text-[0.8rem] mt-1">{{ fieldError('serviceType') || 'Campo obbligatorio' }}</div>
             }
           </div>
           <div class="mb-4">
-            <label for="apptNotes" class="block text-[0.85rem] font-semibold mb-[0.35rem] text-[#3F72AF] uppercase tracking-[0.3px]">Note</label>
-            <textarea id="apptNotes" formControlName="notes" placeholder="Note opzionali…"
-                      class="w-full px-[0.8rem] py-[0.55rem] border-[1.5px] border-[#DBE2EF] rounded-lg text-[0.9rem] outline-none transition-[border-color,box-shadow] duration-200 focus:border-[#3F72AF] focus:shadow-[0_0_0_3px_rgba(122,170,206,0.2)] resize-vertical min-h-[85px]"></textarea>
+            <label appLabel for="apptNotes">Note</label>
+            <textarea appFormControl id="apptNotes" formControlName="notes" placeholder="Note opzionali…"
+                      class="transition-[border-color,box-shadow] duration-200 resize-vertical min-h-[85px]"></textarea>
           </div>
           <div class="flex justify-end gap-3 mt-6 pt-4 border-t border-[#DBE2EF]">
-            <button type="button"
-                    class="px-[1.1rem] py-2 rounded-[10px] text-[0.9rem] cursor-pointer font-semibold transition-colors duration-[180ms] bg-transparent border-[1.5px] border-[#112D4E] text-[#112D4E] hover:bg-[#112D4E] hover:text-white"
-                    (click)="showApptModal = false">Annulla</button>
-            <button type="submit"
-                    class="px-[1.1rem] py-2 border-0 rounded-[10px] text-[0.9rem] cursor-pointer font-semibold transition-colors duration-[180ms] bg-[#112D4E] text-white hover:bg-[#264560]">Prenota</button>
+            <button appBtn="outline" type="button" (click)="showApptModal = false">Annulla</button>
+            <button appBtn="primary" type="submit">Prenota</button>
           </div>
         </form>
       </div>
@@ -150,25 +144,20 @@
       <div class="bg-white rounded-[10px] shadow-[0_10px_40px_rgba(53,88,114,0.22)] p-8 w-full max-w-[360px] max-h-[90vh] overflow-y-auto">
         <div class="flex justify-between items-center mb-6 pb-4 border-b-2 border-[#DBE2EF]">
           <h3 id="statusModalTitle" class="text-[1.15rem] text-[#112D4E] font-bold">Aggiorna Stato</h3>
-          <button class="bg-transparent border-0 text-[1.4rem] cursor-pointer text-[#3F72AF] leading-none hover:text-[#d95550] transition-colors duration-200"
-                  aria-label="Chiudi" (click)="showStatusModal = false">&times;</button>
+          <button appBtn="close" aria-label="Chiudi" (click)="showStatusModal = false">&times;</button>
         </div>
         <form [formGroup]="statusForm" (ngSubmit)="saveStatus()" aria-labelledby="statusModalTitle">
           <div class="mb-4">
-            <label for="statusSelect" class="block text-[0.85rem] font-semibold mb-[0.35rem] text-[#3F72AF] uppercase tracking-[0.3px]">Nuovo Stato *</label>
-            <select id="statusSelect" formControlName="status"
-                    class="w-full px-[0.8rem] py-[0.55rem] border-[1.5px] border-[#DBE2EF] rounded-lg text-[0.9rem] outline-none transition-[border-color,box-shadow] duration-200 focus:border-[#3F72AF] focus:shadow-[0_0_0_3px_rgba(122,170,206,0.2)] bg-white">
+            <label appLabel for="statusSelect">Nuovo Stato *</label>
+            <select appFormControl id="statusSelect" formControlName="status" class="bg-white transition-[border-color,box-shadow] duration-200">
               @for (s of statuses; track s) {
                 <option [value]="s">{{ statusLabel(s) }}</option>
               }
             </select>
           </div>
           <div class="flex justify-end gap-3 mt-6 pt-4 border-t border-[#DBE2EF]">
-            <button type="button"
-                    class="px-[1.1rem] py-2 rounded-[10px] text-[0.9rem] cursor-pointer font-semibold transition-colors duration-[180ms] bg-transparent border-[1.5px] border-[#112D4E] text-[#112D4E] hover:bg-[#112D4E] hover:text-white"
-                    (click)="showStatusModal = false">Annulla</button>
-            <button type="submit"
-                    class="px-[1.1rem] py-2 border-0 rounded-[10px] text-[0.9rem] cursor-pointer font-semibold transition-colors duration-[180ms] bg-[#112D4E] text-white hover:bg-[#264560]">Aggiorna</button>
+            <button appBtn="outline" type="button" (click)="showStatusModal = false">Annulla</button>
+            <button appBtn="primary" type="submit">Aggiorna</button>
           </div>
         </form>
       </div>

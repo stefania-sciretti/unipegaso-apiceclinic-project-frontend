@@ -1,24 +1,41 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, inject, OnInit, signal } from '@angular/core';
 import { NgClass } from '@angular/common';
 import { FormsModule, ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { HttpErrorResponse } from '@angular/common/http';
 import { forkJoin } from 'rxjs';
 import { DietPlanService } from '../../services/diet-plan.service';
 import { PatientService } from '../../services/patient.service';
 import { SpecialistService } from '../../services/specialist.service';
 import { AlertService } from '../../services/alert.service';
-import { Patient, DietPlan, DietPlanRequest } from '../../models/models';
+import { ConfirmModalService } from '../../services/confirm-modal.service';
+import { Patient, DietPlan, DietPlanRequest, ApiError } from '../../models/models';
+import { TableThComponent, TableColumn } from '../../shared/table-th.component';
+import { TableTdDirective } from '../../shared/table-td.directive';
+import { BtnDirective } from '../../shared/btn.directive';
+import { FormControlDirective } from '../../shared/form-control.directive';
+import { FormLabelDirective } from '../../shared/form-label.directive';
 
 @Component({
   selector: 'app-nutrition',
-  imports: [FormsModule, ReactiveFormsModule, NgClass],
+  imports: [FormsModule, ReactiveFormsModule, NgClass, TableThComponent, TableTdDirective, BtnDirective, FormControlDirective, FormLabelDirective],
   templateUrl: './nutrition.component.html'
 })
 export class NutritionComponent implements OnInit {
+
+  readonly tableColumns = signal<TableColumn[]>([
+    { label: 'Paziente' },
+    { label: 'Titolo' },
+    { label: 'Calorie' },
+    { label: 'Durata' },
+    { label: 'Stato' },
+    { label: 'Azioni' }
+  ]);
   private readonly dietPlanService = inject(DietPlanService);
   private readonly patientService  = inject(PatientService);
   private readonly specialistService = inject(SpecialistService);
   private readonly alertSvc        = inject(AlertService);
   private readonly fb              = inject(FormBuilder);
+  private readonly confirmSvc      = inject(ConfirmModalService);
 
   protected readonly alertSignal = this.alertSvc.alert;
 
@@ -29,6 +46,8 @@ export class NutritionComponent implements OnInit {
   showModal      = false;
   editingId: number | null = null;
   filterActive   = '';
+
+  readonly fieldErrors = signal<Record<string, string>>({});
 
   readonly form: FormGroup = this.fb.group({
     patientId:     [null, Validators.required],
@@ -70,11 +89,13 @@ export class NutritionComponent implements OnInit {
   openCreate(): void {
     this.editingId = null;
     this.form.reset({ active: true });
+    this.fieldErrors.set({});
     this.showModal = true;
   }
 
   openEdit(plan: DietPlan): void {
     this.editingId = plan.id;
+    this.fieldErrors.set({});
     this.form.patchValue({
       patientId:     plan.patientId,
       title:         plan.title,
@@ -104,19 +125,28 @@ export class NutritionComponent implements OnInit {
         this.alertSvc.show(this.editingId ? 'Piano aggiornato!' : 'Piano creato!');
         this.showModal = false;
         this.load();
+      },
+      error: (err: HttpErrorResponse) => {
+        const fieldErrors = (err.error as ApiError)?.fieldErrors;
+        if (fieldErrors) this.fieldErrors.set(fieldErrors);
       }
     });
   }
 
   delete(id: number): void {
-    if (!confirm('Eliminare questo piano dieta?')) return;
-    this.dietPlanService.delete(id).subscribe({
-      next: () => { this.alertSvc.show('Piano eliminato.'); this.load(); }
+    this.confirmSvc.open('Eliminare questo piano dieta?', () => {
+      this.dietPlanService.delete(id).subscribe({
+        next: () => { this.alertSvc.show('Piano eliminato.'); this.load(); }
+      });
     });
   }
 
   isInvalid(field: string): boolean {
     const control = this.form.get(field);
     return !!(control && control.invalid && control.touched);
+  }
+
+  fieldError(field: string): string | null {
+    return this.fieldErrors()[field] ?? null;
   }
 }

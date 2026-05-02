@@ -1,10 +1,28 @@
-export type GlycemiaContext = 'FASTING' | 'POST_MEAL_1H' | 'POST_MEAL_2H' | 'RANDOM';
+export type GlycemiaContext = 'A_DIGIUNO' | 'POST_PASTO_1H' | 'POST_PASTO_2H' | 'RANDOM';
 export type GlycemiaClassification = 'NORMALE' | 'ATTENZIONE' | 'ELEVATA';
+
+export interface GlycemiaThreshold {
+  classification: GlycemiaClassification;
+  label: string;
+  minMgDl: number | null;
+  maxMgDl: number | null;
+}
+
+export interface GlycemiaContextRule {
+  context: GlycemiaContext;
+  label: string;
+  thresholds: GlycemiaThreshold[];
+}
+
+export interface GlycemiaClassificationRulesResponse {
+  contexts: GlycemiaContextRule[];
+}
 
 export interface GlycemiaMeasurement {
   id: number;
   patientId: number;
-  patientFullName: string;
+  patientFirstName: string;
+  patientLastName: string;
   specialistId: number;
   specialistFullName: string;
   measuredAt: string;

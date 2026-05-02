@@ -16,7 +16,7 @@ describe('GlycemiaService', () => {
     specialistFullName: 'Jane Smith',
     measuredAt: '2024-01-10T08:00:00Z',
     valueMgDl: 120,
-    context: 'FASTING',
+    context: 'A_DIGIUNO',
     classification: 'NORMALE',
     notes: 'Test measurement',
     createdAt: '2024-01-10T08:00:00Z'
@@ -73,7 +73,7 @@ describe('GlycemiaService', () => {
       specialistId: 1,
       measuredAt: '2024-01-10T08:00:00Z',
       valueMgDl: 120,
-      context: 'FASTING',
+      context: 'A_DIGIUNO',
       notes: 'Test measurement'
     };
 
@@ -93,7 +93,7 @@ describe('GlycemiaService', () => {
       specialistId: 1,
       measuredAt: '2024-01-10T08:00:00Z',
       valueMgDl: 130,
-      context: 'POST_MEAL_1H',
+      context: 'POST_PASTO_1H',
       notes: 'Updated measurement'
     };
 

@@ -5,7 +5,7 @@ import { FitnessAppointment, FitnessAppointmentRequest } from '../models/models'
 
 @Injectable({ providedIn: 'root' })
 export class AppointmentService {
-  private readonly base = '/api/fitness-appointments';
+  private readonly base = '/api/appointments';
   private readonly http = inject(HttpClient);
 
   getAll(filters: { [key: string]: string } = {}): Observable<FitnessAppointment[]> {

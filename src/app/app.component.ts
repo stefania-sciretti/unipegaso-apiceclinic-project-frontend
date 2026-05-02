@@ -1,10 +1,11 @@
 import {Component} from '@angular/core';
 import {RouterModule} from '@angular/router';
 import {NavbarComponent} from './components/navbar/navbar.component';
+import {ConfirmModalComponent} from './components/confirm-modal/confirm-modal.component';
 
 @Component({
     selector: 'app-root',
-    imports: [RouterModule, NavbarComponent],
+    imports: [RouterModule, NavbarComponent, ConfirmModalComponent],
     template: `
     <app-navbar></app-navbar>
     <div class="page-content">
@@ -40,6 +41,7 @@ import {NavbarComponent} from './components/navbar/navbar.component';
         </div>
       </div>
     </footer>
+    <app-confirm-modal></app-confirm-modal>
   `
 })
 export class AppComponent {}

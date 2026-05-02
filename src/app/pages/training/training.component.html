@@ -6,8 +6,7 @@
       </h1>
       <p class="text-[#3F72AF] text-[0.95rem]">Schede di allenamento personalizzate e coaching fitness</p>
     </div>
-    <button class="px-[1.1rem] py-2 border-0 rounded-[10px] text-[0.9rem] cursor-pointer font-semibold transition-colors duration-[180ms] bg-[#112D4E] text-white hover:bg-[#264560]"
-            (click)="openCreate()">+ Nuova Scheda</button>
+    <button appBtn="primary" (click)="openCreate()">+ Nuova Scheda</button>
   </div>
 
   <div class="mb-6">
@@ -57,13 +56,9 @@
       <div class="overflow-x-auto">
         <table class="w-full border-collapse text-[0.9rem]">
           <thead><tr>
-            <th class="bg-[#eef4f9] px-4 py-3 text-left font-semibold text-[#112D4E] border-b-2 border-[#DBE2EF] whitespace-nowrap">#</th>
-            <th class="bg-[#eef4f9] px-4 py-3 text-left font-semibold text-[#112D4E] border-b-2 border-[#DBE2EF] whitespace-nowrap">Paziente</th>
-            <th class="bg-[#eef4f9] px-4 py-3 text-left font-semibold text-[#112D4E] border-b-2 border-[#DBE2EF] whitespace-nowrap">Titolo</th>
-            <th class="bg-[#eef4f9] px-4 py-3 text-left font-semibold text-[#112D4E] border-b-2 border-[#DBE2EF] whitespace-nowrap">Durata</th>
-            <th class="bg-[#eef4f9] px-4 py-3 text-left font-semibold text-[#112D4E] border-b-2 border-[#DBE2EF] whitespace-nowrap">Sessioni/Sett.</th>
-            <th class="bg-[#eef4f9] px-4 py-3 text-left font-semibold text-[#112D4E] border-b-2 border-[#DBE2EF] whitespace-nowrap">Stato</th>
-            <th class="bg-[#eef4f9] px-4 py-3 text-left font-semibold text-[#112D4E] border-b-2 border-[#DBE2EF] whitespace-nowrap">Azioni</th>
+            @for (col of tableColumns(); track col.label) {
+              <th app-table-th [col]="col"></th>
+            }
           </tr></thead>
           <tbody>
             @if (filtered.length === 0) {
@@ -71,24 +66,20 @@
             }
             @for (p of filtered; track p) {
               <tr class="hover:[&>td]:bg-[#f0f7ff]">
-                <td class="px-4 py-3 border-b border-[#DBE2EF] align-middle">{{ p.id }}</td>
-                <td class="px-4 py-3 border-b border-[#DBE2EF] align-middle"><strong>{{ p.patientFullName }}</strong></td>
-                <td class="px-4 py-3 border-b border-[#DBE2EF] align-middle">
+                <td appTd><strong>{{ p.patientFullName }}</strong></td>
+                <td appTd>
                   <a class="text-[#112D4E] cursor-pointer font-semibold hover:underline" (click)="openDetail(p)">{{ p.title }}</a>
                 </td>
-                <td class="px-4 py-3 border-b border-[#DBE2EF] align-middle">{{ p.weeks ? p.weeks + ' sett.' : '–' }}</td>
-                <td class="px-4 py-3 border-b border-[#DBE2EF] align-middle">{{ p.sessionsPerWeek ? p.sessionsPerWeek + 'x / sett.' : '–' }}</td>
-                <td class="px-4 py-3 border-b border-[#DBE2EF] align-middle">
+                <td appTd>{{ p.weeks ? p.weeks + ' sett.' : '–' }}</td>
+                <td appTd>{{ p.sessionsPerWeek ? p.sessionsPerWeek + 'x / sett.' : '–' }}</td>
+                <td appTd>
                   <span class="badge" [class.badge-active]="p.active" [class.badge-inactive]="!p.active">{{ p.active ? 'Attiva' : 'Non attiva' }}</span>
                 </td>
-                <td class="px-4 py-3 border-b border-[#DBE2EF] align-middle">
+                <td appTd>
                   <div class="flex gap-2 flex-nowrap items-center">
-                    <button class="px-[0.7rem] py-[0.3rem] border-0 rounded-[10px] text-[0.8rem] cursor-pointer font-semibold transition-colors duration-[180ms] bg-[#3F72AF] text-white hover:bg-[#5e96be]"
-                            (click)="openDetail(p)">Dettaglio</button>
-                    <button class="px-[0.7rem] py-[0.3rem] border-0 rounded-[10px] text-[0.8rem] cursor-pointer font-semibold transition-colors duration-[180ms] bg-[#112D4E] text-white hover:bg-[#264560]"
-                            (click)="openEdit(p)">Modifica</button>
-                    <button class="px-[0.7rem] py-[0.3rem] border-0 rounded-[10px] text-[0.8rem] cursor-pointer font-semibold transition-colors duration-[180ms] bg-[#d95550] text-white hover:bg-[#b84140]"
-                            (click)="delete(p.id)">Elimina</button>
+                    <button appBtn="sm-blue" (click)="openDetail(p)">Dettaglio</button>
+                    <button appBtn="sm-primary" (click)="openEdit(p)">Modifica</button>
+                    <button appBtn="sm-danger" (click)="delete(p.id)">Elimina</button>
                   </div>
                 </td>
               </tr>
@@ -105,8 +96,7 @@
     <div class="bg-white rounded-[10px] shadow-[0_10px_40px_rgba(53,88,114,0.22)] p-8 w-full max-w-[600px] max-h-[90vh] overflow-y-auto">
       <div class="flex justify-between items-center mb-6 pb-4 border-b-2 border-[#DBE2EF]">
         <h3 class="text-[1.15rem] text-[#112D4E] font-bold">{{ selected.title }}</h3>
-        <button class="bg-transparent border-0 text-[1.4rem] cursor-pointer text-[#3F72AF] leading-none hover:text-[#d95550] transition-colors duration-200"
-                (click)="showDetail = false">&times;</button>
+        <button appBtn="close" (click)="showDetail = false">&times;</button>
       </div>
       <div class="flex gap-3 mb-4 flex-wrap">
         <span class="inline-block bg-[#DBE2EF] text-[#112D4E] px-[0.55rem] py-[0.15rem] rounded-lg text-[0.78rem] font-semibold">{{ selected.patientFullName }}</span>
@@ -114,33 +104,31 @@
       </div>
       @if (selected.description) {
         <div class="mb-4">
-          <p class="block text-[0.85rem] font-semibold mb-[0.35rem] text-[#3F72AF] uppercase tracking-[0.3px]">Descrizione</p>
+          <p appLabel>Descrizione</p>
           <p class="text-[#3F72AF] whitespace-pre-line">{{ selected.description }}</p>
         </div>
       }
       <div class="grid grid-cols-2 gap-4">
         <div class="mb-4">
-          <p class="block text-[0.85rem] font-semibold mb-[0.35rem] text-[#3F72AF] uppercase tracking-[0.3px]">Durata</p>
+          <p appLabel>Durata</p>
           <p>{{ selected.weeks ? selected.weeks + ' settimane' : '–' }}</p>
         </div>
         <div class="mb-4">
-          <p class="block text-[0.85rem] font-semibold mb-[0.35rem] text-[#3F72AF] uppercase tracking-[0.3px]">Sessioni / Settimana</p>
+          <p appLabel>Sessioni / Settimana</p>
           <p>{{ selected.sessionsPerWeek ? selected.sessionsPerWeek + 'x' : '–' }}</p>
         </div>
       </div>
       <div class="mb-4">
-        <p class="block text-[0.85rem] font-semibold mb-[0.35rem] text-[#3F72AF] uppercase tracking-[0.3px]">Specialista</p>
+        <p appLabel>Specialista</p>
         <p>{{ selected.specialistFullName }}</p>
       </div>
       <div class="mb-4">
-        <p class="block text-[0.85rem] font-semibold mb-[0.35rem] text-[#3F72AF] uppercase tracking-[0.3px]">Creata il</p>
+        <p appLabel>Creata il</p>
         <p>{{ selected.createdAt | date:'dd MMM yyyy' }}</p>
       </div>
       <div class="flex justify-end gap-3 mt-6 pt-4 border-t border-[#DBE2EF]">
-        <button class="px-[1.1rem] py-2 rounded-[10px] text-[0.9rem] cursor-pointer font-semibold transition-colors duration-[180ms] bg-transparent border-[1.5px] border-[#112D4E] text-[#112D4E] hover:bg-[#112D4E] hover:text-white"
-                (click)="showDetail = false">Chiudi</button>
-        <button class="px-[1.1rem] py-2 border-0 rounded-[10px] text-[0.9rem] cursor-pointer font-semibold transition-colors duration-[180ms] bg-[#112D4E] text-white hover:bg-[#264560]"
-                (click)="showDetail=false; openEdit(selected!)">Modifica</button>
+        <button appBtn="outline" (click)="showDetail = false">Chiudi</button>
+        <button appBtn="primary" (click)="showDetail=false; openEdit(selected!)">Modifica</button>
       </div>
     </div>
   </div>
@@ -151,46 +139,51 @@
     <div class="bg-white rounded-[10px] shadow-[0_10px_40px_rgba(53,88,114,0.22)] p-8 w-full max-w-[560px] max-h-[90vh] overflow-y-auto">
       <div class="flex justify-between items-center mb-6 pb-4 border-b-2 border-[#DBE2EF]">
         <h3 class="text-[1.15rem] text-[#112D4E] font-bold">{{ editingId ? 'Modifica Scheda' : 'Nuova Scheda di Allenamento' }}</h3>
-        <button class="bg-transparent border-0 text-[1.4rem] cursor-pointer text-[#3F72AF] leading-none hover:text-[#d95550] transition-colors duration-200"
-                (click)="showModal = false">&times;</button>
+        <button appBtn="close" (click)="showModal = false">&times;</button>
       </div>
       <form [formGroup]="form" (ngSubmit)="save()">
         <div class="mb-4">
-          <label for="trainingPatientId" class="block text-[0.85rem] font-semibold mb-[0.35rem] text-[#3F72AF] uppercase tracking-[0.3px]">Paziente *</label>
-          <select id="trainingPatientId" formControlName="patientId"
-                  class="w-full px-[0.8rem] py-[0.55rem] border-[1.5px] border-[#DBE2EF] rounded-lg text-[0.9rem] outline-none transition-[border-color,box-shadow] duration-200 focus:border-[#3F72AF] focus:shadow-[0_0_0_3px_rgba(122,170,206,0.2)] bg-white">
+          <label appLabel for="trainingPatientId">Paziente *</label>
+          <select appFormControl id="trainingPatientId" formControlName="patientId"
+                  class="transition-[border-color,box-shadow] duration-200 bg-white">
             <option value="">– Seleziona paziente –</option>
             @for (c of patients; track c) {
               <option [value]="c.id">{{ c.firstName }} {{ c.lastName }}</option>
             }
           </select>
-          @if (isInvalid('patientId')) {
-            <div class="text-[#d95550] text-[0.8rem] mt-1">Campo obbligatorio</div>
+          @if (fieldError('patientId') || isInvalid('patientId')) {
+            <div class="text-[#d95550] text-[0.8rem] mt-1">{{ fieldError('patientId') || 'Campo obbligatorio' }}</div>
           }
         </div>
         <div class="mb-4">
-          <label for="trainingTitle" class="block text-[0.85rem] font-semibold mb-[0.35rem] text-[#3F72AF] uppercase tracking-[0.3px]">Titolo Scheda *</label>
-          <input id="trainingTitle" formControlName="title" type="text" placeholder="es. Full Body Forza – Fase 1"
-                 class="w-full px-[0.8rem] py-[0.55rem] border-[1.5px] border-[#DBE2EF] rounded-lg text-[0.9rem] outline-none transition-[border-color,box-shadow] duration-200 focus:border-[#3F72AF] focus:shadow-[0_0_0_3px_rgba(122,170,206,0.2)]"/>
-          @if (isInvalid('title')) {
-            <div class="text-[#d95550] text-[0.8rem] mt-1">Campo obbligatorio</div>
+          <label appLabel for="trainingTitle">Titolo Scheda *</label>
+          <input appFormControl id="trainingTitle" formControlName="title" type="text" placeholder="es. Full Body Forza – Fase 1"
+                 class="transition-[border-color,box-shadow] duration-200"/>
+          @if (fieldError('title') || isInvalid('title')) {
+            <div class="text-[#d95550] text-[0.8rem] mt-1">{{ fieldError('title') || 'Campo obbligatorio' }}</div>
           }
         </div>
         <div class="mb-4">
-          <label for="trainingDescription" class="block text-[0.85rem] font-semibold mb-[0.35rem] text-[#3F72AF] uppercase tracking-[0.3px]">Descrizione / Esercizi</label>
-          <textarea id="trainingDescription" formControlName="description" placeholder="Descrivi esercizi, serie, ripetizioni…"
-                    class="w-full px-[0.8rem] py-[0.55rem] border-[1.5px] border-[#DBE2EF] rounded-lg text-[0.9rem] outline-none transition-[border-color,box-shadow] duration-200 focus:border-[#3F72AF] focus:shadow-[0_0_0_3px_rgba(122,170,206,0.2)] resize-vertical min-h-[110px]"></textarea>
+          <label appLabel for="trainingDescription">Descrizione / Esercizi</label>
+          <textarea appFormControl id="trainingDescription" formControlName="description" placeholder="Descrivi esercizi, serie, ripetizioni…"
+                    class="transition-[border-color,box-shadow] duration-200 resize-vertical min-h-[110px]"></textarea>
         </div>
         <div class="grid grid-cols-2 gap-4">
           <div class="mb-4">
-            <label for="trainingWeeks" class="block text-[0.85rem] font-semibold mb-[0.35rem] text-[#3F72AF] uppercase tracking-[0.3px]">Durata (settimane)</label>
-            <input id="trainingWeeks" formControlName="weeks" type="number" placeholder="8"
-                   class="w-full px-[0.8rem] py-[0.55rem] border-[1.5px] border-[#DBE2EF] rounded-lg text-[0.9rem] outline-none transition-[border-color,box-shadow] duration-200 focus:border-[#3F72AF] focus:shadow-[0_0_0_3px_rgba(122,170,206,0.2)]"/>
+            <label appLabel for="trainingWeeks">Durata (settimane)</label>
+            <input appFormControl id="trainingWeeks" formControlName="weeks" type="number" placeholder="8"
+                   class="transition-[border-color,box-shadow] duration-200"/>
+            @if (fieldError('weeks')) {
+              <div class="text-[#d95550] text-[0.8rem] mt-1">{{ fieldError('weeks') }}</div>
+            }
           </div>
           <div class="mb-4">
-            <label for="trainingSessions" class="block text-[0.85rem] font-semibold mb-[0.35rem] text-[#3F72AF] uppercase tracking-[0.3px]">Sessioni / Settimana</label>
-            <input id="trainingSessions" formControlName="sessionsPerWeek" type="number" placeholder="3"
-                   class="w-full px-[0.8rem] py-[0.55rem] border-[1.5px] border-[#DBE2EF] rounded-lg text-[0.9rem] outline-none transition-[border-color,box-shadow] duration-200 focus:border-[#3F72AF] focus:shadow-[0_0_0_3px_rgba(122,170,206,0.2)]"/>
+            <label appLabel for="trainingSessions">Sessioni / Settimana</label>
+            <input appFormControl id="trainingSessions" formControlName="sessionsPerWeek" type="number" placeholder="3"
+                   class="transition-[border-color,box-shadow] duration-200"/>
+            @if (fieldError('sessionsPerWeek')) {
+              <div class="text-[#d95550] text-[0.8rem] mt-1">{{ fieldError('sessionsPerWeek') }}</div>
+            }
           </div>
         </div>
         <div class="mb-4">
@@ -199,11 +192,8 @@
           </label>
         </div>
         <div class="flex justify-end gap-3 mt-6 pt-4 border-t border-[#DBE2EF]">
-          <button type="button"
-                  class="px-[1.1rem] py-2 rounded-[10px] text-[0.9rem] cursor-pointer font-semibold transition-colors duration-[180ms] bg-transparent border-[1.5px] border-[#112D4E] text-[#112D4E] hover:bg-[#112D4E] hover:text-white"
-                  (click)="showModal = false">Annulla</button>
-          <button type="submit"
-                  class="px-[1.1rem] py-2 border-0 rounded-[10px] text-[0.9rem] cursor-pointer font-semibold transition-colors duration-[180ms] bg-[#112D4E] text-white hover:bg-[#264560]">Salva Scheda</button>
+          <button appBtn="outline" type="button" (click)="showModal = false">Annulla</button>
+          <button appBtn="primary" type="submit">Salva Scheda</button>
         </div>
       </form>
     </div>

@@ -1,7 +1,7 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { GlycemiaMeasurement, GlycemiaMeasurementRequest } from '../models/models';
+import { GlycemiaMeasurement, GlycemiaMeasurementRequest, GlycemiaClassificationRulesResponse } from '../models/models';
 
 @Injectable({ providedIn: 'root' })
 export class GlycemiaService {
@@ -27,5 +27,9 @@ export class GlycemiaService {
 
   delete(id: number): Observable<void> {
     return this.http.delete<void>(`${this.base}/${id}`);
+  }
+
+  getClassificationRules(): Observable<GlycemiaClassificationRulesResponse> {
+    return this.http.get<GlycemiaClassificationRulesResponse>(`${this.base}/classification-rules`);
   }
 }

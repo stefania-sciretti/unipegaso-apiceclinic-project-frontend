@@ -1,24 +1,41 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, inject, OnInit, signal } from '@angular/core';
 import { DatePipe, NgClass } from '@angular/common';
 import { FormsModule, ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { HttpErrorResponse } from '@angular/common/http';
 import { forkJoin } from 'rxjs';
 import { TrainingPlanService } from '../../services/training-plan.service';
 import { PatientService } from '../../services/patient.service';
 import { SpecialistService } from '../../services/specialist.service';
 import { AlertService } from '../../services/alert.service';
-import { Patient, TrainingPlan, TrainingPlanRequest } from '../../models/models';
+import { ConfirmModalService } from '../../services/confirm-modal.service';
+import { Patient, TrainingPlan, TrainingPlanRequest, ApiError } from '../../models/models';
+import { TableThComponent, TableColumn } from '../../shared/table-th.component';
+import { TableTdDirective } from '../../shared/table-td.directive';
+import { BtnDirective } from '../../shared/btn.directive';
+import { FormControlDirective } from '../../shared/form-control.directive';
+import { FormLabelDirective } from '../../shared/form-label.directive';
 
 @Component({
   selector: 'app-training',
-  imports: [FormsModule, ReactiveFormsModule, DatePipe, NgClass],
+  imports: [FormsModule, ReactiveFormsModule, DatePipe, NgClass, TableThComponent, TableTdDirective, BtnDirective, FormControlDirective, FormLabelDirective],
   templateUrl: './training.component.html'
 })
 export class TrainingComponent implements OnInit {
+
+  readonly tableColumns = signal<TableColumn[]>([
+    { label: 'Paziente' },
+    { label: 'Titolo' },
+    { label: 'Durata' },
+    { label: 'Sessioni/Sett.' },
+    { label: 'Stato' },
+    { label: 'Azioni' }
+  ]);
   private readonly trainingPlanService = inject(TrainingPlanService);
   private readonly patientService      = inject(PatientService);
   private readonly specialistService   = inject(SpecialistService);
   private readonly alertSvc            = inject(AlertService);
   private readonly fb                  = inject(FormBuilder);
+  private readonly confirmSvc          = inject(ConfirmModalService);
 
   protected readonly alertSignal = this.alertSvc.alert;
 
@@ -32,6 +49,8 @@ export class TrainingComponent implements OnInit {
   selected: TrainingPlan | null = null;
   filterActive    = '';
   filterPatientId = '';
+
+  readonly fieldErrors = signal<Record<string, string>>({});
 
   readonly form: FormGroup = this.fb.group({
     patientId:       [null, Validators.required],
@@ -77,11 +96,13 @@ export class TrainingComponent implements OnInit {
   openCreate(): void {
     this.editingId = null;
     this.form.reset({ active: true });
+    this.fieldErrors.set({});
     this.showModal = true;
   }
 
   openEdit(plan: TrainingPlan): void {
     this.editingId = plan.id;
+    this.fieldErrors.set({});
     this.form.patchValue({
       patientId:       plan.patientId,
       title:           plan.title,
@@ -111,19 +132,28 @@ export class TrainingComponent implements OnInit {
         this.alertSvc.show(this.editingId ? 'Scheda aggiornata!' : 'Scheda creata!');
         this.showModal = false;
         this.load();
+      },
+      error: (err: HttpErrorResponse) => {
+        const fieldErrors = (err.error as ApiError)?.fieldErrors;
+        if (fieldErrors) this.fieldErrors.set(fieldErrors);
       }
     });
   }
 
   delete(id: number): void {
-    if (!confirm('Eliminare questa scheda di allenamento?')) return;
-    this.trainingPlanService.delete(id).subscribe({
-      next: () => { this.alertSvc.show('Scheda eliminata.'); this.load(); }
+    this.confirmSvc.open('Eliminare questa scheda di allenamento?', () => {
+      this.trainingPlanService.delete(id).subscribe({
+        next: () => { this.alertSvc.show('Scheda eliminata.'); this.load(); }
+      });
     });
   }
 
   isInvalid(field: string): boolean {
     const control = this.form.get(field);
     return !!(control && control.invalid && control.touched);
+  }
+
+  fieldError(field: string): string | null {
+    return this.fieldErrors()[field] ?? null;
   }
 }
