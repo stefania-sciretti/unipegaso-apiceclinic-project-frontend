@@ -40,6 +40,7 @@ export class ServiceDonutComponent implements AfterViewInit, OnDestroy {
       colors: ['#6366f1', '#22c55e', '#f59e0b', '#ec4899', '#14b8a6'],
       plotOptions: { pie: { donut: { size: '60%' } } },
       legend: {
+        show: true,
         position: 'bottom',
         fontSize: '12px',
         markers: { size: 8 },

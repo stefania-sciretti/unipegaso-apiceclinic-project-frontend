@@ -11,7 +11,8 @@ describe('SpecialistService', () => {
   const mockSpecialist: Specialist = {
     id: 1, firstName: 'Luca', lastName: 'Siretta',
     role: 'PERSONAL_TRAINER', email: 'luca@test.com',
-    createdAt: '2024-01-01T00:00:00'
+    createdAt: '2024-01-01T00:00:00',
+    area: { id: 1, name: 'Sport' }
   };
 
   beforeEach(() => {

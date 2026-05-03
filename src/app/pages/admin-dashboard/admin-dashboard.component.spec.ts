@@ -16,7 +16,7 @@ const MOCK_STATS: DashboardStats = {
   },
   revenueByMonth: [{ month: 'Dic', total: 12450 }],
   appointmentsByMonth: [{ month: 'Dic', booked: 87, completed: 80, cancelled: 7 }],
-  revenueByService: [{ service: 'Fitness', total: 12450 }]
+  revenueByArea: [{ area: { areaId: 1, areaName: 'Fitness' }, total: 12450 }]
 };
 
 describe('AdminDashboardComponent', () => {

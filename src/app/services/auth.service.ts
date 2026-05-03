@@ -1,5 +1,6 @@
 import { Injectable, signal, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
+import { Router } from '@angular/router';
 import { toObservable } from '@angular/core/rxjs-interop';
 import { Observable, throwError } from 'rxjs';
 import { map } from 'rxjs/operators';
@@ -36,7 +37,8 @@ const API_URL = '/api/auth';
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
-  private readonly http = inject(HttpClient);
+  private readonly http   = inject(HttpClient);
+  private readonly router = inject(Router);
 
   readonly user     = signal<AuthUser | null>(this.loadUserFromStorage());
   readonly showModal = signal<boolean>(false);
@@ -91,6 +93,7 @@ export class AuthService {
     this.user.set(null);
     localStorage.removeItem(STORAGE_KEY);
     localStorage.removeItem(TOKEN_STORAGE_KEY);
+    this.router.navigate(['/homepage']);
   }
 
   getToken(): string | null {

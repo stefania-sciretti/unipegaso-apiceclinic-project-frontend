@@ -1,5 +1,4 @@
 import { Component, DestroyRef, inject, signal } from '@angular/core';
-import { NgClass } from '@angular/common';
 import { catchError, of } from 'rxjs';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { DashboardService } from './services/dashboard.service';
@@ -8,11 +7,12 @@ import { KpiCardsComponent } from './components/kpi-cards/kpi-cards.component';
 import { RevenueChartComponent } from './components/revenue-chart/revenue-chart.component';
 import { AppointmentsChartComponent } from './components/appointments-chart/appointments-chart.component';
 import { ServiceDonutComponent } from './components/service-donut/service-donut.component';
+import { ButtonComponent } from '../../components/ui/button/button.component';
 
 @Component({
   selector: 'app-admin-dashboard',
   standalone: true,
-  imports: [NgClass, KpiCardsComponent, RevenueChartComponent, AppointmentsChartComponent, ServiceDonutComponent],
+  imports: [KpiCardsComponent, RevenueChartComponent, AppointmentsChartComponent, ButtonComponent, ServiceDonutComponent],
   templateUrl: './admin-dashboard.component.html'
 })
 export class AdminDashboardComponent {

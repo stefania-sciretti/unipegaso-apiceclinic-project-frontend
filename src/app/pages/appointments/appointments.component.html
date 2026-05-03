@@ -52,9 +52,9 @@
                 <td appTd><span [class]="a.status | statusBadge">{{ statusLabel(a.status) }}</span></td>
                 <td appTd class="w-[200px] min-w-[200px] whitespace-nowrap">
                   <div class="flex items-center gap-2">
-                    <app-button size="sm" (click)="openStatusModal(a)">Modifica</app-button>
+                    <app-button size="sm" (click)="openStatusModal(a)"><span class="material-icons text-[1rem]">edit</span></app-button>
                     @if (canCancel(a)) {
-                      <app-button variant="danger" size="sm" (click)="cancel(a.id)">Annulla</app-button>
+                      <app-button variant="danger" size="sm" (click)="cancel(a.id)"><span class="material-icons text-[1rem]">delete</span></app-button>
                     }
                   </div>
                 </td>

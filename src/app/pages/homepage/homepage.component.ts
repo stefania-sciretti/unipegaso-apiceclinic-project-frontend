@@ -146,11 +146,7 @@ export class HomepageComponent {
   }
 
   getAvailableSlots(): string[] {
-    if (!this.selectedDate) return [];
-    const today    = new Date();
-    const selected = new Date(`${this.selectedDate}T00:00:00`);
-    if (selected <= today) return [];
-    return ['09:00', '09:30', '10:00', '10:30', '11:00', '14:00', '14:30', '15:00', '15:30', '16:00'];
+    return [];
   }
 
   selectTime(time: string): void { this.selectedTime = time; }

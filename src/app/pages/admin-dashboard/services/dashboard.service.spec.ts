@@ -15,9 +15,9 @@ const MOCK_STATS: DashboardStats = {
     { month: 'Dic', total: 12450 }
   ],
   appointmentsByMonth: [{ month: 'Nov', booked: 80, completed: 70, cancelled: 10 }],
-  revenueByService: [
-    { service: 'Nutrizione', total: 5000 },
-    { service: 'Fitness', total: 7450 }
+  revenueByArea: [
+    { area: { areaId: 1, areaName: 'Nutrizione' }, total: 5000 },
+    { area: { areaId: 2, areaName: 'Fitness' }, total: 7450 }
   ]
 };
 

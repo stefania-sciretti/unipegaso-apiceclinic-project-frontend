@@ -53,11 +53,10 @@ describe('ReportsComponent', () => {
   it('calls ReportService.getAll() on init', () =>
     expect(mockReportService.getAll).toHaveBeenCalled());
 
-  it('falls back to mock data when API returns empty array', () => {
+  it('shows empty list when API returns empty array', () => {
     mockReportService.getAll.and.returnValue(of([]));
     component.load();
-    // MOCK_REPORTS is the private constant; just assert it is non-empty
-    expect(component.reports.length).toBeGreaterThan(0);
+    expect(component.reports.length).toBe(0);
   });
 
   it('uses API data when API returns non-empty array', () => {

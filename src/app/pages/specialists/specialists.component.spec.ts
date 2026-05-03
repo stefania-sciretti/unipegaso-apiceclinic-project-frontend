@@ -9,6 +9,7 @@ const makeSpecialist = (overrides: Partial<Specialist> = {}): Specialist => ({
   id: 1, firstName: 'Simona', lastName: 'Ruberti',
   role: 'NUTRITIONIST', email: 'simona@test.com',
   createdAt: '2024-01-01T00:00:00',
+  area: { id: 1, name: 'Alimentazione' },
   ...overrides
 });
 
