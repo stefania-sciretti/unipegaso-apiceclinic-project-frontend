@@ -10,3 +10,4 @@ export * from './api-error.model';
 export * from './clinical-appointment.model';
 export * from './glycemia.model';
 export * from './dashboard.model';
+export * from './service.model';

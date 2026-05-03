@@ -10,7 +10,7 @@ export const routes: Routes = [
   },
   {
     path: 'specialists',
-    loadComponent: () => import('./pages/doctors/doctors.component').then(m => m.DoctorsComponent)
+    loadComponent: () => import('./pages/specialists/specialists.component').then(m => m.SpecialistsComponent)
   },
   { path: 'doctors', redirectTo: 'specialists', pathMatch: 'full' },
   {

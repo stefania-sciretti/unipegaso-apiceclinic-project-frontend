@@ -29,7 +29,7 @@
             </app-button>
             @if (showAreaDropdown) {
               <div class="absolute top-[calc(100%+0.5rem)] left-0 right-0 bg-white rounded-lg shadow-[0_8px_24px_rgba(0,0,0,0.2)] z-[1000] overflow-hidden min-w-full max-h-[400px] overflow-y-auto">
-                @for (area of serviceAreas; track area) {
+                @for (area of bookingAreas(); track area.id) {
                   <button
                     type="button"
                     class="w-full text-left px-[1.125rem] py-[0.875rem] text-[var(--primary)] cursor-pointer border-b border-[rgba(17,45,78,0.1)] last:border-b-0 transition-colors duration-200 text-[0.95rem] hover:bg-slate-100 bg-transparent"
@@ -49,7 +49,7 @@
               <span class="material-icons text-[1rem]">arrow_back</span> Torna alle aree
             </app-button>
             <div class="flex flex-col gap-2 max-h-[300px] overflow-y-auto pr-2">
-              @for (service of selectedArea.services; track service) {
+              @for (service of selectedArea.services; track service.id) {
                 <button
                   type="button"
                   class="w-full text-left flex items-center justify-between px-[1.125rem] py-[0.875rem] border rounded-md text-white cursor-pointer transition-all duration-200 text-[0.95rem]"
@@ -57,7 +57,7 @@
                     ? 'bg-[rgba(34,197,94,0.25)] border-green-500'
                     : 'bg-white/10 border-white/20 hover:bg-white/15 hover:border-white/40'"
                   (click)="selectService(service)">
-                  {{ service.name }}
+                  {{ service.service }}
                   @if (selectedService?.id === service.id) {
                     <span class="material-icons text-[1.2rem]">check_circle</span>
                   }
@@ -71,7 +71,7 @@
         @if (selectedService && !selectedArea) {
           <div>
             <div class="inline-flex items-center gap-2 px-5 py-3 bg-[rgba(34,197,94,0.15)] border border-green-500 rounded-[20px] text-white text-[0.95rem] font-medium">
-              {{ selectedService.name }}
+              {{ selectedService.service }}
               <button type="button"
                       class="bg-transparent border-0 p-0 inline-flex items-center text-white cursor-pointer hover:opacity-80 material-icons text-[1rem]"
                       aria-label="Rimuovi servizio selezionato"
@@ -132,10 +132,10 @@
             <!-- Doctor Card -->
             <div>
               <div class="flex items-center gap-6 p-6 bg-gradient-to-br from-slate-100 to-slate-50 border-b border-gray-200">
-                <span class="material-icons text-[3rem] text-[var(--primary)] shrink-0">{{ getSelectedDoctor()?.icon }}</span>
+                <span class="material-icons text-[3rem] text-[var(--primary)] shrink-0">{{ selectedArea?.icon }}</span>
                 <div class="flex-1">
-                  <h4 class="text-[1.1rem] font-semibold text-[var(--primary)] m-0 mb-1">{{ getSelectedDoctor()?.name }}</h4>
-                  <p class="text-[0.9rem] text-gray-500 m-0">{{ getSelectedDoctor()?.title }}</p>
+                  <h4 class="text-[1.1rem] font-semibold text-[var(--primary)] m-0 mb-1">{{ getSelectedSpecialist()?.firstName }} {{ getSelectedSpecialist()?.lastName }}</h4>
+                  <p class="text-[0.9rem] text-gray-500 m-0">{{ getSelectedSpecialist()?.role }}</p>
                 </div>
               </div>
               <!-- Time Slots -->
@@ -179,92 +179,31 @@
 
   <div class="grid gap-6 mb-8 grid-cols-[repeat(auto-fill,minmax(280px,1fr))]">
 
-    <!-- Area Clinica -->
-    <div class="group bg-white rounded-[10px] shadow-[0_2px_14px_rgba(17,45,78,0.10)] overflow-hidden flex flex-col transition-all duration-150 hover:-translate-y-1 hover:shadow-[0_8px_24px_rgba(53,88,114,0.15)]">
-      <div class="flex items-center gap-3 px-5 py-4 text-white bg-gradient-to-br from-[var(--primary)] to-[var(--primary-mid)]">
-        <span class="material-icons text-[1.8rem]">medical_services</span>
-        <span class="text-[1.05rem] font-bold tracking-[0.2px]">Area Clinica</span>
+    @for (area of bookingAreas(); track area.id) {
+      <div class="group bg-white rounded-[10px] shadow-[0_2px_14px_rgba(17,45,78,0.10)] overflow-hidden flex flex-col transition-all duration-150 hover:-translate-y-1 hover:shadow-[0_8px_24px_rgba(53,88,114,0.15)]">
+        <div class="flex items-center gap-3 px-5 py-4 text-white bg-gradient-to-br from-[var(--primary)] to-[var(--primary-mid)]">
+          <span class="material-icons text-[1.8rem]">{{ area.icon }}</span>
+          <span class="text-[1.05rem] font-bold tracking-[0.2px]">{{ area.label }}</span>
+        </div>
+        @if (area.image) {
+          <div class="w-full h-40 overflow-hidden">
+            <img class="w-full h-full object-cover block transition-transform duration-[350ms] ease-in-out group-hover:scale-105"
+                 [src]="area.image" [alt]="area.label"/>
+          </div>
+        }
+        <ul class="list-none p-0 px-5 py-4 flex-1">
+          @for (s of area.services.slice(0, 4); track s.id) {
+            <li class="flex items-center gap-[0.4rem] py-[0.35rem] text-[0.88rem] text-[var(--primary)] border-b border-[var(--border)] last:border-b-0">
+              <span class="material-icons text-[1rem] text-[var(--primary-mid)] shrink-0">{{ area.icon }}</span>
+              {{ s.service }}
+            </li>
+          }
+        </ul>
+        <app-button size="sm" extraClass="mx-5 mb-5 self-start" (click)="navigate(area.navPath)">
+          {{ area.navLabel }}
+        </app-button>
       </div>
-      <div class="w-full h-40 overflow-hidden">
-        <img class="w-full h-full object-cover block transition-transform duration-[350ms] ease-in-out group-hover:scale-105"
-             ngSrc="assets/images/visit.webp" alt="Area Clinica" height="2160" width="3840"/>
-      </div>
-      <ul class="list-none p-0 px-5 py-4 flex-1">
-        <li class="flex items-center gap-[0.4rem] py-[0.35rem] text-[0.88rem] text-[var(--primary)] border-b border-[var(--border)] last:border-b-0">
-          <span class="material-icons text-[1rem] text-[var(--primary-mid)] shrink-0">medical_services</span> Visita Nutrizionistica
-        </li>
-        <li class="flex items-center gap-[0.4rem] py-[0.35rem] text-[0.88rem] text-[var(--primary)] border-b border-[var(--border)] last:border-b-0">
-          <span class="material-icons text-[1rem] text-[var(--primary-mid)] shrink-0">event_available</span> Visita di Controllo
-        </li>
-        <li class="flex items-center gap-[0.4rem] py-[0.35rem] text-[0.88rem] text-[var(--primary)] border-b border-[var(--border)] last:border-b-0">
-          <span class="material-icons text-[1rem] text-[var(--primary-mid)] shrink-0">directions_run</span> Visita Medico-Sportiva
-        </li>
-        <li class="flex items-center gap-[0.4rem] py-[0.35rem] text-[0.88rem] text-[var(--primary)] border-b border-[var(--border)] last:border-b-0">
-          <span class="material-icons text-[1rem] text-[var(--primary-mid)] shrink-0">assignment</span> Referto Clinico
-        </li>
-      </ul>
-      <app-button size="sm" extraClass="mx-5 mb-5 self-start" (click)="navigate('/services')">
-        Vedi tutte le prestazioni →
-      </app-button>
-    </div>
-
-    <!-- Area Nutrizione -->
-    <div class="group bg-white rounded-[10px] shadow-[0_2px_14px_rgba(17,45,78,0.10)] overflow-hidden flex flex-col transition-all duration-150 hover:-translate-y-1 hover:shadow-[0_8px_24px_rgba(53,88,114,0.15)]">
-      <div class="flex items-center gap-3 px-5 py-4 text-white bg-gradient-to-br from-[var(--primary)] to-[var(--primary-mid)]">
-        <span class="material-icons text-[1.8rem]">restaurant_menu</span>
-        <span class="text-[1.05rem] font-bold tracking-[0.2px]">Area Nutrizione</span>
-      </div>
-      <div class="w-full h-40 overflow-hidden">
-        <img class="w-full h-full object-cover block transition-transform duration-[350ms] ease-in-out group-hover:scale-105"
-             ngSrc="assets/images/nutrition.webp" alt="Area Nutrizione" height="3444" width="5166"/>
-      </div>
-      <ul class="list-none p-0 px-5 py-4 flex-1">
-        <li class="flex items-center gap-[0.4rem] py-[0.35rem] text-[0.88rem] text-[var(--primary)] border-b border-[var(--border)] last:border-b-0">
-          <span class="material-icons text-[1rem] text-[var(--primary-mid)] shrink-0">restaurant_menu</span> Piano Nutrizionale Personalizzato
-        </li>
-        <li class="flex items-center gap-[0.4rem] py-[0.35rem] text-[0.88rem] text-[var(--primary)] border-b border-[var(--border)] last:border-b-0">
-          <span class="material-icons text-[1rem] text-[var(--primary-mid)] shrink-0">accessibility_new</span> Analisi Composizione Corporea (BIA)
-        </li>
-        <li class="flex items-center gap-[0.4rem] py-[0.35rem] text-[0.88rem] text-[var(--primary)] border-b border-[var(--border)] last:border-b-0">
-          <span class="material-icons text-[1rem] text-[var(--primary-mid)] shrink-0">colorize</span> Monitoraggio Glicemia (Pungidito)
-        </li>
-        <li class="flex items-center gap-[0.4rem] py-[0.35rem] text-[0.88rem] text-[var(--primary)] border-b border-[var(--border)] last:border-b-0">
-          <span class="material-icons text-[1rem] text-[var(--primary-mid)] shrink-0">menu_book</span> Ricettario Fit Personalizzato
-        </li>
-      </ul>
-      <app-button size="sm" extraClass="mx-5 mb-5 self-start" (click)="navigate('/nutrition')">
-        Vedi piani nutrizionali →
-      </app-button>
-    </div>
-
-    <!-- Area Sport -->
-    <div class="group bg-white rounded-[10px] shadow-[0_2px_14px_rgba(17,45,78,0.10)] overflow-hidden flex flex-col transition-all duration-150 hover:-translate-y-1 hover:shadow-[0_8px_24px_rgba(53,88,114,0.15)]">
-      <div class="flex items-center gap-3 px-5 py-4 text-white bg-gradient-to-br from-[var(--primary)] to-[var(--primary-mid)]">
-        <span class="material-icons text-[1.8rem]">fitness_center</span>
-        <span class="text-[1.05rem] font-bold tracking-[0.2px]">Area Sport</span>
-      </div>
-      <div class="w-full h-40 overflow-hidden">
-        <img class="w-full h-full object-cover block transition-transform duration-[350ms] ease-in-out group-hover:scale-105"
-             ngSrc="assets/images/gym.webp" alt="Area Sport" height="3289" width="4933"/>
-      </div>
-      <ul class="list-none p-0 px-5 py-4 flex-1">
-        <li class="flex items-center gap-[0.4rem] py-[0.35rem] text-[0.88rem] text-[var(--primary)] border-b border-[var(--border)] last:border-b-0">
-          <span class="material-icons text-[1rem] text-[var(--primary-mid)] shrink-0">fitness_center</span> Scheda di Allenamento Personalizzata
-        </li>
-        <li class="flex items-center gap-[0.4rem] py-[0.35rem] text-[0.88rem] text-[var(--primary)] border-b border-[var(--border)] last:border-b-0">
-          <span class="material-icons text-[1rem] text-[var(--primary-mid)] shrink-0">self_improvement</span> Personal Training
-        </li>
-        <li class="flex items-center gap-[0.4rem] py-[0.35rem] text-[0.88rem] text-[var(--primary)] border-b border-[var(--border)] last:border-b-0">
-          <span class="material-icons text-[1rem] text-[var(--primary-mid)] shrink-0">healing</span> Riatletizzazione e Recupero Funzionale
-        </li>
-        <li class="flex items-center gap-[0.4rem] py-[0.35rem] text-[0.88rem] text-[var(--primary)] border-b border-[var(--border)] last:border-b-0">
-          <span class="material-icons text-[1rem] text-[var(--primary-mid)] shrink-0">emoji_events</span> Preparazione Atletica Agonistica
-        </li>
-      </ul>
-      <app-button size="sm" extraClass="mx-5 mb-5 self-start" (click)="navigate('/training')">
-        Vedi schede allenamento →
-      </app-button>
-    </div>
+    }
 
   </div>
 

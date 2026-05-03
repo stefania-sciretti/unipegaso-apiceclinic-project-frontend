@@ -4,11 +4,20 @@
       <h1 class="text-[1.75rem] font-bold mb-1 text-[var(--primary)]">Elenco Prestazioni</h1>
       <p class="text-[var(--primary-mid)] text-[0.95rem]">I servizi offerti da Apice Clinic</p>
     </div>
+    @if (authSvc.isAdmin) {
+      <app-button (click)="openForm()">+ Aggiungi Servizio</app-button>
+    }
   </div>
+
   @if (loading()) {
     <p class="text-[var(--primary-mid)] text-sm">Caricamento prestazioni...</p>
   }
-  @for (cat of categories(); track cat) {
+
+  @if (!loading() && categories().length === 0) {
+    <p class="text-[var(--primary-mid)] text-sm">Nessun servizio disponibile.</p>
+  }
+
+  @for (cat of categories(); track cat.specialistId) {
     <div class="mb-8 bg-white rounded-[10px] shadow-[0_2px_14px_rgba(17,45,78,0.10)] overflow-hidden">
       <div class="flex items-center justify-between px-7 py-[1.1rem] border-b-2 border-[var(--border)] cursor-pointer"
            (click)="toggle(cat)">
@@ -17,18 +26,13 @@
               [class.rotate-180]="cat.open">expand_more</span>
       </div>
       @if (cat.open) {
-        <div class="grid grid-cols-[repeat(auto-fill,minmax(200px,1fr))] gap-8 p-10">
-          @for (s of cat.services; track s) {
-            <div class="flex flex-col items-center text-center gap-[0.85rem]">
-              <div class="w-[90px] h-[90px] rounded-full flex items-center justify-center shrink-0"
-                   [style.background]="cat.bgColor" [style.color]="cat.color">
-                <span class="material-icons text-[2.4rem]">{{ s.icon }}</span>
-              </div>
-              <div class="text-[0.82rem] font-bold text-[var(--primary)] tracking-[0.3px] leading-[1.4]">{{ s.name | uppercase }}</div>
-              <p class="text-[0.82rem] text-[var(--primary-mid)] leading-[1.6] m-0">{{ s.description }}</p>
-              @if (s.duration) {
-                <span class="badge badge-info">{{ s.duration }}</span>
-              }
+        <div class="grid grid-cols-[repeat(auto-fill,minmax(200px,1fr))] gap-6 p-8">
+          @for (s of cat.services; track s.id) {
+            <div class="flex flex-col items-center text-center gap-3 p-4 rounded-[8px] border border-[var(--border)] hover:shadow-sm transition-shadow">
+              <div class="text-[0.9rem] font-bold text-[var(--primary)] leading-[1.4]">{{ s.service }}</div>
+              <span class="badge badge-info text-[0.85rem] font-semibold">
+                {{ s.price | currency:'EUR':'symbol':'1.2-2' }}
+              </span>
             </div>
           }
         </div>
@@ -36,3 +40,65 @@
     </div>
   }
 </main>
+
+@if (showForm()) {
+  <div class="fixed inset-0 bg-[rgba(30,45,59,0.5)] z-[99999] flex items-center justify-center p-4"
+       (click)="closeForm()">
+    <div class="bg-white rounded-[10px] shadow-[0_10px_40px_rgba(53,88,114,0.22)] p-8 w-full max-w-[480px]"
+         (click)="$event.stopPropagation()">
+      <div class="flex justify-between items-center mb-6 pb-4 border-b-2 border-[var(--border)]">
+        <h3 class="text-[1.15rem] text-[var(--primary)] font-bold">Nuovo Servizio</h3>
+        <app-button variant="close" (click)="closeForm()">&times;</app-button>
+      </div>
+      <form [formGroup]="form" (ngSubmit)="submit()">
+        <div class="mb-4">
+          <label appLabel for="service">Nome servizio *</label>
+          <input appFormControl
+                 id="service"
+                 formControlName="service"
+                 type="text"
+                 placeholder="Es. Consulenza nutrizionale"
+                 class="transition-[border-color,box-shadow] duration-200"/>
+          @if (isInvalid('service')) {
+            <div class="text-[var(--danger)] text-[0.8rem] mt-1">Campo obbligatorio (max 255 caratteri)</div>
+          }
+        </div>
+        <div class="mb-4">
+          <label appLabel for="price">Prezzo (€) *</label>
+          <input appFormControl
+                 id="price"
+                 formControlName="price"
+                 type="number"
+                 min="0"
+                 step="0.01"
+                 placeholder="80.00"
+                 class="transition-[border-color,box-shadow] duration-200"/>
+          @if (isInvalid('price')) {
+            <div class="text-[var(--danger)] text-[0.8rem] mt-1">Inserire un prezzo valido (≥ 0)</div>
+          }
+        </div>
+        <div class="mb-4">
+          <label appLabel for="specialistId">Specialista *</label>
+          <select appFormControl
+                  id="specialistId"
+                  formControlName="specialistId"
+                  class="transition-[border-color,box-shadow] duration-200">
+            <option [ngValue]="null" disabled>Seleziona uno specialista</option>
+            @for (sp of specialists(); track sp.id) {
+              <option [ngValue]="sp.id">{{ sp.firstName }} {{ sp.lastName }} — {{ sp.role }}</option>
+            }
+          </select>
+          @if (isInvalid('specialistId')) {
+            <div class="text-[var(--danger)] text-[0.8rem] mt-1">Selezionare uno specialista</div>
+          }
+        </div>
+        <div class="flex justify-end gap-3 mt-6 pt-4 border-t border-[var(--border)]">
+          <app-button variant="secondary" type="button" (click)="closeForm()">Annulla</app-button>
+          <app-button type="submit" [disabled]="saving()">
+            {{ saving() ? 'Salvataggio…' : 'Salva' }}
+          </app-button>
+        </div>
+      </form>
+    </div>
+  </div>
+}

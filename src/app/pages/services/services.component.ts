@@ -1,154 +1,113 @@
-import { Component, computed, inject, resource } from '@angular/core';
-import { CommonModule, UpperCasePipe } from '@angular/common';
+import { Component, computed, inject, resource, signal } from '@angular/core';
+import { CurrencyPipe } from '@angular/common';
+import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { firstValueFrom } from 'rxjs';
 import { SpecialistService } from '../../services/specialist.service';
-
-interface ServiceItem {
-  icon: string;
-  name: string;
-  description: string;
-  duration?: string;
-}
+import { ClinicServicesService } from '../../services/clinic-services.service';
+import { AuthService } from '../../services/auth.service';
+import { AlertService } from '../../services/alert.service';
+import { ServiceResponse, Specialist } from '../../models/models';
+import { ButtonComponent } from '../../components/ui/button/button.component';
+import { FormControlDirective } from '../../shared/form-control.directive';
+import { FormLabelDirective } from '../../shared/form-label.directive';
 
 interface ServiceCategory {
-  key: string;
+  specialistId: number;
   label: string;
-  color: string;
-  bgColor: string;
-  services: ServiceItem[];
+  services: ServiceResponse[];
   open: boolean;
 }
 
-interface AreaConfig {
-  key: string;
-  areaName: string;
-  roleMatcher: (role: string) => boolean;
-  services: ServiceItem[];
-}
-
-const AREA_CONFIGS: AreaConfig[] = [
-  {
-    key: 'clinico',
-    areaName: 'Area Clinica',
-    roleMatcher: (role) => /medico|sport/i.test(role),
-    services: [
-      { icon: 'assignment', name: 'Visita di Idoneità Sportiva', duration: '45 min',
-        description: 'Certificazione medica per attività sportive agonistiche e non agonistiche, con ECG e spirometria.' },
-      { icon: 'healing', name: 'Trattamento Infortuni Sportivi', duration: '45 min',
-        description: 'Diagnosi e trattamento di distorsioni, contratture, tendinopatie e altri infortuni legati all\'attività fisica.' },
-      { icon: 'speed', name: 'Test da Sforzo', duration: '30 min',
-        description: 'Valutazione della capacità cardiorespiratoria tramite test ergometrici per definire le zone di allenamento ottimali.' },
-      { icon: 'shield', name: 'Prevenzione Infortuni',
-        description: 'Programmi preventivi personalizzati per ridurre il rischio di infortuni nello sport e nel lavoro fisico.' },
-      { icon: 'medical_services', name: 'Terapia Infiltrativa', duration: '30 min',
-        description: 'Infiltrazioni di acido ialuronico, PRP e corticosteroidi per il trattamento di patologie articolari e tendinee.' },
-      { icon: 'trending_up', name: 'Ottimizzazione della Performance',
-        description: 'Consulenza medica per atleti agonisti volta a massimizzare le prestazioni nel rispetto della salute.' },
-    ]
-  },
-  {
-    key: 'nutrizione',
-    areaName: 'Area Nutrizione',
-    roleMatcher: (role) => /nutri|dietol/i.test(role),
-    services: [
-      { icon: 'restaurant_menu', name: 'Piano Alimentare Personalizzato', duration: '60 min',
-        description: 'Elaborazione di piani nutrizionali su misura basati su analisi della composizione corporea e obiettivi specifici.' },
-      { icon: 'monitor_weight', name: 'Analisi Composizione Corporea (BIA)', duration: '20 min',
-        description: 'Misurazione di massa grassa, massa magra, acqua corporea totale e metabolismo basale tramite bioimpedenziometria.' },
-      { icon: 'favorite', name: 'Nutrizione Clinica', duration: '45 min',
-        description: 'Supporto nutrizionale per patologie metaboliche come diabete, ipertensione, dislipidemia e intolleranze alimentari.' },
-      { icon: 'bolt', name: 'Nutrizione Sportiva e Performance', duration: '45 min',
-        description: 'Piani alimentari specifici per atleti: gestione del timing dei nutrienti, recupero e supplementazione mirata.' },
-      { icon: 'water_drop', name: 'Gestione dell\'Idratazione',
-        description: 'Strategie per mantenere un corretto equilibrio idrico prima, durante e dopo l\'attività fisica.' },
-      { icon: 'groups', name: 'Educazione Alimentare',
-        description: 'Percorsi di consapevolezza alimentare per individui e famiglie, con focus sulla corretta lettura delle etichette.' },
-      { icon: 'refresh', name: 'Follow-up e Monitoraggio', duration: '30 min',
-        description: 'Visite di controllo periodiche per adattare il piano nutrizionale all\'evoluzione del paziente.' },
-    ]
-  },
-  {
-    key: 'sport',
-    areaName: 'Area Sport',
-    roleMatcher: (role) => /personal trainer|fitness|trainer/i.test(role),
-    services: [
-      { icon: 'fitness_center', name: 'Personal Training', duration: '60 min',
-        description: 'Sessioni individuali di allenamento personalizzate in base agli obiettivi, al livello di fitness e alle condizioni fisiche del cliente.' },
-      { icon: 'directions_run', name: 'Allenamento Funzionale', duration: '60 min',
-        description: 'Programmi basati su movimenti naturali per migliorare forza, equilibrio, coordinazione e resistenza nella vita quotidiana.' },
-      { icon: 'sports', name: 'Preparazione Atletica', duration: '60 min',
-        description: 'Piani di allenamento specifici per atleti amatoriali e agonisti, con periodizzazione e peak performance.' },
-      { icon: 'self_improvement', name: 'Programma Dimagrimento', duration: '60 min',
-        description: 'Training ad alta intensità (HIIT) e circuiti mirati per la riduzione del grasso corporeo e il miglioramento della composizione corporea.' },
-      { icon: 'accessibility_new', name: 'Tonificazione Muscolare', duration: '60 min',
-        description: 'Schede di allenamento progressive per la definizione e l\'aumento della massa muscolare magra.' },
-      { icon: 'psychology', name: 'Coaching Motivazionale',
-        description: 'Supporto psicologico e motivazionale per mantenere la costanza nel percorso di allenamento e superare i momenti di stallo.' },
-    ]
-  },
-  {
-    key: 'fisioterapia',
-    areaName: 'Area Fisioterapia',
-    roleMatcher: (role) => /fisioterapi|physio/i.test(role),
-    services: [
-      { icon: 'back_hand', name: 'Fisioterapia Muscoloscheletrica', duration: '60 min',
-        description: 'Trattamento di patologie muscolo-scheletriche: dolori articolari, tendinopatie, lombalgie e cervicalgie attraverso tecniche fisioterapiche mirate.' },
-      { icon: 'airline_seat_flat', name: 'Riabilitazione Post-Chirurgica', duration: '60 min',
-        description: 'Percorsi riabilitativi personalizzati dopo interventi ortopedici per recuperare la funzionalità e tornare alla vita quotidiana.' },
-      { icon: 'accessibility_new', name: 'Terapia Manuale', duration: '45 min',
-        description: 'Tecniche specifiche di mobilizzazione articolare e manipolazione per ridurre il dolore e migliorare la mobilità.' },
-      { icon: 'sports_handball', name: 'Fisioterapia Sportiva', duration: '60 min',
-        description: 'Valutazione e trattamento degli infortuni sportivi, con programmi di recupero per tornare all\'attività fisica in sicurezza.' },
-      { icon: 'self_improvement', name: 'Rieducazione Posturale', duration: '60 min',
-        description: 'Programmi personalizzati per la correzione di squilibri posturali, scoliosi e paramorfismi attraverso esercizi specifici.' },
-      { icon: 'psychology', name: 'Fisioterapia Neurologica', duration: '60 min',
-        description: 'Trattamento fisioterapico per patologie neurologiche come ictus, sclerosi multipla e Parkinson per migliorare la funzionalità motoria.' },
-    ]
-  }
-];
-
 @Component({
   selector: 'app-services',
-  imports: [CommonModule, UpperCasePipe],
+  standalone: true,
+  imports: [CurrencyPipe, ReactiveFormsModule, ButtonComponent, FormControlDirective, FormLabelDirective],
   templateUrl: './services.component.html'
 })
 export class ServicesComponent {
   private readonly specialistSvc = inject(SpecialistService);
+  private readonly clinicSvc     = inject(ClinicServicesService);
+  readonly authSvc               = inject(AuthService);
+  private readonly alertSvc      = inject(AlertService);
+  private readonly fb            = inject(FormBuilder);
 
   private readonly allSpecialists = resource({
     loader: () => firstValueFrom(this.specialistSvc.getAll()),
   });
 
-  readonly loading = computed(() => this.allSpecialists.isLoading());
+  private readonly allServices = resource({
+    loader: () => firstValueFrom(this.clinicSvc.getAll()),
+  });
+
+  readonly loading = computed(() =>
+    this.allServices.isLoading() || this.allSpecialists.isLoading()
+  );
+
+  readonly specialists = computed<Specialist[]>(() =>
+    this.allSpecialists.value() ?? []
+  );
 
   readonly categories = computed<ServiceCategory[]>(() => {
-    const specialists = this.allSpecialists.value();
+    const services    = this.allServices.value() ?? [];
+    const specialists = this.allSpecialists.value() ?? [];
 
-    // On error or before data arrives, show all configured areas as a fallback.
-    if (this.allSpecialists.error() || !specialists) {
-      return AREA_CONFIGS.map(config => ({
-        key:      config.key,
-        label:    config.areaName,
-        color:    'var(--primary)',
-        bgColor:  'var(--primary-light)',
-        services: config.services,
-        open:     true,
-      }));
+    const grouped = new Map<number, ServiceResponse[]>();
+    for (const s of services) {
+      const list = grouped.get(s.specialistId) ?? [];
+      list.push(s);
+      grouped.set(s.specialistId, list);
     }
 
-    return AREA_CONFIGS
-      .filter(config => specialists.some(s => config.roleMatcher(s.role)))
-      .map(config => ({
-        key:      config.key,
-        label:    config.areaName,
-        color:    'var(--primary)',
-        bgColor:  'var(--primary-light)',
-        services: config.services,
-        open:     true,
+    return specialists
+      .filter(sp => grouped.has(sp.id))
+      .map(sp => ({
+        specialistId: sp.id,
+        label: `${sp.firstName} ${sp.lastName} — ${sp.role}`,
+        services: grouped.get(sp.id) ?? [],
+        open: true,
       }));
+  });
+
+  readonly showForm = signal(false);
+  readonly saving   = signal(false);
+
+  readonly form: FormGroup = this.fb.group({
+    service:      ['', [Validators.required, Validators.maxLength(255)]],
+    price:        [null, [Validators.required, Validators.min(0)]],
+    specialistId: [null, Validators.required],
   });
 
   toggle(cat: ServiceCategory): void {
     cat.open = !cat.open;
+  }
+
+  openForm(): void {
+    this.form.reset();
+    this.showForm.set(true);
+  }
+
+  closeForm(): void {
+    this.showForm.set(false);
+  }
+
+  isInvalid(field: string): boolean {
+    const ctrl = this.form.get(field);
+    return !!ctrl && ctrl.invalid && ctrl.touched;
+  }
+
+  async submit(): Promise<void> {
+    if (this.form.invalid) {
+      this.form.markAllAsTouched();
+      return;
+    }
+    this.saving.set(true);
+    try {
+      await firstValueFrom(this.clinicSvc.create(this.form.getRawValue()));
+      this.alertSvc.show('Servizio creato con successo', 'success');
+      this.closeForm();
+      this.allServices.reload();
+    } finally {
+      this.saving.set(false);
+    }
   }
 }

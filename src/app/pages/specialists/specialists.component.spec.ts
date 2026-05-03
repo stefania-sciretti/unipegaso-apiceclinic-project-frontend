@@ -1,6 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { of } from 'rxjs';
-import { DoctorsComponent } from './doctors.component';
+import { SpecialistsComponent } from './specialists.component';
 import { SpecialistService } from '../../services/specialist.service';
 import { Router } from '@angular/router';
 import { Specialist } from '../../models/models';
@@ -12,9 +12,9 @@ const makeSpecialist = (overrides: Partial<Specialist> = {}): Specialist => ({
   ...overrides
 });
 
-describe('DoctorsComponent', () => {
-  let component: DoctorsComponent;
-  let fixture:   ComponentFixture<DoctorsComponent>;
+describe('SpecialistsComponent', () => {
+  let component: SpecialistsComponent;
+  let fixture:   ComponentFixture<SpecialistsComponent>;
   let mockRouter: jasmine.SpyObj<Router>;
 
   const mockSpecialistService = jasmine.createSpyObj('SpecialistService', ['getAll']);
@@ -25,14 +25,14 @@ describe('DoctorsComponent', () => {
     mockSpecialistService.getAll.and.returnValue(of([]));
 
     await TestBed.configureTestingModule({
-      imports: [DoctorsComponent],
+      imports: [SpecialistsComponent],
       providers: [
         { provide: SpecialistService, useValue: mockSpecialistService },
         { provide: Router,            useValue: mockRouter }
       ]
     }).compileComponents();
 
-    fixture   = TestBed.createComponent(DoctorsComponent);
+    fixture   = TestBed.createComponent(SpecialistsComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });
@@ -51,19 +51,18 @@ describe('DoctorsComponent', () => {
     mockSpecialistService.getAll.and.returnValue(of([
       makeSpecialist({ firstName: 'Luca', lastName: 'Siretta', role: 'PERSONAL_TRAINER' })
     ]));
-    // Re-create component so resource() picks up new spy
     TestBed.resetTestingModule();
     mockSpecialistService.getAll.and.returnValue(of([
       makeSpecialist({ firstName: 'Luca', lastName: 'Siretta', role: 'PERSONAL_TRAINER' })
     ]));
     await TestBed.configureTestingModule({
-      imports: [DoctorsComponent],
+      imports: [SpecialistsComponent],
       providers: [
         { provide: SpecialistService, useValue: mockSpecialistService },
         { provide: Router,            useValue: mockRouter }
       ]
     }).compileComponents();
-    const f = TestBed.createComponent(DoctorsComponent);
+    const f = TestBed.createComponent(SpecialistsComponent);
     f.detectChanges();
     await f.whenStable();
 
@@ -71,7 +70,6 @@ describe('DoctorsComponent', () => {
     expect(cards.length).toBe(1);
     expect(cards[0].firstName).toBe('Luca');
     expect(cards[0].lastName).toBe('Siretta');
-    expect(cards[0].role).toBe('PERSONAL_TRAINER');
     expect(cards[0].route).toBe('/specialist/luca');
     f.destroy();
   });
@@ -82,13 +80,13 @@ describe('DoctorsComponent', () => {
       makeSpecialist({ firstName: 'Simona', lastName: 'Ruberti', role: 'NUTRITIONIST' })
     ]));
     await TestBed.configureTestingModule({
-      imports: [DoctorsComponent],
+      imports: [SpecialistsComponent],
       providers: [
         { provide: SpecialistService, useValue: mockSpecialistService },
         { provide: Router,            useValue: mockRouter }
       ]
     }).compileComponents();
-    const f = TestBed.createComponent(DoctorsComponent);
+    const f = TestBed.createComponent(SpecialistsComponent);
     f.detectChanges();
     await f.whenStable();
 
@@ -104,13 +102,13 @@ describe('DoctorsComponent', () => {
       makeSpecialist({ firstName: 'Unknown', lastName: 'Person', role: 'NUTRITIONIST' })
     ]));
     await TestBed.configureTestingModule({
-      imports: [DoctorsComponent],
+      imports: [SpecialistsComponent],
       providers: [
         { provide: SpecialistService, useValue: mockSpecialistService },
         { provide: Router,            useValue: mockRouter }
       ]
     }).compileComponents();
-    const f = TestBed.createComponent(DoctorsComponent);
+    const f = TestBed.createComponent(SpecialistsComponent);
     f.detectChanges();
     await f.whenStable();
 

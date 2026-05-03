@@ -5,6 +5,8 @@ import {AppointmentService} from '../../services/appointment.service';
 import {ClinicalAppointmentService} from '../../services/clinical-appointment.service';
 import {AuthService} from '../../services/auth.service';
 import {BookingService} from '../../services/booking.service';
+import {ClinicServicesService} from '../../services/clinic-services.service';
+import {SpecialistService} from '../../services/specialist.service';
 import {Router} from '@angular/router';
 
 describe('HomepageComponent', () => {
@@ -16,6 +18,8 @@ describe('HomepageComponent', () => {
   const mockAuthService         = jasmine.createSpyObj('AuthService', ['openLoginModal'],
     { currentUser: null, isLoggedIn: false });
   const mockBookingService      = jasmine.createSpyObj('BookingService', ['setPendingBooking', 'clearPendingBooking']);
+  const mockClinicSvc           = jasmine.createSpyObj('ClinicServicesService', ['getAll']);
+  const mockSpecialistSvc       = jasmine.createSpyObj('SpecialistService', ['getAll']);
 
   beforeEach(async () => {
     mockApptService.getAll.calls.reset();
@@ -27,6 +31,8 @@ describe('HomepageComponent', () => {
     mockApptService.getAll.and.returnValue(of([]));
     mockClinicalApptService.getAll.and.returnValue(of([]));
     mockApptService.create.and.returnValue(of({}));
+    mockClinicSvc.getAll.and.returnValue(of([]));
+    mockSpecialistSvc.getAll.and.returnValue(of([]));
 
     await TestBed.configureTestingModule({
       imports: [HomepageComponent],
@@ -35,6 +41,8 @@ describe('HomepageComponent', () => {
         { provide: ClinicalAppointmentService, useValue: mockClinicalApptService },
         { provide: AuthService,                useValue: mockAuthService },
         { provide: BookingService,             useValue: mockBookingService },
+        { provide: ClinicServicesService,      useValue: mockClinicSvc },
+        { provide: SpecialistService,          useValue: mockSpecialistSvc },
         { provide: Router,                     useValue: { navigate: jasmine.createSpy() } }
       ]
     }).compileComponents();
@@ -46,8 +54,8 @@ describe('HomepageComponent', () => {
 
   it('should create', () => expect(component).toBeTruthy());
 
-  it('serviceAreas array is not empty', () => {
-    expect(component.serviceAreas.length).toBeGreaterThan(0);
+  it('bookingAreas() returns an array', () => {
+    expect(Array.isArray(component.bookingAreas())).toBeTrue();
   });
 
   it('getCalendarDays() returns real day numbers', () => {
@@ -62,8 +70,7 @@ describe('HomepageComponent', () => {
   });
 
   it('selectArea() sets selectedArea and clears selectedService', () => {
-    component.selectedService = component.serviceAreas[0].services?.[0] ?? null;
-    const area = component.serviceAreas[1] ?? component.serviceAreas[0];
+    const area = { id: 1, label: 'Area Test', icon: 'test', image: '', appointmentType: 'fitness' as const, navPath: '/test', navLabel: 'Test →', services: [] };
     component.selectArea(area);
     expect(component.selectedArea).toBe(area);
     expect(component.selectedService).toBeNull();

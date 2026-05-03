@@ -120,8 +120,8 @@
           <textarea appFormControl id="reportPrescription" formControlName="prescription" rows="2" placeholder="Farmaci prescritti, terapie…"></textarea>
         </div>
         <div class="mb-4">
-          <label appLabel for="reportDoctorNotes">Note del Medico</label>
-          <textarea appFormControl id="reportDoctorNotes" formControlName="doctorNotes" rows="2" placeholder="Note interne del medico…"></textarea>
+          <label appLabel for="reportSpecialistNotes">Note dello Specialista</label>
+          <textarea appFormControl id="reportSpecialistNotes" formControlName="doctorNotes" rows="2" placeholder="Note interne dello specialista…"></textarea>
         </div>
         <div class="flex justify-end gap-3 mt-6 pt-4 border-t border-[var(--border)]">
           <app-button variant="secondary" type="button" (click)="closeFormModal()">Annulla</app-button>
@@ -178,7 +178,7 @@
         <div class="bg-[var(--bg)] border border-[var(--border)] rounded-[10px] px-[0.9rem] py-[0.65rem] text-[0.92rem] leading-[1.55] whitespace-pre-wrap text-[var(--primary)] min-h-[2.5rem]">{{ selectedReport.prescription || '–' }}</div>
       </div>
       <div class="mb-4">
-        <p appLabel>Note del Medico</p>
+        <p appLabel>Note dello Specialista</p>
         <div class="bg-[var(--bg)] border border-[var(--border)] rounded-[10px] px-[0.9rem] py-[0.65rem] text-[0.92rem] leading-[1.55] whitespace-pre-wrap text-[var(--primary)] min-h-[2.5rem]">{{ selectedReport.doctorNotes || '–' }}</div>
       </div>
       <div class="flex justify-end gap-3 mt-6 pt-4 border-t border-[var(--border)]">

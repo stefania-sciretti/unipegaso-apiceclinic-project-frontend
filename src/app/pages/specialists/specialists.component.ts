@@ -18,17 +18,17 @@ const SPECIALIST_ENRICHMENT: Record<string, { gender: 'male' | 'female'; image: 
   simona:    { gender: 'female', image: 'assets/icons/simona.webp'    },
   luca:      { gender: 'male',   image: 'assets/icons/luca.webp'      },
   sandro:    { gender: 'male',   image: 'assets/icons/sandro.webp'    },
-  mihai:     { gender: 'male',   image: 'assets/icons/mihai.webp'     },
-  michele:   { gender: 'male',   image: 'assets/icons/mihai.webp'     },
+  michele:   { gender: 'male',   image: 'assets/icons/michele.webp'   },
   cristiana: { gender: 'female', image: 'assets/icons/cristiana.webp' },
 };
 
 @Component({
-  selector: 'app-doctors',
+  selector: 'app-specialists',
+  standalone: true,
   imports: [],
-  templateUrl: './doctors.component.html'
+  templateUrl: './specialists.component.html'
 })
-export class DoctorsComponent {
+export class SpecialistsComponent {
   private readonly specialistService = inject(SpecialistService);
   private readonly router            = inject(Router);
 
@@ -48,11 +48,22 @@ export class DoctorsComponent {
     return {
       firstName: s.firstName,
       lastName:  s.lastName,
-      role:      s.role,
+      role:      this.roleTranslate(s.role),
       gender:    enrichment.gender,
       image:     enrichment.image,
       route:     `/specialist/${key}`,
     };
+  }
+
+  roleTranslate(role: string): string {
+    switch (role) {
+      case 'NUTRITIONIST':   return 'Nutrizionista';
+      case 'PHYSIOTHERAPIST': return 'Fisioterapista';
+      case 'DIETOLOGIST':    return 'Dietologa';
+      case 'PERSONAL_TRAINER': return 'Personal Trainer';
+      case 'SPORT_DOCTOR':   return 'Medico Sportivo';
+      default: return role;
+    }
   }
 
   navigateTo(route: string): void { this.router.navigate([route]); }
