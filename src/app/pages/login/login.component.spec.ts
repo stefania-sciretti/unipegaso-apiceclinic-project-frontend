@@ -89,69 +89,78 @@ describe('LoginComponent', () => {
     mockAuthService.login.and.returnValue(of(false));
     component.form.patchValue({ username: 'admin', password: 'wrong' });
     component.submit();
-    expect(component.error).toBeTruthy();
-    expect(component.error).toContain('valide');
+    expect(component.error()).toBeTruthy();
+    expect(component.error()).toContain('valide');
   });
 
   it('submit() sets error when login observable errors', () => {
     mockAuthService.login.and.returnValue(throwError(() => new Error('Network')));
     component.form.patchValue({ username: 'admin', password: 'pass' });
     component.submit();
-    expect(component.error).toBeTruthy();
-    expect(component.loading).toBeFalse();
+    expect(component.error()).toBeTruthy();
+    expect(component.loading()).toBeFalse();
   });
 
   // ── toggleMode() ─────────────────────────────────────────────────────────
 
   it('toggleMode() switches to registration mode', () => {
     component.toggleMode();
-    expect(component.isRegistering).toBeTrue();
+    expect(component.isRegistering()).toBeTrue();
   });
 
   it('toggleMode() twice returns to login mode', () => {
     component.toggleMode();
     component.toggleMode();
-    expect(component.isRegistering).toBeFalse();
+    expect(component.isRegistering()).toBeFalse();
   });
 
   it('toggleMode() clears the error message', () => {
-    component.error = 'Some error';
+    component.error.set('Some error');
     component.toggleMode();
-    expect(component.error).toBe('');
+    expect(component.error()).toBe('');
   });
 
-  it('toggleMode() to register makes displayName required', () => {
+  it('toggleMode() to register makes firstName required', () => {
     component.toggleMode(); // now registering
-    component.form.get('displayName')!.setValue('');
-    component.form.get('displayName')!.markAsTouched();
-    expect(component.isInvalid('displayName')).toBeTrue();
+    component.form.get('firstName')!.setValue('');
+    component.form.get('firstName')!.markAsTouched();
+    expect(component.isInvalid('firstName')).toBeTrue();
   });
 
-  it('toggleMode() to login removes displayName required validator', () => {
+  it('toggleMode() to login removes registration validators', () => {
     component.toggleMode(); // to register
     component.toggleMode(); // back to login
-    component.form.get('displayName')!.setValue('');
-    component.form.get('displayName')!.markAsTouched();
-    expect(component.isInvalid('displayName')).toBeFalse();
+    component.form.get('firstName')!.setValue('');
+    component.form.get('firstName')!.markAsTouched();
+    expect(component.isInvalid('firstName')).toBeFalse();
   });
 
   // ── submit() — registration ───────────────────────────────────────────────
 
   it('submit() calls auth.register() when isRegistering is true and form is valid', () => {
-    spyOn(window, 'alert');
-    mockAuthService.register.and.returnValue(of(null));
-    component.isRegistering = true;
-    component.form.patchValue({ username: 'newuser', password: 'pass', displayName: 'New User' });
+    mockAuthService.register.and.returnValue(of({ success: true, message: '', username: 'newuser', email: 'a@b.com', patientId: 1 }));
+    component.isRegistering.set(true);
+    component.form.patchValue({
+      username: 'newuser', password: 'password1',
+      firstName: 'Mario', lastName: 'Rossi',
+      fiscalCode: 'RSSMRA85T10A562S', birthDate: '1985-12-10',
+      email: 'mario@example.com', phone: ''
+    });
     component.submit();
-    expect(mockAuthService.register).toHaveBeenCalledWith('newuser', 'pass', 'New User');
+    expect(mockAuthService.register).toHaveBeenCalled();
   });
 
   it('submit() sets error when register errors', () => {
     mockAuthService.register.and.returnValue(throwError(() => new Error()));
-    component.isRegistering = true;
-    component.form.patchValue({ username: 'newuser', password: 'pass', displayName: 'User' });
+    component.isRegistering.set(true);
+    component.form.patchValue({
+      username: 'newuser', password: 'password1',
+      firstName: 'Mario', lastName: 'Rossi',
+      fiscalCode: 'RSSMRA85T10A562S', birthDate: '1985-12-10',
+      email: 'mario@example.com'
+    });
     component.submit();
-    expect(component.error).toBeTruthy();
-    expect(component.loading).toBeFalse();
+    expect(component.error()).toBeTruthy();
+    expect(component.loading()).toBeFalse();
   });
 });

@@ -6,7 +6,9 @@
       </h1>
       <p class="text-[var(--primary-mid)] text-[0.95rem]">Gestione diagnosi, prescrizioni e note cliniche</p>
     </div>
-    <app-button (click)="openCreate()">+ Nuovo Referto</app-button>
+    @if (isAdmin) {
+      <app-button (click)="openCreate()">+ Nuovo Referto</app-button>
+    }
   </div>
 
   @if (alertSignal(); as alert) {
@@ -40,11 +42,13 @@
             }
             @for (r of reports; track r) {
               <tr class="hover:[&>td]:bg-sky-50">
-                <td appTd>
-                  <div class="flex items-center gap-[6px]">
-                    {{ r.patientFullName }}
-                  </div>
-                </td>
+                @if (isAdmin) {
+                  <td appTd>
+                    <div class="flex items-center gap-[6px]">
+                      {{ r.patientFullName }}
+                    </div>
+                  </td>
+                }
                 <td appTd>{{ r.specialistFullName }}</td>
                 <td appTd>
                   <span class="badge" [ngClass]="getVisitTypeBadgeClass(r.visitType)">
@@ -58,9 +62,11 @@
                     <app-button size="sm" (click)="openDetail(r)">
                       <span class="material-icons text-[15px] align-middle">visibility</span> Dettaglio
                     </app-button>
-                    <app-button size="sm" (click)="openEdit(r)">
-                      <span class="material-icons text-[15px] align-middle">edit</span> Modifica
-                    </app-button>
+                    @if (isAdmin) {
+                      <app-button size="sm" (click)="openEdit(r)">
+                        <span class="material-icons text-[15px] align-middle">edit</span> Modifica
+                      </app-button>
+                    }
                   </div>
                 </td>
               </tr>

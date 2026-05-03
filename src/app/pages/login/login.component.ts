@@ -1,12 +1,14 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, inject, signal, OnInit } from '@angular/core';
 import { NgClass } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
-import { AuthService } from '../../services/auth.service';
+import { AuthService, RegisterRequest } from '../../services/auth.service';
 import { BookingService, PendingBooking } from '../../services/booking.service';
 import { AppointmentService } from '../../services/appointment.service';
 import { HttpErrorResponse } from '@angular/common/http';
 import { ButtonComponent } from '../../components/ui/button/button.component';
+
+const FISCAL_CODE_PATTERN = /^[A-Z]{6}\d{2}[A-Z]\d{2}[A-Z]\d{3}[A-Z]$/;
 
 @Component({
   selector: 'app-login',
@@ -20,18 +22,21 @@ export class LoginComponent implements OnInit {
   private readonly bookingSvc     = inject(BookingService);
   private readonly appointmentSvc = inject(AppointmentService);
 
-  error           = '';
-  loading         = false;
-  isRegistering   = false;
-  showPassword    = false;
+  readonly error         = signal('');
+  readonly loading       = signal(false);
+  readonly isRegistering = signal(false);
+  readonly showPassword  = signal(false);
 
   readonly form: FormGroup = this.fb.group({
-    username:    ['', Validators.required],
-    password:    ['', Validators.required],
-    displayName: ['']   // required only when registering; validator added dynamically
+    username:   ['', Validators.required],
+    password:   ['', [Validators.required, Validators.minLength(8)]],
+    firstName:  [''],
+    lastName:   [''],
+    fiscalCode: [''],
+    birthDate:  [''],
+    email:      [''],
+    phone:      ['']
   });
-
-  constructor() {}
 
   ngOnInit(): void {
     if (this.auth.isLoggedIn) {
@@ -40,23 +45,37 @@ export class LoginComponent implements OnInit {
   }
 
   toggleMode(): void {
-    this.isRegistering = !this.isRegistering;
-    this.error = '';
+    this.isRegistering.update(v => !v);
+    this.error.set('');
     this.form.reset();
-    const ctrl = this.form.get('displayName')!;
-    if (this.isRegistering) {
-      ctrl.addValidators(Validators.required);
+
+    const registerFields: Record<string, any[]> = {
+      firstName:  [Validators.required],
+      lastName:   [Validators.required],
+      fiscalCode: [Validators.required, Validators.pattern(FISCAL_CODE_PATTERN)],
+      birthDate:  [Validators.required],
+      email:      [Validators.required, Validators.email]
+    };
+
+    if (this.isRegistering()) {
+      Object.entries(registerFields).forEach(([name, validators]) => {
+        this.form.get(name)!.addValidators(validators);
+      });
     } else {
-      ctrl.removeValidators(Validators.required);
+      Object.keys(registerFields).forEach(name => {
+        this.form.get(name)!.clearValidators();
+      });
     }
-    ctrl.updateValueAndValidity();
+    Object.keys(registerFields).forEach(name =>
+      this.form.get(name)!.updateValueAndValidity()
+    );
   }
 
   submit(): void {
     if (this.form.invalid) { this.form.markAllAsTouched(); return; }
-    this.loading = true;
-    this.error   = '';
-    if (this.isRegistering) {
+    this.loading.set(true);
+    this.error.set('');
+    if (this.isRegistering()) {
       this.register();
     } else {
       this.login();
@@ -67,7 +86,7 @@ export class LoginComponent implements OnInit {
     const { username, password } = this.form.value;
     this.auth.login(username, password).subscribe({
       next: (ok) => {
-        this.loading = false;
+        this.loading.set(false);
         if (ok) {
           const pending = this.bookingSvc.pendingBooking;
           if (pending) {
@@ -76,28 +95,38 @@ export class LoginComponent implements OnInit {
             this.router.navigate(['/homepage']);
           }
         } else {
-          this.error = 'Credenziali non valide. Riprova.';
+          this.error.set('Credenziali non valide. Riprova.');
         }
       },
       error: () => {
-        this.loading = false;
-        this.error = 'Credenziali non valide. Riprova.';
+        this.loading.set(false);
+        this.error.set('Credenziali non valide. Riprova.');
       }
     });
   }
 
   private register(): void {
-    const { username, password, displayName } = this.form.value;
-    this.auth.register(username, password, displayName).subscribe({
+    const v = this.form.value;
+    const request: RegisterRequest = {
+      firstName:  v.firstName.trim(),
+      lastName:   v.lastName.trim(),
+      fiscalCode: v.fiscalCode.trim().toUpperCase(),
+      birthDate:  v.birthDate,
+      email:      v.email.trim().toLowerCase(),
+      phone:      v.phone?.trim() || undefined,
+      username:   v.username,
+      password:   v.password
+    };
+    this.auth.register(request).subscribe({
       next: () => {
-        this.loading = false;
-        alert('Registrazione completata! Effettua il login.');
-        this.isRegistering = false;
+        this.loading.set(false);
+        this.isRegistering.set(false);
         this.form.reset();
+        this.error.set('');
       },
-      error: () => {
-        this.loading = false;
-        this.error = 'Username già esistente o dati non validi.';
+      error: (err: HttpErrorResponse) => {
+        this.loading.set(false);
+        this.error.set(err.error?.message ?? 'Dati non validi o già esistenti. Riprova.');
       }
     });
   }
@@ -106,8 +135,8 @@ export class LoginComponent implements OnInit {
     const bookingRequest = {
       patientId:    this.auth.currentUser!.id,
       specialistId: pending.specialistId,
-      scheduledAt: pending.scheduledAt,
-      serviceType: pending.serviceType
+      scheduledAt:  pending.scheduledAt,
+      serviceType:  pending.serviceType
     };
 
     if (pending.appointmentType === 'clinical') {

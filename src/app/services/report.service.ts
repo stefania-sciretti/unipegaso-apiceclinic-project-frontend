@@ -1,5 +1,5 @@
 import { Injectable, inject } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 
 export interface Report {
@@ -28,8 +28,9 @@ export class ReportService {
   private readonly base = '/api/reports';
   private readonly http = inject(HttpClient);
 
-  getAll(): Observable<Report[]> {
-    return this.http.get<Report[]>(this.base);
+  getAll(patientId?: number): Observable<Report[]> {
+    const params = patientId ? new HttpParams().set('patientId', patientId.toString()) : undefined;
+    return this.http.get<Report[]>(this.base, { params });
   }
 
   getById(id: number): Observable<Report> {

@@ -11,6 +11,7 @@ export interface AuthUser {
   username: string;
   role: UserRole;
   displayName: string;
+  patientId?: number;
 }
 
 export interface LoginRequest {
@@ -23,12 +24,26 @@ export interface LoginResponse {
   tokenType: string;
   username: string;
   role: string;
+  userId: number;
 }
 
 export interface RegisterRequest {
+  firstName: string;
+  lastName: string;
+  fiscalCode: string;
+  birthDate: string;
+  email: string;
+  phone?: string;
   username: string;
   password: string;
-  email?: string;
+}
+
+export interface RegisterResponse {
+  message: string;
+  success: boolean;
+  username: string;
+  email: string;
+  patientId: number;
 }
 
 const STORAGE_KEY = 'apice_auth_user';
@@ -50,17 +65,16 @@ export class AuthService {
   get currentUser(): AuthUser | null { return this.user(); }
   get isLoggedIn(): boolean          { return this.user() !== null; }
   get isAdmin(): boolean             { return this.user()?.role === 'admin'; }
+  get patientId(): number | undefined { return this.user()?.patientId; }
 
   openLoginModal(): void  { this.showModal.set(true);  }
   closeLoginModal(): void { this.showModal.set(false); }
 
-  register(username: string, password: string, email?: string): Observable<any> {
-    const request: RegisterRequest = {
-      username: username.trim().toLowerCase(),
-      password,
-      email
-    };
-    return this.http.post(`${API_URL}/register`, request);
+  register(request: RegisterRequest): Observable<RegisterResponse> {
+    return this.http.post<RegisterResponse>(`${API_URL}/register`, {
+      ...request,
+      username: request.username.trim().toLowerCase()
+    });
   }
 
   login(username: string, password: string): Observable<boolean> {
@@ -70,23 +84,27 @@ export class AuthService {
     };
     return this.http.post<LoginResponse>(`${API_URL}/login`, request).pipe(
       map(response => {
-        if (response?.accessToken) {
-          localStorage.setItem(TOKEN_STORAGE_KEY, response.accessToken);
-          const role: UserRole = response.role === 'ROLE_ADMIN' ? 'admin' : 'user';
-          const user: AuthUser = {
-            id: Date.now(),
-            username: response.username,
-            role,
-            displayName: response.username
-          };
-          this.user.set(user);
-          localStorage.setItem(STORAGE_KEY, JSON.stringify(user));
-          this.showModal.set(false);
-          return true;
-        }
-        return false;
+        if (!response?.accessToken) return false;
+        const role: UserRole = response.role === 'ROLE_ADMIN' ? 'admin' : 'user';
+        const patientId = role === 'user' ? response.userId : undefined;
+        this.persistUser(response, role, patientId);
+        return true;
       })
     );
+  }
+
+  private persistUser(response: LoginResponse, role: UserRole, patientId: number | undefined): void {
+    const user: AuthUser = {
+      id: response.userId,
+      username: response.username,
+      role,
+      displayName: response.username,
+      patientId
+    };
+    this.user.set(user);
+    localStorage.setItem(TOKEN_STORAGE_KEY, response.accessToken);
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(user));
+    this.showModal.set(false);
   }
 
   logout(): void {

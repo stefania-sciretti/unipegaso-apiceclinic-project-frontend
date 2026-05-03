@@ -1,9 +1,12 @@
-import { Component, HostListener, effect, inject } from '@angular/core';
+import { Component, HostListener, effect, inject, signal } from '@angular/core';
 import { Router } from '@angular/router';
 import { NgClass, NgOptimizedImage } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { AuthService } from '../../services/auth.service';
+import { HttpErrorResponse } from '@angular/common/http';
+import { AuthService, RegisterRequest } from '../../services/auth.service';
 import { ButtonComponent } from '../ui/button/button.component';
+
+const FISCAL_CODE_PATTERN = /^[A-Z]{6}\d{2}[A-Z]\d{2}[A-Z]\d{3}[A-Z]$/;
 
 @Component({
   selector: 'app-navbar',
@@ -15,22 +18,61 @@ export class NavbarComponent {
   private readonly router  = inject(Router);
   private readonly fb      = inject(FormBuilder);
 
-  activeMenu    : string | null = null;
-  mobileOpen    = false;
-  loginError    = '';
-  loginLoading  = false;
-  showPassword  = false;
+  activeMenu      : string | null = null;
+  mobileOpen      = false;
+  loginError      = '';
+  registerSuccess = '';
+  loginLoading    = false;
+  showPassword    = false;
+
+  readonly activeTab = signal<'login' | 'register'>('login');
 
   readonly loginForm: FormGroup = this.fb.group({
-    username: ['', Validators.required],
-    password: ['', Validators.required]
+    username:   ['', Validators.required],
+    password:   ['', Validators.required],
+    firstName:  [''],
+    lastName:   [''],
+    fiscalCode: [''],
+    birthDate:  [''],
+    email:      [''],
+    phone:      ['']
   });
 
+  private readonly registerOnlyFields: Record<string, any[]> = {
+    firstName:  [Validators.required],
+    lastName:   [Validators.required],
+    fiscalCode: [Validators.required, Validators.pattern(FISCAL_CODE_PATTERN)],
+    birthDate:  [Validators.required],
+    email:      [Validators.required, Validators.email]
+  };
+
   constructor() {
-    // Clear login error whenever the modal opens
     effect(() => {
-      if (this.auth.showModal()) this.loginError = '';
+      if (this.auth.showModal()) {
+        this.loginError = '';
+        this.registerSuccess = '';
+        this.activeTab.set('login');
+      }
     });
+  }
+
+  setTab(tab: 'login' | 'register'): void {
+    this.activeTab.set(tab);
+    this.loginError = '';
+    this.registerSuccess = '';
+    this.loginForm.reset();
+
+    if (tab === 'register') {
+      Object.entries(this.registerOnlyFields).forEach(([name, validators]) => {
+        this.loginForm.get(name)!.addValidators(validators);
+        this.loginForm.get(name)!.updateValueAndValidity();
+      });
+    } else {
+      Object.keys(this.registerOnlyFields).forEach(name => {
+        this.loginForm.get(name)!.clearValidators();
+        this.loginForm.get(name)!.updateValueAndValidity();
+      });
+    }
   }
 
   toggle(menu: string, e: MouseEvent): void {
@@ -53,13 +95,26 @@ export class NavbarComponent {
   }
 
   openLogin(): void  { this.auth.openLoginModal(); this.activeMenu = null; }
-  closeLogin(): void { this.auth.closeLoginModal(); this.loginForm.reset(); this.loginError = ''; }
+  closeLogin(): void {
+    this.auth.closeLoginModal();
+    this.loginForm.reset();
+    this.loginError = '';
+    this.registerSuccess = '';
+    this.activeTab.set('login');
+  }
 
   submitLogin(): void {
     if (this.loginForm.invalid) { this.loginForm.markAllAsTouched(); return; }
-    const { username, password } = this.loginForm.value;
     this.loginLoading = true;
     this.loginError   = '';
+    this.registerSuccess = '';
+
+    if (this.activeTab() === 'register') {
+      this.submitRegister();
+      return;
+    }
+
+    const { username, password } = this.loginForm.value;
     this.auth.login(username, password).subscribe({
       next: (ok) => {
         this.loginLoading = false;
@@ -68,6 +123,31 @@ export class NavbarComponent {
       error: () => {
         this.loginLoading = false;
         this.loginError = 'Credenziali non valide. Riprova.';
+      }
+    });
+  }
+
+  private submitRegister(): void {
+    const v = this.loginForm.value;
+    const request: RegisterRequest = {
+      firstName:  v.firstName.trim(),
+      lastName:   v.lastName.trim(),
+      fiscalCode: v.fiscalCode.trim().toUpperCase(),
+      birthDate:  v.birthDate,
+      email:      v.email.trim().toLowerCase(),
+      phone:      v.phone?.trim() || undefined,
+      username:   v.username,
+      password:   v.password
+    };
+    this.auth.register(request).subscribe({
+      next: () => {
+        this.loginLoading = false;
+        this.setTab('login');
+        this.registerSuccess = 'Registrazione completata! Accedi con le tue credenziali.';
+      },
+      error: (err: HttpErrorResponse) => {
+        this.loginLoading = false;
+        this.loginError = err.error?.message ?? 'Dati non validi o già esistenti. Riprova.';
       }
     });
   }

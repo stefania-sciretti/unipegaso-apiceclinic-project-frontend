@@ -12,3 +12,11 @@ export interface ClinicalAppointment {
   hasReport: boolean;
   createdAt: string;
 }
+
+export interface ClinicalAppointmentRequest {
+  patientId: number;
+  specialistId: number;
+  scheduledAt: string;
+  visitType: string;
+  notes?: string | null;
+}

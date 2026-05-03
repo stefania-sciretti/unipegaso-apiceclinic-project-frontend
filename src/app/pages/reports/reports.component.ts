@@ -1,10 +1,11 @@
-import { Component, inject, OnInit, signal } from '@angular/core';
+import { Component, inject, OnInit, signal, computed } from '@angular/core';
 import { DatePipe, NgClass, SlicePipe } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { of } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 import { Report, ReportService } from '../../services/report.service';
 import { AlertService } from '../../services/alert.service';
+import { AuthService } from '../../services/auth.service';
 import { ClinicalAppointmentService } from '../../services/clinical-appointment.service';
 import { ClinicalAppointment } from '../../models/models';
 import { TableThComponent, TableColumn } from '../../shared/table-th.component';
@@ -21,14 +22,15 @@ import { FormLabelDirective } from '../../shared/form-label.directive';
 })
 export class ReportsComponent implements OnInit {
 
-  readonly tableColumns = signal<TableColumn[]>([
-    { label: 'Paziente' },
+  readonly tableColumns = computed<TableColumn[]>(() => [
+    ...(this.auth.isAdmin ? [{ label: 'Paziente' }] : []),
     { label: 'Specialista' },
     { label: 'Tipo Visita' },
     { label: 'Data Emissione' },
     { label: 'Diagnosi (sintesi)' },
     { label: 'Azioni', extraClass: 'w-[200px] min-w-[200px]' }
   ]);
+  private readonly auth                       = inject(AuthService);
   private readonly reportService              = inject(ReportService);
   private readonly clinicalAppointmentService = inject(ClinicalAppointmentService);
   private readonly alertSvc                   = inject(AlertService);
@@ -51,6 +53,8 @@ export class ReportsComponent implements OnInit {
     doctorNotes:   ['']
   });
 
+  protected get isAdmin(): boolean { return this.auth.isAdmin; }
+
   constructor() {}
 
   ngOnInit(): void {
@@ -59,7 +63,8 @@ export class ReportsComponent implements OnInit {
 
   load(): void {
     this.loading = true;
-    this.reportService.getAll().pipe(
+    const patientId = !this.auth.isAdmin ? this.auth.patientId : undefined;
+    this.reportService.getAll(patientId).pipe(
       catchError(() => of([]))
     ).subscribe({
       next: (data) => {

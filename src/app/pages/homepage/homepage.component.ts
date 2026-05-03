@@ -4,6 +4,7 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { firstValueFrom } from 'rxjs';
 import { AppointmentService } from '../../services/appointment.service';
+import { ClinicalAppointmentService } from '../../services/clinical-appointment.service';
 import { AuthService } from '../../services/auth.service';
 import { BookingService, PendingBooking } from '../../services/booking.service';
 import { ClinicServicesService } from '../../services/clinic-services.service';
@@ -34,12 +35,13 @@ const AREA_CONFIG: Record<string, Omit<BookingArea, 'id' | 'services'>> = {
   templateUrl: './homepage.component.html'
 })
 export class HomepageComponent {
-  private readonly router         = inject(Router);
-  private readonly appointmentSvc = inject(AppointmentService);
-  protected readonly auth         = inject(AuthService);
-  private readonly bookingSvc     = inject(BookingService);
-  private readonly clinicSvc      = inject(ClinicServicesService);
-  private readonly specialistSvc  = inject(SpecialistService);
+  private readonly router              = inject(Router);
+  private readonly appointmentSvc      = inject(AppointmentService);
+  private readonly clinicalApptSvc     = inject(ClinicalAppointmentService);
+  protected readonly auth              = inject(AuthService);
+  private readonly bookingSvc          = inject(BookingService);
+  private readonly clinicSvc           = inject(ClinicServicesService);
+  private readonly specialistSvc       = inject(SpecialistService);
 
   private readonly allServices = resource({
     loader: () => firstValueFrom(this.clinicSvc.getAll()),
@@ -145,8 +147,23 @@ export class HomepageComponent {
     return this.allSpecialists.value()?.find(sp => sp.id === this.selectedService!.specialistId) ?? null;
   }
 
+  roleLabel(role: string | undefined): string {
+    switch (role) {
+      case 'NUTRITIONIST':    return 'Nutrizionista';
+      case 'PHYSIOTHERAPIST': return 'Fisioterapista';
+      case 'DIETOLOGIST':     return 'Dietologa';
+      case 'PERSONAL_TRAINER':return 'Personal Trainer';
+      case 'SPORT_DOCTOR':    return 'Medico Sportivo';
+      default: return role ?? '';
+    }
+  }
+
   getAvailableSlots(): string[] {
-    return [];
+    const slots: string[] = [];
+    for (let h = 9; h <= 18; h++) {
+      slots.push(`${String(h).padStart(2, '0')}:00`);
+    }
+    return slots;
   }
 
   selectTime(time: string): void { this.selectedTime = time; }
@@ -184,27 +201,30 @@ export class HomepageComponent {
 
     this.bookingLoading = true;
 
-    if (appointmentType === 'clinical') {
+    const onSuccess = () => {
       this.bookingLoading = false;
-      alert(`Prenotazione confermata per ${this.selectedService.service} il ${this.formatDateDisplay(this.selectedDate)} alle ${this.selectedTime}`);
+      alert(`Prenotazione confermata per ${this.selectedService?.service} il ${this.formatDateDisplay(this.selectedDate)} alle ${this.selectedTime}`);
       this.resetForm();
+    };
+    const onError = (err: HttpErrorResponse) => {
+      this.bookingLoading = false;
+      alert('Errore nella prenotazione: ' + (err.error?.message ?? 'Riprova più tardi'));
+    };
+
+    if (appointmentType === 'clinical') {
+      this.clinicalApptSvc.create({
+        patientId:   this.auth.currentUser!.id,
+        specialistId,
+        scheduledAt: appointmentDateTime,
+        visitType:   this.selectedService.service,
+      }).subscribe({ next: onSuccess, error: onError });
     } else {
       this.appointmentSvc.create({
-        patientId:   this.auth.currentUser.id,
+        patientId:   this.auth.currentUser!.id,
         specialistId,
         scheduledAt: appointmentDateTime,
         serviceType: this.selectedService.service,
-      }).subscribe({
-        next: () => {
-          this.bookingLoading = false;
-          alert(`Prenotazione confermata per ${this.selectedService?.service} il ${this.formatDateDisplay(this.selectedDate)} alle ${this.selectedTime}`);
-          this.resetForm();
-        },
-        error: (err: HttpErrorResponse) => {
-          this.bookingLoading = false;
-          alert('Errore nella prenotazione: ' + (err.error?.message ?? 'Riprova più tardi'));
-        }
-      });
+      }).subscribe({ next: onSuccess, error: onError });
     }
   }
 

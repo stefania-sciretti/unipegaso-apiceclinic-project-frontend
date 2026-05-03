@@ -1,7 +1,7 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { ClinicalAppointment } from '../models/models';
+import { ClinicalAppointment, ClinicalAppointmentRequest } from '../models/models';
 
 @Injectable({ providedIn: 'root' })
 export class ClinicalAppointmentService {
@@ -18,5 +18,9 @@ export class ClinicalAppointmentService {
 
   getById(id: number): Observable<ClinicalAppointment> {
     return this.http.get<ClinicalAppointment>(`${this.base}/${id}`);
+  }
+
+  create(body: ClinicalAppointmentRequest): Observable<ClinicalAppointment> {
+    return this.http.post<ClinicalAppointment>(this.base, body);
   }
 }

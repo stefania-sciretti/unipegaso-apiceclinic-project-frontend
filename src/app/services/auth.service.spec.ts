@@ -200,8 +200,14 @@ describe('AuthService', () => {
   });
 
   describe('register()', () => {
+    const baseRequest = {
+      firstName: 'Mario', lastName: 'Rossi',
+      fiscalCode: 'RSSMRA85T10A562S', birthDate: '1985-12-10',
+      email: 'mario@example.com', username: 'newuser', password: 'password123'
+    };
+
     it('should POST to /api/auth/register with username and password', () => {
-      service.register('newuser', 'password123').subscribe();
+      service.register(baseRequest).subscribe();
 
       const req = httpMock.expectOne('/api/auth/register');
       expect(req.request.method).toBe('POST');
@@ -211,7 +217,7 @@ describe('AuthService', () => {
     });
 
     it('should POST to /api/auth/register with email when provided', () => {
-      service.register('newuser', 'password123', 'user@example.com').subscribe();
+      service.register({ ...baseRequest, email: 'user@example.com' }).subscribe();
 
       const req = httpMock.expectOne('/api/auth/register');
       expect(req.request.body.email).toBe('user@example.com');
@@ -219,7 +225,7 @@ describe('AuthService', () => {
     });
 
     it('should normalize username to lowercase', () => {
-      service.register('NewUser', 'password123').subscribe();
+      service.register({ ...baseRequest, username: 'NewUser' }).subscribe();
 
       const req = httpMock.expectOne('/api/auth/register');
       expect(req.request.body.username).toBe('newuser');

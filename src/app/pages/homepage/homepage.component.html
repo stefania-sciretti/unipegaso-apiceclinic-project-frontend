@@ -11,7 +11,7 @@
   <div class="bg-gradient-to-br from-[var(--primary)] to-[var(--primary-mid)] rounded-xl p-8 mb-12 shadow-[0_4px_20px_rgba(17,45,78,0.15)] text-white">
     <h2 class="text-[1.75rem] font-bold mb-8 text-white">Cosa vuoi prenotare?</h2>
 
-    <div class="grid grid-cols-1 lg:grid-cols-[1fr_1fr_auto] gap-6 items-stretch">
+    <div class="grid grid-cols-1 lg:grid-cols-[1fr_1fr_1fr_auto] gap-6 items-stretch">
       <!-- Step 1: Select Area/Service -->
       <div class="flex flex-col gap-3 h-full">
         <p class="text-[0.9rem] font-semibold text-white/90 tracking-wide">1. Cosa vuoi prenotare? *</p>
@@ -81,93 +81,87 @@
         }
       </div>
 
-      <!-- Step 2: Select Date with Calendar -->
-      @if (selectedService) {
-        <div class="flex flex-col gap-3 h-full">
-          <p class="text-[0.9rem] font-semibold text-white/90 tracking-wide">2. Da quando sei disponibile? *</p>
-          <div class="bg-white rounded-lg p-6 shadow-[0_2px_8px_rgba(0,0,0,0.1)] flex-1">
-            <div class="flex items-center justify-between mb-6">
-              <button type="button"
-                      class="bg-transparent border-0 p-0 material-icons cursor-pointer text-[var(--primary)] transition-colors duration-200 hover:text-[var(--primary-mid)]"
-                      aria-label="Mese precedente"
-                      (click)="previousMonth()">chevron_left</button>
-              <h3 class="text-[1.1rem] font-semibold text-[var(--primary)] m-0 capitalize">{{ currentMonth | date: 'MMMM yyyy' : 'it-IT' }}</h3>
-              <button type="button"
-                      class="bg-transparent border-0 p-0 material-icons cursor-pointer text-[var(--primary)] transition-colors duration-200 hover:text-[var(--primary-mid)]"
-                      aria-label="Mese successivo"
-                      (click)="nextMonth()">chevron_right</button>
-            </div>
-            <div class="grid grid-cols-7 gap-2">
-              @for (day of ['L', 'M', 'M', 'G', 'V', 'S', 'D']; track day) {
-                <div class="text-center font-semibold text-[var(--primary)] text-[0.85rem] p-2">{{ day }}</div>
+      <!-- Step 2: Select Date with Calendar — always in DOM to avoid grid layout shift -->
+      <div [ngClass]="!selectedService ? 'hidden lg:block lg:invisible lg:pointer-events-none flex-col gap-3 h-full' : 'flex flex-col gap-3 h-full'">
+        <p class="text-[0.9rem] font-semibold text-white/90 tracking-wide">2. Da quando sei disponibile? *</p>
+        <div class="bg-white rounded-lg p-6 shadow-[0_2px_8px_rgba(0,0,0,0.1)] flex-1">
+          <div class="flex items-center justify-between mb-6">
+            <button type="button"
+                    class="bg-transparent border-0 p-0 material-icons cursor-pointer text-[var(--primary)] transition-colors duration-200 hover:text-[var(--primary-mid)]"
+                    aria-label="Mese precedente"
+                    (click)="previousMonth()">chevron_left</button>
+            <h3 class="text-[1.1rem] font-semibold text-[var(--primary)] m-0 capitalize">{{ currentMonth | date: 'MMMM yyyy' : 'it-IT' }}</h3>
+            <button type="button"
+                    class="bg-transparent border-0 p-0 material-icons cursor-pointer text-[var(--primary)] transition-colors duration-200 hover:text-[var(--primary-mid)]"
+                    aria-label="Mese successivo"
+                    (click)="nextMonth()">chevron_right</button>
+          </div>
+          <div class="grid grid-cols-7 gap-2">
+            @for (day of ['L', 'M', 'M', 'G', 'V', 'S', 'D']; track day) {
+              <div class="text-center font-semibold text-[var(--primary)] text-[0.85rem] p-2">{{ day }}</div>
+            }
+            @for (d of getCalendarDays(); track d) {
+              @if (d !== 0) {
+                <button
+                  class="aspect-square flex items-center justify-center border rounded-md bg-white text-[var(--primary)] cursor-pointer text-[0.9rem] font-medium transition-all duration-200"
+                  [ngClass]="isDateSelected(d)
+                    ? 'bg-[var(--primary)] text-white border-[var(--primary)] font-bold'
+                    : isDateDisabled(d)
+                      ? 'opacity-50 cursor-not-allowed bg-gray-100 text-gray-400 border-gray-200'
+                      : 'border-gray-200 hover:border-[var(--primary)] hover:bg-slate-100'"
+                  [disabled]="isDateDisabled(d)"
+                  (click)="selectCalendarDate(d)">
+                  {{ d }}
+                </button>
               }
-              @for (d of getCalendarDays(); track d) {
-                @if (d !== 0) {
-                  <button
-                    class="aspect-square border rounded-md bg-white text-[var(--primary)] cursor-pointer text-[0.9rem] font-medium transition-all duration-200"
-                    [ngClass]="isDateSelected(d)
-                      ? 'bg-[var(--primary)] text-white border-[var(--primary)] font-bold'
-                      : isDateDisabled(d)
-                        ? 'opacity-50 cursor-not-allowed bg-gray-100 text-gray-400 border-gray-200'
-                        : 'border-gray-200 hover:border-[var(--primary)] hover:bg-slate-100'"
-                    [disabled]="isDateDisabled(d)"
-                    (click)="selectCalendarDate(d)">
-                    {{ d }}
-                  </button>
-                }
-                @if (d === 0) {
-                  <div class="aspect-square opacity-50 cursor-not-allowed bg-gray-100 border border-gray-200 rounded-md"></div>
-                }
+              @if (d === 0) {
+                <div class="aspect-square opacity-50 cursor-not-allowed bg-gray-100 border border-gray-200 rounded-md"></div>
+              }
+            }
+          </div>
+        </div>
+      </div>
+
+      <!-- Step 3: Doctor Availability — always in DOM to avoid grid layout shift -->
+      <div [ngClass]="!selectedService || !selectedDate ? 'hidden lg:block lg:invisible lg:pointer-events-none flex-col gap-3 h-full' : 'flex flex-col gap-3 h-full'">
+        <p class="text-[0.9rem] font-semibold text-white/90 tracking-wide">3. Seleziona orario *</p>
+        <div class="bg-white rounded-lg overflow-hidden shadow-[0_2px_8px_rgba(0,0,0,0.1)] flex-1">
+          <div class="flex items-center gap-6 p-6 bg-gradient-to-br from-slate-100 to-slate-50 border-b border-gray-200">
+            <span class="material-icons text-[3rem] text-[var(--primary)] shrink-0">{{ selectedArea?.icon }}</span>
+            <div class="flex-1">
+              <h4 class="text-[1.1rem] font-semibold text-[var(--primary)] m-0 mb-1">{{ getSelectedSpecialist()?.lastName }} {{ getSelectedSpecialist()?.firstName }}</h4>
+              <p class="text-[0.9rem] text-gray-500 m-0">{{ roleLabel(getSelectedSpecialist()?.role) }}</p>
+            </div>
+          </div>
+          <div class="p-6">
+            <div class="text-[0.9rem] text-gray-500 font-medium mb-4">
+              {{ selectedDate | date: 'd MMMM yyyy' : 'it-IT' }}
+            </div>
+            <div class="grid gap-3 grid-cols-[repeat(auto-fit,minmax(100px,1fr))]">
+              @for (slot of getAvailableSlots(); track slot) {
+                <button
+                  class="px-4 py-3 border rounded-md text-[0.9rem] font-medium cursor-pointer transition-all duration-200"
+                  [ngClass]="selectedTime === slot
+                    ? 'bg-[var(--primary)] text-white border-[var(--primary)] font-semibold'
+                    : 'bg-white text-[var(--primary)] border-gray-200 hover:border-[var(--primary)] hover:bg-slate-100'"
+                  (click)="selectTime(slot)">
+                  {{ slot }}
+                </button>
               }
             </div>
           </div>
         </div>
-      }
+      </div>
 
-      <!-- Step 3: Doctor Availability -->
-      @if (selectedService && selectedDate) {
-        <div class="flex flex-col gap-3 h-full">
-          <p class="text-[0.9rem] font-semibold text-white/90 tracking-wide">3. Seleziona orario *</p>
-          <div class="bg-white rounded-lg overflow-hidden shadow-[0_2px_8px_rgba(0,0,0,0.1)] flex-1">
-            <!-- Doctor Card -->
-            <div>
-              <div class="flex items-center gap-6 p-6 bg-gradient-to-br from-slate-100 to-slate-50 border-b border-gray-200">
-                <span class="material-icons text-[3rem] text-[var(--primary)] shrink-0">{{ selectedArea?.icon }}</span>
-                <div class="flex-1">
-                  <h4 class="text-[1.1rem] font-semibold text-[var(--primary)] m-0 mb-1">{{ getSelectedSpecialist()?.firstName }} {{ getSelectedSpecialist()?.lastName }}</h4>
-                  <p class="text-[0.9rem] text-gray-500 m-0">{{ getSelectedSpecialist()?.role }}</p>
-                </div>
-              </div>
-              <!-- Time Slots -->
-              <div class="p-6">
-                <div class="text-[0.9rem] text-gray-500 font-medium mb-4">
-                  {{ selectedDate | date: 'd MMMM yyyy' : 'it-IT' }}
-                </div>
-                <div class="grid gap-3 grid-cols-[repeat(auto-fit,minmax(100px,1fr))]">
-                  @for (slot of getAvailableSlots(); track slot) {
-                    <button
-                      class="px-4 py-3 border rounded-md text-[0.9rem] font-medium cursor-pointer transition-all duration-200"
-                      [ngClass]="selectedTime === slot
-                        ? 'bg-[var(--primary)] text-white border-[var(--primary)] font-semibold'
-                        : 'bg-white text-[var(--primary)] border-gray-200 hover:border-[var(--primary)] hover:bg-slate-100'"
-                      (click)="selectTime(slot)">
-                      {{ slot }}
-                    </button>
-                  }
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      }
-
-      <!-- Booking Button -->
-      <app-button
-        [disabled]="!selectedService || !selectedDate || !selectedTime"
-        extraClass="gap-3 px-8 py-4 text-[1.05rem] uppercase tracking-wide whitespace-nowrap rounded-lg"
-        (click)="bookAppointment()">
-        <span class="material-icons text-[1.3rem]">check</span> Prenota
-      </app-button>
+      <!-- Booking Button: visible only when all 3 steps are complete -->
+      <div class="flex items-stretch"
+           [ngClass]="!selectedService || !selectedDate || !selectedTime ? 'hidden lg:flex lg:invisible lg:pointer-events-none' : ''">
+        <app-button
+          extraClass="gap-3 px-8 py-4 text-[1.05rem] uppercase tracking-wide whitespace-nowrap rounded-lg"
+          (click)="bookAppointment()">
+          <span class="material-icons text-[1.3rem]">check</span> Prenota
+        </app-button>
+      </div>
     </div>
   </div>
 

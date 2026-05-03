@@ -74,14 +74,7 @@
           <a class="flex items-center gap-[0.35rem] px-[0.85rem] py-[0.4rem] rounded-md text-sm font-medium cursor-pointer transition-colors duration-150 hover:bg-white/15 hover:text-white"
             [ngClass]="isActive('/appointments') ? 'bg-white/15 text-white' : 'text-white/[.82]'"
             (click)="go('/appointments')">
-            <span class="material-icons text-[1.1rem] leading-none">calendar_today</span> Prenota
-          </a>
-        </li>
-        <li class="flex items-center">
-          <a class="flex items-center gap-[0.35rem] px-[0.85rem] py-[0.4rem] rounded-md text-sm font-medium cursor-pointer transition-colors duration-150 hover:bg-white/15 hover:text-white"
-            [ngClass]="isActive('/reports') ? 'bg-white/15 text-white' : 'text-white/[.82]'"
-            (click)="go('/reports')">
-            <span class="material-icons text-[1.1rem] leading-none">assignment</span> I miei referti
+            <span class="material-icons text-[1.1rem] leading-none">calendar_today</span> I miei appuntamenti
           </a>
         </li>
       }
@@ -128,6 +121,11 @@
           </a>
           @if (activeMenu === 'user') {
             <ul class="absolute top-full right-0 left-auto bg-[var(--primary)] rounded-[8px_0_8px_8px] shadow-[0_8px_24px_rgba(0,0,0,0.30)] min-w-[160px] list-none py-[0.35rem] z-[10000] border border-white/[.12] border-t-0 p-0">
+              <li class="list-none">
+                <a class="flex items-center gap-2 px-5 py-[0.6rem] whitespace-nowrap text-sm cursor-pointer text-white/[.82] hover:bg-white/15 hover:text-white transition-colors duration-150" (click)="go('/reports')">
+                  <span class="material-icons text-[1.1rem]">assignment</span> I miei referti
+                </a>
+              </li>
               <li class="list-none">
                 <a class="flex items-center gap-2 px-5 py-[0.6rem] whitespace-nowrap text-sm cursor-pointer text-red-400 hover:bg-white/15 transition-colors duration-150" (click)="logout()">
                   <span class="material-icons text-[1.1rem]">logout</span> Esci
@@ -189,12 +187,14 @@
   </div>
 </nav>
 
-<!-- Login Modal -->
+<!-- Login / Register Modal -->
 @if (auth.showModal()) {
   <div class="fixed inset-0 bg-[rgba(17,45,78,0.55)] backdrop-blur-sm flex items-center justify-center z-[99999] p-4"
     (click)="closeLogin()" (keydown.escape)="closeLogin()">
-    <dialog class="bg-white rounded-2xl shadow-[0_24px_64px_rgba(17,45,78,0.35)] px-[2.2rem] pt-8 pb-[1.8rem] w-full max-w-[400px] relative border-0"
-      open aria-label="Finestra di login" (click)="$event.stopPropagation()" (keydown)="$event.stopPropagation()">
+    <dialog
+      [ngClass]="activeTab() === 'register' ? 'max-w-[620px]' : 'max-w-[400px]'"
+      class="bg-white rounded-2xl shadow-[0_24px_64px_rgba(17,45,78,0.35)] px-[2.2rem] pt-8 pb-[1.8rem] w-full relative border-0"
+      open aria-label="Accesso o registrazione" (click)="$event.stopPropagation()" (keydown)="$event.stopPropagation()">
 
       <app-button variant="close" extraClass="absolute top-3 right-4" (click)="closeLogin()">&times;</app-button>
 
@@ -202,8 +202,27 @@
         <img ngSrc="assets/logo/logomark.svg" alt="Apice Clinic" class="h-12 w-auto" height="227" width="249"/>
       </div>
 
-      <h2 class="text-[1.3rem] font-bold text-[var(--primary)] text-center mb-1">Accedi al portale</h2>
-      <p class="text-[0.82rem] text-[var(--text-muted)] text-center mb-5">Inserisci le tue credenziali per accedere alle funzioni riservate</p>
+      <!-- Tabs -->
+      <div class="flex border-b border-[var(--border)] mb-5">
+        <button type="button"
+          class="flex-1 flex items-center justify-center gap-1 py-[0.65rem] text-sm font-semibold transition-colors duration-150 border-b-2 -mb-px"
+          [ngClass]="activeTab() === 'login' ? 'border-[var(--primary)] text-[var(--primary)]' : 'border-transparent text-[var(--text-muted)] hover:text-[var(--primary)]'"
+          (click)="setTab('login')">
+          <span class="material-icons text-[1rem]">login</span> Accedi
+        </button>
+        <button type="button"
+          class="flex-1 flex items-center justify-center gap-1 py-[0.65rem] text-sm font-semibold transition-colors duration-150 border-b-2 -mb-px"
+          [ngClass]="activeTab() === 'register' ? 'border-[var(--primary)] text-[var(--primary)]' : 'border-transparent text-[var(--text-muted)] hover:text-[var(--primary)]'"
+          (click)="setTab('register')">
+          <span class="material-icons text-[1rem]">person_add</span> Registrati
+        </button>
+      </div>
+
+      @if (registerSuccess) {
+        <div class="bg-green-100 text-green-700 rounded-lg px-4 py-[0.7rem] text-sm flex items-center gap-[0.4rem] mb-4">
+          <span class="material-icons text-[1rem]">check_circle</span> {{ registerSuccess }}
+        </div>
+      }
 
       @if (loginError) {
         <div class="bg-red-100 text-red-700 rounded-lg px-4 py-[0.7rem] text-sm flex items-center gap-[0.4rem] mb-4">
@@ -212,56 +231,137 @@
       }
 
       <form [formGroup]="loginForm" (ngSubmit)="submitLogin()" class="flex flex-col gap-4">
-        <div>
-          <label for="login-username" class="block text-sm font-semibold text-[var(--primary)] mb-[0.35rem]">Username</label>
-          <div class="relative flex items-center">
-            <span class="material-icons absolute left-3 text-[var(--text-muted)] text-[1.1rem] pointer-events-none">person</span>
-            <input id="login-username" formControlName="username" type="text" placeholder="es. mario.rossi"
-              autocomplete="username" aria-describedby="username-error"
-              class="w-full pl-10 pr-3 py-[0.65rem] border-[1.5px] border-[var(--border)] rounded-[var(--radius)] text-[0.95rem] text-[var(--text)] bg-[var(--bg)] outline-none transition-colors duration-200 focus:border-[var(--primary-mid)] focus:bg-white"/>
+
+        <!-- Username + Password (sempre visibili) -->
+        <div [ngClass]="activeTab() === 'register' ? 'grid grid-cols-1 sm:grid-cols-2 gap-4' : 'flex flex-col gap-4'">
+          <div>
+            <label for="login-username" class="block text-sm font-semibold text-[var(--primary)] mb-[0.35rem]">Username</label>
+            <div class="relative flex items-center">
+              <span class="material-icons absolute left-3 text-[var(--text-muted)] text-[1.1rem] pointer-events-none">person</span>
+              <input id="login-username" formControlName="username" type="text" placeholder="es. mario.rossi"
+                autocomplete="username"
+                class="w-full pl-10 pr-3 py-[0.65rem] border-[1.5px] border-[var(--border)] rounded-[var(--radius)] text-[0.95rem] text-[var(--text)] bg-[var(--bg)] outline-none transition-colors duration-200 focus:border-[var(--primary-mid)] focus:bg-white"/>
+            </div>
+            @if (isInvalid('username')) {
+              <div class="text-[0.78rem] text-[var(--danger)] mt-1">Campo obbligatorio</div>
+            }
           </div>
-          @if (isInvalid('username')) {
-            <div class="text-[0.78rem] text-[var(--danger)] mt-1" id="username-error">Campo obbligatorio</div>
-          }
-        </div>
-        <div>
-          <label for="login-password" class="block text-sm font-semibold text-[var(--primary)] mb-[0.35rem]">Password</label>
-          <div class="relative flex items-center">
-            <span class="material-icons absolute left-3 text-[var(--text-muted)] text-[1.1rem] pointer-events-none">lock</span>
-            <input id="login-password" formControlName="password" [type]="showPassword ? 'text' : 'password'" placeholder="••••••••"
-              autocomplete="current-password" aria-describedby="password-error"
-              class="w-full pl-10 pr-10 py-[0.65rem] border-[1.5px] border-[var(--border)] rounded-[var(--radius)] text-[0.95rem] text-[var(--text)] bg-[var(--bg)] outline-none transition-colors duration-200 focus:border-[var(--primary-mid)] focus:bg-white"/>
-            <app-button variant="icon" extraClass="absolute right-3 p-0"
-              [ariaLabel]="showPassword ? 'Nascondi password' : 'Mostra password'"
-              (click)="showPassword = !showPassword">
-              <span class="material-icons text-[1.1rem]">{{ showPassword ? 'visibility_off' : 'visibility' }}</span>
-            </app-button>
+
+          <div>
+            <label for="login-password" class="block text-sm font-semibold text-[var(--primary)] mb-[0.35rem]">Password</label>
+            <div class="relative flex items-center">
+              <span class="material-icons absolute left-3 text-[var(--text-muted)] text-[1.1rem] pointer-events-none">lock</span>
+              <input id="login-password" formControlName="password" [type]="showPassword ? 'text' : 'password'" placeholder="••••••••"
+                [attr.autocomplete]="activeTab() === 'register' ? 'new-password' : 'current-password'"
+                class="w-full pl-10 pr-10 py-[0.65rem] border-[1.5px] border-[var(--border)] rounded-[var(--radius)] text-[0.95rem] text-[var(--text)] bg-[var(--bg)] outline-none transition-colors duration-200 focus:border-[var(--primary-mid)] focus:bg-white"/>
+              <app-button variant="icon" extraClass="absolute right-3 p-0"
+                [ariaLabel]="showPassword ? 'Nascondi password' : 'Mostra password'"
+                (click)="showPassword = !showPassword">
+                <span class="material-icons text-[1.1rem]">{{ showPassword ? 'visibility_off' : 'visibility' }}</span>
+              </app-button>
+            </div>
+            @if (isInvalid('password')) {
+              <div class="text-[0.78rem] text-[var(--danger)] mt-1">Campo obbligatorio</div>
+            }
           </div>
-          @if (isInvalid('password')) {
-            <div class="text-[0.78rem] text-[var(--danger)] mt-1" id="password-error">Campo obbligatorio</div>
-          }
         </div>
+
+        <!-- Campi extra: solo registrazione -->
+        @if (activeTab() === 'register') {
+          <div class="border-t border-[var(--border)] pt-4 grid grid-cols-1 sm:grid-cols-2 gap-4">
+
+            <div class="flex flex-col gap-1">
+              <label for="reg-firstName" class="text-[0.85rem] font-semibold text-[var(--primary)]">Nome *</label>
+              <div class="flex items-center border-[1.5px] rounded-[var(--radius)] overflow-hidden focus-within:border-[var(--primary-mid)]"
+                [ngClass]="isInvalid('firstName') ? 'border-[var(--danger)]' : 'border-[var(--border)]'">
+                <span class="material-icons text-[var(--text-muted)] px-3 text-[1.1rem] pointer-events-none">badge</span>
+                <input id="reg-firstName" formControlName="firstName" type="text" placeholder="Mario"
+                  class="flex-1 py-[0.6rem] pr-3 outline-none text-[0.9rem] text-[var(--primary)] bg-transparent"/>
+              </div>
+              @if (isInvalid('firstName')) {
+                <span class="text-[var(--danger)] text-[0.78rem]">Campo obbligatorio</span>
+              }
+            </div>
+
+            <div class="flex flex-col gap-1">
+              <label for="reg-lastName" class="text-[0.85rem] font-semibold text-[var(--primary)]">Cognome *</label>
+              <div class="flex items-center border-[1.5px] rounded-[var(--radius)] overflow-hidden focus-within:border-[var(--primary-mid)]"
+                [ngClass]="isInvalid('lastName') ? 'border-[var(--danger)]' : 'border-[var(--border)]'">
+                <span class="material-icons text-[var(--text-muted)] px-3 text-[1.1rem] pointer-events-none">badge</span>
+                <input id="reg-lastName" formControlName="lastName" type="text" placeholder="Rossi"
+                  class="flex-1 py-[0.6rem] pr-3 outline-none text-[0.9rem] text-[var(--primary)] bg-transparent"/>
+              </div>
+              @if (isInvalid('lastName')) {
+                <span class="text-[var(--danger)] text-[0.78rem]">Campo obbligatorio</span>
+              }
+            </div>
+
+            <div class="flex flex-col gap-1">
+              <label for="reg-fiscalCode" class="text-[0.85rem] font-semibold text-[var(--primary)]">Codice Fiscale *</label>
+              <div class="flex items-center border-[1.5px] rounded-[var(--radius)] overflow-hidden focus-within:border-[var(--primary-mid)]"
+                [ngClass]="isInvalid('fiscalCode') ? 'border-[var(--danger)]' : 'border-[var(--border)]'">
+                <span class="material-icons text-[var(--text-muted)] px-3 text-[1.1rem] pointer-events-none">article</span>
+                <input id="reg-fiscalCode" formControlName="fiscalCode" type="text" placeholder="RSSMRA85T10A562S"
+                  maxlength="16" style="text-transform: uppercase"
+                  class="flex-1 py-[0.6rem] pr-3 outline-none text-[0.9rem] text-[var(--primary)] bg-transparent font-mono tracking-wider"/>
+              </div>
+              @if (isInvalid('fiscalCode')) {
+                <span class="text-[var(--danger)] text-[0.78rem]">
+                  @if (loginForm.get('fiscalCode')?.errors?.['required']) { Campo obbligatorio }
+                  @else { Formato non valido (16 caratteri) }
+                </span>
+              }
+            </div>
+
+            <div class="flex flex-col gap-1">
+              <label for="reg-birthDate" class="text-[0.85rem] font-semibold text-[var(--primary)]">Data di nascita *</label>
+              <div class="flex items-center border-[1.5px] rounded-[var(--radius)] overflow-hidden focus-within:border-[var(--primary-mid)]"
+                [ngClass]="isInvalid('birthDate') ? 'border-[var(--danger)]' : 'border-[var(--border)]'">
+                <span class="material-icons text-[var(--text-muted)] px-3 text-[1.1rem] pointer-events-none">cake</span>
+                <input id="reg-birthDate" formControlName="birthDate" type="date"
+                  class="flex-1 py-[0.6rem] pr-3 outline-none text-[0.9rem] text-[var(--primary)] bg-transparent"/>
+              </div>
+              @if (isInvalid('birthDate')) {
+                <span class="text-[var(--danger)] text-[0.78rem]">Campo obbligatorio</span>
+              }
+            </div>
+
+            <div class="flex flex-col gap-1">
+              <label for="reg-email" class="text-[0.85rem] font-semibold text-[var(--primary)]">Email *</label>
+              <div class="flex items-center border-[1.5px] rounded-[var(--radius)] overflow-hidden focus-within:border-[var(--primary-mid)]"
+                [ngClass]="isInvalid('email') ? 'border-[var(--danger)]' : 'border-[var(--border)]'">
+                <span class="material-icons text-[var(--text-muted)] px-3 text-[1.1rem] pointer-events-none">email</span>
+                <input id="reg-email" formControlName="email" type="email" placeholder="mario.rossi@example.com"
+                  autocomplete="email"
+                  class="flex-1 py-[0.6rem] pr-3 outline-none text-[0.9rem] text-[var(--primary)] bg-transparent"/>
+              </div>
+              @if (isInvalid('email')) {
+                <span class="text-[var(--danger)] text-[0.78rem]">
+                  @if (loginForm.get('email')?.errors?.['required']) { Campo obbligatorio }
+                  @else { Email non valida }
+                </span>
+              }
+            </div>
+
+            <div class="flex flex-col gap-1">
+              <label for="reg-phone" class="text-[0.85rem] font-semibold text-[var(--primary)]">Telefono</label>
+              <div class="flex items-center border-[1.5px] rounded-[var(--radius)] overflow-hidden focus-within:border-[var(--primary-mid)] border-[var(--border)]">
+                <span class="material-icons text-[var(--text-muted)] px-3 text-[1.1rem] pointer-events-none">phone</span>
+                <input id="reg-phone" formControlName="phone" type="tel" placeholder="+39 333 1234567"
+                  autocomplete="tel"
+                  class="flex-1 py-[0.6rem] pr-3 outline-none text-[0.9rem] text-[var(--primary)] bg-transparent"/>
+              </div>
+            </div>
+
+          </div>
+        }
+
         <app-button type="submit" [disabled]="loginLoading" extraClass="w-full mt-2 py-3 text-base">
-          {{ loginLoading ? 'Accesso in corso...' : 'Accedi' }}
+          @if (loginLoading) { {{ activeTab() === 'register' ? 'Registrazione in corso...' : 'Accesso in corso...' }} }
+          @else { {{ activeTab() === 'register' ? 'Registrati' : 'Accedi' }} }
         </app-button>
       </form>
 
-      <div class="flex gap-3 mt-6">
-        <div class="flex-1 flex items-start gap-2 bg-[var(--bg)] rounded-lg p-3 text-[0.8rem]">
-          <span class="material-icons text-[var(--primary-mid)] text-[1.3rem]">badge</span>
-          <div>
-            <strong class="block text-[var(--primary)] mb-[0.1rem]">Medici / Staff</strong>
-            <p class="text-[var(--text-muted)] leading-[1.4]">Accesso completo alla gestione clinica</p>
-          </div>
-        </div>
-        <div class="flex-1 flex items-start gap-2 bg-[var(--bg)] rounded-lg p-3 text-[0.8rem]">
-          <span class="material-icons text-[var(--primary-mid)] text-[1.3rem]">person</span>
-          <div>
-            <strong class="block text-[var(--primary)] mb-[0.1rem]">Pazienti</strong>
-            <p class="text-[var(--text-muted)] leading-[1.4]">Prenota visite e visualizza i tuoi referti</p>
-          </div>
-        </div>
-      </div>
     </dialog>
   </div>
 }

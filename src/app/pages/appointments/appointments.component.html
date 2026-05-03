@@ -6,7 +6,9 @@
       </h1>
       <p class="text-[var(--primary-mid)] text-[0.95rem]">Gestione appuntamenti</p>
     </div>
-    <app-button (click)="openCreate()">+ Nuovo Appuntamento</app-button>
+    @if (isAdmin) {
+      <app-button (click)="openCreate()">+ Nuovo Appuntamento</app-button>
+    }
   </div>
   @if (alertSignal(); as alert) {
     <div class="px-[1.1rem] py-[0.8rem] rounded-[10px] mb-4 text-[0.9rem] flex items-center gap-2 border-l-4"
@@ -39,7 +41,9 @@
             }
             @for (a of appointments(); track a.id) {
               <tr class="hover:[&>td]:bg-sky-50">
-                <td appTd>{{ a.patientFullName }}</td>
+                @if (isAdmin) {
+                  <td appTd>{{ a.patientFullName }}</td>
+                }
                 <td appTd>{{ a.scheduledAt | date:'dd MMM yyyy HH:mm' }}</td>
                 <td appTd>
                   {{ a.specialistFullName }}<br/>
@@ -52,7 +56,9 @@
                 <td appTd><span [class]="a.status | statusBadge">{{ statusLabel(a.status) }}</span></td>
                 <td appTd class="w-[200px] min-w-[200px] whitespace-nowrap">
                   <div class="flex items-center gap-2">
-                    <app-button size="sm" (click)="openStatusModal(a)"><span class="material-icons text-[1rem]">edit</span></app-button>
+                    @if (isAdmin) {
+                      <app-button size="sm" (click)="openStatusModal(a)"><span class="material-icons text-[1rem]">edit</span></app-button>
+                    }
                     @if (canCancel(a)) {
                       <app-button variant="danger" size="sm" (click)="cancel(a.id)"><span class="material-icons text-[1rem]">delete</span></app-button>
                     }

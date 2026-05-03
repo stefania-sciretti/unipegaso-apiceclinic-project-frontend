@@ -1,23 +1,25 @@
 <div class="min-h-screen flex items-center justify-center bg-gradient-to-br from-[var(--primary)] to-[var(--primary-mid)] p-4">
-  <div class="w-full max-w-[420px] bg-white rounded-2xl shadow-[0_8px_40px_rgba(17,45,78,0.25)] p-8">
+  <div class="w-full bg-white rounded-2xl shadow-[0_8px_40px_rgba(17,45,78,0.25)] p-8"
+    [class]="isRegistering() ? 'max-w-[640px]' : 'max-w-[420px]'">
 
     <div class="flex items-center gap-3 mb-6">
       <span class="material-icons text-4xl text-[var(--primary-mid)]">local_hospital</span>
       <span class="text-[1.4rem] font-bold text-[var(--primary)] tracking-wide">Apice Clinic</span>
     </div>
 
-    <h2 class="text-[1.4rem] font-bold text-[var(--primary)] mb-1">{{ isRegistering ? 'Registrati' : 'Accedi al portale' }}</h2>
-    <p class="text-[var(--primary-mid)] text-[0.9rem] mb-6">{{ isRegistering ? 'Crea un nuovo account' : 'Inserisci le tue credenziali per continuare' }}</p>
+    <h2 class="text-[1.4rem] font-bold text-[var(--primary)] mb-1">{{ isRegistering() ? 'Registrati' : 'Accedi al portale' }}</h2>
+    <p class="text-[var(--primary-mid)] text-[0.9rem] mb-6">{{ isRegistering() ? 'Crea un nuovo account paziente' : 'Inserisci le tue credenziali per continuare' }}</p>
 
-    @if (error) {
+    @if (error()) {
       <div class="flex items-center gap-2 px-4 py-3 rounded-lg bg-red-100 text-[var(--danger)] text-[0.9rem] mb-4 border-l-4 border-[var(--danger)]">
         <span class="material-icons text-[1.1rem]">error_outline</span>
-        {{ error }}
+        {{ error() }}
       </div>
     }
 
     <form [formGroup]="form" (ngSubmit)="submit()" class="flex flex-col gap-4">
 
+      <!-- ── Login fields ─────────────────────────────────────────── -->
       <div class="flex flex-col gap-1">
         <label for="loginUsername" class="text-[0.85rem] font-semibold text-[var(--primary)]">Username</label>
         <div class="flex items-center border-[1.5px] rounded-lg overflow-hidden focus-within:border-[var(--primary-mid)]"
@@ -31,54 +33,132 @@
         }
       </div>
 
-      @if (isRegistering) {
-        <div class="flex flex-col gap-1">
-          <label for="loginDisplayName" class="text-[0.85rem] font-semibold text-[var(--primary)]">Nome Completo</label>
-          <div class="flex items-center border-[1.5px] rounded-lg overflow-hidden focus-within:border-[var(--primary-mid)]"
-            [ngClass]="isInvalid('displayName') ? 'border-[var(--danger)]' : 'border-[var(--border)]'">
-            <span class="material-icons text-[var(--primary-mid)] px-3 text-[1.2rem]">badge</span>
-            <input id="loginDisplayName" formControlName="displayName" type="text" placeholder="es. Mario Rossi" autocomplete="off"
-              class="flex-1 py-[0.6rem] pr-3 outline-none text-[0.9rem] text-[var(--primary)] bg-transparent"/>
-          </div>
-          @if (isInvalid('displayName')) {
-            <span class="text-[var(--danger)] text-[0.78rem]">Campo obbligatorio</span>
-          }
-        </div>
-      }
-
       <div class="flex flex-col gap-1">
         <label for="loginPassword" class="text-[0.85rem] font-semibold text-[var(--primary)]">Password</label>
         <div class="flex items-center border-[1.5px] rounded-lg overflow-hidden focus-within:border-[var(--primary-mid)]"
           [ngClass]="isInvalid('password') ? 'border-[var(--danger)]' : 'border-[var(--border)]'">
           <span class="material-icons text-[var(--primary-mid)] px-3 text-[1.2rem]">lock</span>
-          <input id="loginPassword" formControlName="password" [type]="showPassword ? 'text' : 'password'" placeholder="••••••••"
-            [attr.autocomplete]="isRegistering ? 'new-password' : 'current-password'"
+          <input id="loginPassword" formControlName="password" [type]="showPassword() ? 'text' : 'password'" placeholder="••••••••"
+            [attr.autocomplete]="isRegistering() ? 'new-password' : 'current-password'"
             class="flex-1 py-[0.6rem] outline-none text-[0.9rem] text-[var(--primary)] bg-transparent"/>
-          <app-button variant="icon" [ariaLabel]="showPassword ? 'Nascondi password' : 'Mostra password'"
-            extraClass="px-3" (click)="showPassword = !showPassword">
-            <span class="material-icons text-[1.2rem]">{{ showPassword ? 'visibility_off' : 'visibility' }}</span>
+          <app-button variant="icon" [ariaLabel]="showPassword() ? 'Nascondi password' : 'Mostra password'"
+            extraClass="px-3" (click)="showPassword.update(v => !v)">
+            <span class="material-icons text-[1.2rem]">{{ showPassword() ? 'visibility_off' : 'visibility' }}</span>
           </app-button>
         </div>
         @if (isInvalid('password')) {
-          <span class="text-[var(--danger)] text-[0.78rem]">Campo obbligatorio</span>
+          <span class="text-[var(--danger)] text-[0.78rem]">
+            @if (form.get('password')?.errors?.['required']) { Campo obbligatorio }
+            @else { Minimo 8 caratteri }
+          </span>
         }
       </div>
 
-      <app-button type="submit" [disabled]="loading" extraClass="w-full mt-1 py-[0.75rem] rounded-xl text-[0.95rem]">
-        @if (!loading) { {{ isRegistering ? 'Registrati' : 'Accedi' }} }
-        @if (loading) { Caricamento… }
+      <!-- ── Extra fields (registrazione only) ───────────────────── -->
+      @if (isRegistering()) {
+        <div class="border-t border-[var(--border)] pt-4 grid grid-cols-1 sm:grid-cols-2 gap-4">
+
+          <div class="flex flex-col gap-1">
+            <label for="regFirstName" class="text-[0.85rem] font-semibold text-[var(--primary)]">Nome *</label>
+            <div class="flex items-center border-[1.5px] rounded-lg overflow-hidden focus-within:border-[var(--primary-mid)]"
+              [ngClass]="isInvalid('firstName') ? 'border-[var(--danger)]' : 'border-[var(--border)]'">
+              <span class="material-icons text-[var(--primary-mid)] px-3 text-[1.2rem]">badge</span>
+              <input id="regFirstName" formControlName="firstName" type="text" placeholder="Mario"
+                class="flex-1 py-[0.6rem] pr-3 outline-none text-[0.9rem] text-[var(--primary)] bg-transparent"/>
+            </div>
+            @if (isInvalid('firstName')) {
+              <span class="text-[var(--danger)] text-[0.78rem]">Campo obbligatorio</span>
+            }
+          </div>
+
+          <div class="flex flex-col gap-1">
+            <label for="regLastName" class="text-[0.85rem] font-semibold text-[var(--primary)]">Cognome *</label>
+            <div class="flex items-center border-[1.5px] rounded-lg overflow-hidden focus-within:border-[var(--primary-mid)]"
+              [ngClass]="isInvalid('lastName') ? 'border-[var(--danger)]' : 'border-[var(--border)]'">
+              <span class="material-icons text-[var(--primary-mid)] px-3 text-[1.2rem]">badge</span>
+              <input id="regLastName" formControlName="lastName" type="text" placeholder="Rossi"
+                class="flex-1 py-[0.6rem] pr-3 outline-none text-[0.9rem] text-[var(--primary)] bg-transparent"/>
+            </div>
+            @if (isInvalid('lastName')) {
+              <span class="text-[var(--danger)] text-[0.78rem]">Campo obbligatorio</span>
+            }
+          </div>
+
+          <div class="flex flex-col gap-1">
+            <label for="regFiscalCode" class="text-[0.85rem] font-semibold text-[var(--primary)]">Codice Fiscale *</label>
+            <div class="flex items-center border-[1.5px] rounded-lg overflow-hidden focus-within:border-[var(--primary-mid)]"
+              [ngClass]="isInvalid('fiscalCode') ? 'border-[var(--danger)]' : 'border-[var(--border)]'">
+              <span class="material-icons text-[var(--primary-mid)] px-3 text-[1.2rem]">article</span>
+              <input id="regFiscalCode" formControlName="fiscalCode" type="text" placeholder="RSSMRA85T10A562S"
+                maxlength="16" style="text-transform: uppercase"
+                class="flex-1 py-[0.6rem] pr-3 outline-none text-[0.9rem] text-[var(--primary)] bg-transparent font-mono tracking-wider"/>
+            </div>
+            @if (isInvalid('fiscalCode')) {
+              <span class="text-[var(--danger)] text-[0.78rem]">
+                @if (form.get('fiscalCode')?.errors?.['required']) { Campo obbligatorio }
+                @else { Formato non valido (16 caratteri) }
+              </span>
+            }
+          </div>
+
+          <div class="flex flex-col gap-1">
+            <label for="regBirthDate" class="text-[0.85rem] font-semibold text-[var(--primary)]">Data di nascita *</label>
+            <div class="flex items-center border-[1.5px] rounded-lg overflow-hidden focus-within:border-[var(--primary-mid)]"
+              [ngClass]="isInvalid('birthDate') ? 'border-[var(--danger)]' : 'border-[var(--border)]'">
+              <span class="material-icons text-[var(--primary-mid)] px-3 text-[1.2rem]">cake</span>
+              <input id="regBirthDate" formControlName="birthDate" type="date"
+                class="flex-1 py-[0.6rem] pr-3 outline-none text-[0.9rem] text-[var(--primary)] bg-transparent"/>
+            </div>
+            @if (isInvalid('birthDate')) {
+              <span class="text-[var(--danger)] text-[0.78rem]">Campo obbligatorio</span>
+            }
+          </div>
+
+          <div class="flex flex-col gap-1">
+            <label for="regEmail" class="text-[0.85rem] font-semibold text-[var(--primary)]">Email *</label>
+            <div class="flex items-center border-[1.5px] rounded-lg overflow-hidden focus-within:border-[var(--primary-mid)]"
+              [ngClass]="isInvalid('email') ? 'border-[var(--danger)]' : 'border-[var(--border)]'">
+              <span class="material-icons text-[var(--primary-mid)] px-3 text-[1.2rem]">email</span>
+              <input id="regEmail" formControlName="email" type="email" placeholder="mario.rossi@example.com"
+                autocomplete="email"
+                class="flex-1 py-[0.6rem] pr-3 outline-none text-[0.9rem] text-[var(--primary)] bg-transparent"/>
+            </div>
+            @if (isInvalid('email')) {
+              <span class="text-[var(--danger)] text-[0.78rem]">
+                @if (form.get('email')?.errors?.['required']) { Campo obbligatorio }
+                @else { Email non valida }
+              </span>
+            }
+          </div>
+
+          <div class="flex flex-col gap-1">
+            <label for="regPhone" class="text-[0.85rem] font-semibold text-[var(--primary)]">Telefono</label>
+            <div class="flex items-center border-[1.5px] rounded-lg overflow-hidden focus-within:border-[var(--primary-mid)] border-[var(--border)]">
+              <span class="material-icons text-[var(--primary-mid)] px-3 text-[1.2rem]">phone</span>
+              <input id="regPhone" formControlName="phone" type="tel" placeholder="+39 333 1234567"
+                autocomplete="tel"
+                class="flex-1 py-[0.6rem] pr-3 outline-none text-[0.9rem] text-[var(--primary)] bg-transparent"/>
+            </div>
+          </div>
+
+        </div>
+      }
+
+      <app-button type="submit" [disabled]="loading()" extraClass="w-full mt-1 py-[0.75rem] rounded-xl text-[0.95rem]">
+        @if (!loading()) { {{ isRegistering() ? 'Registrati' : 'Accedi' }} }
+        @if (loading()) { Caricamento… }
       </app-button>
     </form>
 
     <div class="mt-5 text-center text-[0.88rem] text-[var(--primary-mid)]">
-      @if (!isRegistering) { <span>Non hai un account? </span> }
-      @if (isRegistering) { <span>Hai già un account? </span> }
+      @if (!isRegistering()) { <span>Non hai un account? </span> }
+      @if (isRegistering()) { <span>Hai già un account? </span> }
       <a (click)="toggleMode()" class="font-semibold cursor-pointer underline hover:text-[var(--primary)]">
-        {{ isRegistering ? 'Accedi qui' : 'Registrati qui' }}
+        {{ isRegistering() ? 'Accedi qui' : 'Registrati qui' }}
       </a>
     </div>
 
-    @if (!isRegistering) {
+    @if (!isRegistering()) {
       <div class="mt-6 flex flex-col gap-3">
         <div class="flex items-center gap-3 p-3 rounded-xl bg-slate-50 border border-[var(--border)]">
           <span class="material-icons text-[var(--primary-mid)]">badge</span>

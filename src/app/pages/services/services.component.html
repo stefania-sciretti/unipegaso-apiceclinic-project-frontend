@@ -16,16 +16,16 @@
   @if (!loading() && categories().length === 0) {
     <p class="text-[var(--primary-mid)] text-sm">Nessun servizio disponibile.</p>
   }
-
-  @for (cat of categories(); track cat.areaId) {
-    <div class="mb-8 bg-white rounded-[10px] shadow-[0_2px_14px_rgba(17,45,78,0.10)] overflow-hidden">
+  <div class="flex gap-4 items-start">
+ @for (cat of categories(); track cat.areaId) {
+    <div class="flex-1 bg-white rounded-[10px] shadow-[0_2px_14px_rgba(17,45,78,0.10)] overflow-hidden">
       <div class="flex items-center justify-between px-7 py-[1.1rem] border-b-2 border-[var(--border)] cursor-pointer"
-           (click)="toggle(cat)">
+           (click)="toggle(cat.areaId)">
         <h2 class="text-[1.1rem] font-bold text-[var(--primary)]">{{ cat.label }}</h2>
         <span class="material-icons text-[1.4rem] text-[var(--primary-mid)] transition-transform duration-[250ms]"
-              [class.rotate-180]="cat.open">expand_more</span>
+              [class.rotate-180]="openCategoryId() === cat.areaId">expand_more</span>
       </div>
-      @if (cat.open) {
+      @if (openCategoryId() === cat.areaId) {
         <div class="grid grid-cols-[repeat(auto-fill,minmax(200px,1fr))] gap-6 p-8">
           @for (s of cat.services; track s.id) {
             <div class="flex flex-col items-center text-center gap-3 p-4 rounded-[8px] border border-[var(--border)] hover:shadow-sm transition-shadow">
@@ -39,6 +39,8 @@
       }
     </div>
   }
+  </div>
+ 
 </main>
 
 @if (showForm()) {

@@ -4,12 +4,14 @@ import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angula
 import { HttpErrorResponse } from '@angular/common/http';
 import { ActivatedRoute, Router } from '@angular/router';
 import { forkJoin } from 'rxjs';
+import { map } from 'rxjs/operators';
 import { MatIconModule } from '@angular/material/icon';
 import { AppointmentService } from '../../services/appointment.service';
 import { PatientService } from '../../services/patient.service';
 import { SpecialistService } from '../../services/specialist.service';
 import { AlertService } from '../../services/alert.service';
 import { ConfirmModalService } from '../../services/confirm-modal.service';
+import { AuthService } from '../../services/auth.service';
 import { AppointmentStatus, Patient, FitnessAppointment, FitnessAppointmentRequest, Specialist, ApiError } from '../../models/models';
 import { TableThComponent, TableColumn } from '../../shared/table-th.component';
 import { TableTdDirective } from '../../shared/table-td.directive';
@@ -29,14 +31,15 @@ import { APPOINTMENT_STATUS_LABELS } from '../../shared/constants/appointment-st
 })
 export class AppointmentsComponent implements OnInit {
 
-  readonly tableColumns = signal<TableColumn[]>([
-    { label: 'Paziente' },
+  readonly tableColumns = computed<TableColumn[]>(() => [
+    ...(this.auth.isAdmin ? [{ label: 'Paziente' }] : []),
     { label: 'Data e Ora' },
     { label: 'Specialista' },
     { label: 'Servizio' },
     { label: 'Stato' },
     { label: 'Azioni', extraClass: 'w-[200px] min-w-[200px]' }
   ]);
+  private readonly auth               = inject(AuthService);
   private readonly appointmentService = inject(AppointmentService);
   private readonly patientService     = inject(PatientService);
   private readonly specialistService  = inject(SpecialistService);
@@ -78,6 +81,8 @@ export class AppointmentsComponent implements OnInit {
     PERSONAL_TRAINER: COLOR_PRIMARY,
   }));
 
+  protected get isAdmin(): boolean { return this.auth.isAdmin; }
+
   protected readonly v = new FormValidationHelper(this.apptForm, this.fieldErrors);
 
   roleBadgeColor(role: string): string { return this.roleColorMap()[role] ?? COLOR_PRIMARY; }
@@ -91,12 +96,19 @@ export class AppointmentsComponent implements OnInit {
 
   loadAll(): void {
     this.loading.set(true);
-    const filters: Record<string, string> = this.filterStatus() ? { status: this.filterStatus() } : {};
-    forkJoin({
-      appointments: this.appointmentService.getAll(filters),
-      patients:     this.patientService.getAll(),
-      specialists:  this.specialistService.getAll()
-    }).subscribe({
+    const filters = this.buildFilters();
+    const obs$ = this.auth.isAdmin
+      ? forkJoin({
+          appointments: this.appointmentService.getAll(filters),
+          patients:     this.patientService.getAll(),
+          specialists:  this.specialistService.getAll()
+        })
+      : forkJoin({
+          appointments: this.appointmentService.getAll(filters),
+          specialists:  this.specialistService.getAll()
+        }).pipe(map(r => ({ ...r, patients: [] as Patient[] })));
+
+    obs$.subscribe({
       next: ({ appointments, patients, specialists }) => {
         this.appointments.set(appointments);
         this.patients.set(patients);
@@ -109,11 +121,17 @@ export class AppointmentsComponent implements OnInit {
 
   load(): void {
     this.loading.set(true);
-    const filters: Record<string, string> = this.filterStatus() ? { status: this.filterStatus() } : {};
-    this.appointmentService.getAll(filters).subscribe({
+    this.appointmentService.getAll(this.buildFilters()).subscribe({
       next: (data) => { this.appointments.set(data); this.loading.set(false); },
       error: ()    => { this.loading.set(false); }
     });
+  }
+
+  private buildFilters(): Record<string, string> {
+    const f: Record<string, string> = this.filterStatus() ? { status: this.filterStatus() } : {};
+    const patientId = !this.auth.isAdmin ? this.auth.patientId : undefined;
+    if (patientId) f['patientId'] = patientId.toString();
+    return f;
   }
 
   onStatusFilter(e: Event): void {

@@ -15,7 +15,6 @@ interface ServiceCategory {
   areaId: number;
   label: string;
   services: ServiceResponse[];
-  open: boolean;
 }
 
 @Component({
@@ -64,9 +63,10 @@ export class ServicesComponent {
       areaId,
       label: areaName,
       services,
-      open: true,
     }));
   });
+
+  readonly openCategoryId = signal<number | null>(null);
 
   readonly showForm = signal(false);
   readonly saving   = signal(false);
@@ -77,8 +77,8 @@ export class ServicesComponent {
     specialistId: [null, Validators.required],
   });
 
-  toggle(cat: ServiceCategory): void {
-    cat.open = !cat.open;
+  toggle(areaId: number): void {
+    this.openCategoryId.update(current => current === areaId ? null : areaId);
   }
 
   openForm(): void {
