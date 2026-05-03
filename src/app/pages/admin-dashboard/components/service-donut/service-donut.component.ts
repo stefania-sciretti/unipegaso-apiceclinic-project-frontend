@@ -28,7 +28,7 @@ export class ServiceDonutComponent implements OnDestroy {
 
   ngOnDestroy(): void { this.chart?.destroy(); }
 
-  buildOptions(data: RevenueByService[]): object {
+  buildOptions(data: RevenueByService[]): ApexCharts.ApexOptions {
     return {
       chart: { type: 'donut', height: 220, fontFamily: 'Inter, sans-serif' },
       series: data.map(d => d.total),
