@@ -1,6 +1,7 @@
-import { Component, inject, signal, OnInit } from '@angular/core';
+import { Component, DestroyRef, inject, signal } from '@angular/core';
 import { NgClass } from '@angular/common';
 import { catchError, of } from 'rxjs';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { DashboardService } from './services/dashboard.service';
 import { DashboardStats, PeriodFilter } from '../../models/dashboard.model';
 import { KpiCardsComponent } from './components/kpi-cards/kpi-cards.component';
@@ -14,8 +15,9 @@ import { ServiceDonutComponent } from './components/service-donut/service-donut.
   imports: [NgClass, KpiCardsComponent, RevenueChartComponent, AppointmentsChartComponent, ServiceDonutComponent],
   templateUrl: './admin-dashboard.component.html'
 })
-export class AdminDashboardComponent implements OnInit {
+export class AdminDashboardComponent {
   private readonly dashboardService = inject(DashboardService);
+  private readonly destroyRef = inject(DestroyRef);
 
   readonly loading = signal(true);
   readonly error   = signal(false);
@@ -29,7 +31,7 @@ export class AdminDashboardComponent implements OnInit {
     { label: 'Anno corrente',  value: '1y' }
   ];
 
-  ngOnInit(): void { this.loadStats(); }
+  constructor() { this.loadStats(); }
 
   selectPeriod(p: PeriodFilter): void {
     this.period.set(p);
@@ -40,7 +42,8 @@ export class AdminDashboardComponent implements OnInit {
     this.loading.set(true);
     this.error.set(false);
     this.dashboardService.getStats(this.period()).pipe(
-      catchError(() => { this.error.set(true); return of(null); })
+      catchError(() => { this.error.set(true); return of(null); }),
+      takeUntilDestroyed(this.destroyRef)
     ).subscribe(data => {
       this.stats.set(data);
       this.loading.set(false);
