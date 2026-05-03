@@ -25,8 +25,8 @@ export interface AppointmentsByMonth {
   cancelled: number;
 }
 
-export interface RevenueByService {
-  service: string;
+export interface RevenueByArea {
+  area: { areaId: number; areaName: string };
   total: number;
 }
 
@@ -34,5 +34,5 @@ export interface DashboardStats {
   kpi: DashboardKpi;
   revenueByMonth: RevenueByMonth[];
   appointmentsByMonth: AppointmentsByMonth[];
-  revenueByService: RevenueByService[];
+  revenueByArea: RevenueByArea[];
 }

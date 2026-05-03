@@ -15,7 +15,7 @@
       @for (member of specialists(); track member.route) {
         <div class="flex flex-col items-center gap-4">
           <button type="button" class="relative w-[180px] h-[180px] rounded-full bg-[var(--border)] overflow-hidden flex items-end justify-center shrink-0 cursor-pointer transition-[transform,box-shadow] duration-200 hover:scale-[1.04] hover:shadow-[0_6px_24px_rgba(63,114,175,0.25)] border-0 p-0" (click)="navigateTo(member.route)" (keydown.enter)="navigateTo(member.route)" (keydown.space)="navigateTo(member.route)">
-            <img class="w-full h-full object-cover block rounded-full" [src]="member.image" [alt]="member.firstName + ' ' + member.lastName"/>
+            <img class="w-full h-full object-cover block rounded-full" [src]="member.image" [alt]="member.lastName + ' ' + member.firstName"/>
           </button>
           <div class="text-center">
             <p class="font-bold text-base text-[var(--primary-mid)] mb-1">

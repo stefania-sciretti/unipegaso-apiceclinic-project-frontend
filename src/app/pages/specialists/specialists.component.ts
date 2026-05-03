@@ -28,6 +28,7 @@ const SPECIALIST_ENRICHMENT: Record<string, { gender: 'male' | 'female'; image: 
   imports: [],
   templateUrl: './specialists.component.html'
 })
+
 export class SpecialistsComponent {
   private readonly specialistService = inject(SpecialistService);
   private readonly router            = inject(Router);
@@ -48,14 +49,17 @@ export class SpecialistsComponent {
     return {
       firstName: s.firstName,
       lastName:  s.lastName,
-      role:      this.roleTranslate(s.role),
+      role:      roleTranslate(s.role),
       gender:    enrichment.gender,
       image:     enrichment.image,
       route:     `/specialist/${key}`,
     };
   }
 
-  roleTranslate(role: string): string {
+  navigateTo(route: string): void { this.router.navigate([route]); }
+}
+
+  export function roleTranslate(role: string): string {
     switch (role) {
       case 'NUTRITIONIST':   return 'Nutrizionista';
       case 'PHYSIOTHERAPIST': return 'Fisioterapista';
@@ -65,6 +69,3 @@ export class SpecialistsComponent {
       default: return role;
     }
   }
-
-  navigateTo(route: string): void { this.router.navigate([route]); }
-}

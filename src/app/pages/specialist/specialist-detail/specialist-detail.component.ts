@@ -4,6 +4,7 @@ import { toSignal } from '@angular/core/rxjs-interop';
 import { firstValueFrom } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { SpecialistService } from '../../../services/specialist.service';
+import { roleTranslate } from '../../specialists/specialists.component';
 import { getServicesByRole, SpecialistServiceItem } from '../specialist-data';
 
 // Visual enrichment not available from the API (gender for Italian title, local image).
@@ -11,8 +12,7 @@ const SPECIALIST_ENRICHMENT: Record<string, { gender: 'male' | 'female'; image: 
   simona:    { gender: 'female', image: 'assets/icons/simona.webp'    },
   luca:      { gender: 'male',   image: 'assets/icons/luca.webp'      },
   sandro:    { gender: 'male',   image: 'assets/icons/sandro.webp'    },
-  mihai:     { gender: 'male',   image: 'assets/icons/mihai.webp'     },
-  michele:   { gender: 'male',   image: 'assets/icons/mihai.webp'     },
+  michele:   { gender: 'male',   image: 'assets/icons/michele.webp'     },
   cristiana: { gender: 'female', image: 'assets/icons/cristiana.webp' },
 };
 
@@ -57,8 +57,8 @@ export class SpecialistDetailComponent {
     const enrichment = SPECIALIST_ENRICHMENT[key] ?? { gender: 'male' as const, image: 'assets/icons/default.webp' };
     return {
       title:    enrichment.gender === 'female' ? 'Dott.ssa' : 'Dott.',
-      name:     `${s.firstName} ${s.lastName}`,
-      role:     s.role,
+      name:     `${s.lastName} ${s.firstName}`,
+      role:     roleTranslate(s.role),
       photo:    enrichment.image,
       bio:      s.bio ?? '',
       services: getServicesByRole(s.role),

@@ -1,7 +1,7 @@
 import { Component, input, effect, ViewChild, ElementRef, OnDestroy, AfterViewInit, PLATFORM_ID, inject } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
 import ApexCharts from 'apexcharts';
-import { RevenueByService } from '../../../../models/dashboard.model';
+import { RevenueByArea } from '../../../../models/dashboard.model';
 
 @Component({
   selector: 'app-service-donut',
@@ -9,7 +9,7 @@ import { RevenueByService } from '../../../../models/dashboard.model';
   templateUrl: './service-donut.component.html'
 })
 export class ServiceDonutComponent implements AfterViewInit, OnDestroy {
-  data = input.required<RevenueByService[]>();
+  data = input.required<RevenueByArea[]>();
   @ViewChild('chartEl', { static: true }) chartEl!: ElementRef;
   private chart: ApexCharts | null = null;
   private readonly platformId = inject(PLATFORM_ID);
@@ -31,12 +31,12 @@ export class ServiceDonutComponent implements AfterViewInit, OnDestroy {
 
   ngOnDestroy(): void { this.chart?.destroy(); }
 
-  buildOptions(data: RevenueByService[]): ApexCharts.ApexOptions {
+  buildOptions(data: RevenueByArea[]): ApexCharts.ApexOptions {
     return {
       chart: { type: 'donut', height: 260, fontFamily: 'Inter, sans-serif', foreColor: '#374151' },
       theme: { mode: 'light' },
       series: data.map(d => d.total),
-      labels: data.map(d => d.service),
+      labels: data.map(d => d.area.areaName),
       colors: ['#6366f1', '#22c55e', '#f59e0b', '#ec4899', '#14b8a6'],
       plotOptions: { pie: { donut: { size: '60%' } } },
       legend: {

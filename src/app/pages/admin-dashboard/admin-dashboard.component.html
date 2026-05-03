@@ -41,7 +41,7 @@
       <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
         <!-- Riga 1: KPI + Donut -->
         <app-kpi-cards [kpi]="s.kpi" />
-        <app-service-donut [data]="s.revenueByService" />
+        <app-service-donut [data]="s.revenueByArea" />
         <!-- Riga 2: Revenue + Appointments -->
         <app-revenue-chart [data]="s.revenueByMonth" />
         <app-appointments-chart [data]="s.appointmentsByMonth" />

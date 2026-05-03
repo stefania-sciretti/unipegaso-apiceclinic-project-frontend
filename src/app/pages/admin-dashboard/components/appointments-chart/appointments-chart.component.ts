@@ -53,6 +53,6 @@ export class AppointmentsChartComponent implements AfterViewInit, OnDestroy {
       tooltip: {
         enabled: false,
       }
-      };
+    };
   }
 }

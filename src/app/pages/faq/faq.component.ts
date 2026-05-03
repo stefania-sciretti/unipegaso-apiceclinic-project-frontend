@@ -42,7 +42,7 @@ export class FaqComponent {
     },
     {
       q: 'Chi sono i professionisti della clinica?',
-      a: 'Puoi conoscere il nostro staff cliccando su "Staff" nella barra di navigazione o visitando le pagine dedicate a ciascun professionista. Il team è composto da: Dott.ssa Simona Ruberti (Biologa Nutrizionista), Dott. Luca Siretta (Personal Trainer ISSA), Dott. Marco Lavecri (Medico dello Sport), Dott. Mihai Lavretti (Osteopata).',
+      a: 'Puoi conoscere il nostro staff cliccando su "Staff" nella barra di navigazione o visitando le pagine dedicate a ciascun professionista.',
       open: false
     },
     {
