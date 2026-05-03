@@ -6,7 +6,7 @@ import {AuthService} from '../services/auth.service';
 export const loginGuard: CanActivateFn = () => {
   const auth   = inject(AuthService);
   const router = inject(Router);
-  if (!auth.isLoggedIn) return router.createUrlTree(['/dashboard']);
+  if (!auth.isLoggedIn) return router.createUrlTree(['/homepage']);
   return true;
 };
 
@@ -15,5 +15,5 @@ export const adminGuard: CanActivateFn = () => {
   const auth   = inject(AuthService);
   const router = inject(Router);
   if (auth.isAdmin) return true;
-  return router.createUrlTree(['/dashboard']);
+  return router.createUrlTree(['/homepage']);
 };

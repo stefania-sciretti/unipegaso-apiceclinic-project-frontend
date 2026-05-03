@@ -35,7 +35,7 @@ export class LoginComponent implements OnInit {
 
   ngOnInit(): void {
     if (this.auth.isLoggedIn) {
-      this.router.navigate(['/dashboard']);
+      this.router.navigate(['/homepage']);
     }
   }
 
@@ -73,7 +73,7 @@ export class LoginComponent implements OnInit {
           if (pending) {
             this.completePendingBooking(pending);
           } else {
-            this.router.navigate(['/dashboard']);
+            this.router.navigate(['/homepage']);
           }
         } else {
           this.error = 'Credenziali non valide. Riprova.';
@@ -113,17 +113,17 @@ export class LoginComponent implements OnInit {
     if (pending.appointmentType === 'clinical') {
       alert('Prenotazione completata con successo!');
       this.bookingSvc.clearPendingBooking();
-      this.router.navigate(['/dashboard']);
+      this.router.navigate(['/homepage']);
     } else {
       this.appointmentSvc.create(bookingRequest).subscribe({
         next: () => {
           alert('Prenotazione completata con successo!');
           this.bookingSvc.clearPendingBooking();
-          this.router.navigate(['/dashboard']);
+          this.router.navigate(['/homepage']);
         },
         error: (err: HttpErrorResponse) => {
           alert('Errore nel completamento della prenotazione: ' + (err.error?.message ?? 'Riprova più tardi'));
-          this.router.navigate(['/dashboard']);
+          this.router.navigate(['/homepage']);
         }
       });
     }

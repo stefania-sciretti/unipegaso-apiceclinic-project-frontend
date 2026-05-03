@@ -1,12 +1,12 @@
 import { Routes } from '@angular/router';
 import { loginGuard, adminGuard } from './guards/auth.guard';
 export const routes: Routes = [
-  { path: '', redirectTo: 'landing-page', pathMatch: 'full' },
+  { path: '', redirectTo: 'homepage', pathMatch: 'full' },
 
   // ── Pubbliche (visibili a tutti senza login) ──────────────────────────
   {
-    path: 'landing-page',
-    loadComponent: () => import('./pages/landing-page/landing-page.component').then(m => m.LandingPageComponent)
+    path: 'homepage',
+    loadComponent: () => import('./pages/homepage/homepage.component').then(m => m.HomepageComponent)
   },
   {
     path: 'specialists',
@@ -75,5 +75,5 @@ export const routes: Routes = [
     canActivate: [adminGuard]
   },
 
-  { path: '**', redirectTo: 'landing-page' }
+  { path: '**', redirectTo: 'homepage' }
 ];

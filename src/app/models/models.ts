@@ -5,7 +5,7 @@ export * from './appointment.model';
 export * from './diet-plan.model';
 export * from './training-plan.model';
 export * from './recipe.model';
-export * from './landing-page.model';
+export * from './homepage.model';
 export * from './api-error.model';
 export * from './clinical-appointment.model';
 export * from './glycemia.model';

@@ -29,11 +29,11 @@ interface Doctor {
 }
 
 @Component({
-  selector: 'app-dashboard',
+  selector: 'app-homepage',
   imports: [CommonModule, NgOptimizedImage, ButtonComponent],
-  templateUrl: './dashboard.component.html'
+  templateUrl: './homepage.component.html'
 })
-export class DashboardComponent {
+export class HomepageComponent {
   private readonly router              = inject(Router);
   private readonly appointmentSvc     = inject(AppointmentService);
   protected readonly auth             = inject(AuthService);

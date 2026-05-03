@@ -1,14 +1,14 @@
 import {TestBed} from '@angular/core/testing';
 import {HttpTestingController, provideHttpClientTesting} from '@angular/common/http/testing';
 import {provideHttpClient, withInterceptorsFromDi} from '@angular/common/http';
-import {DashboardService} from './dashboard.service';
-import {DashboardStats} from '../models/models';
+import {HomepageService} from './homepage.service';
+import {HomepageStats} from '../models/models';
 
-describe('DashboardService', () => {
-  let service: DashboardService;
+describe('HomepageService', () => {
+  let service: HomepageService;
   let httpMock: HttpTestingController;
 
-  const mockStats: DashboardStats = {
+  const mockStats: HomepageStats = {
     totalClients: 5,
     totalAppointments: 10,
     bookedAppointments: 3,
@@ -20,9 +20,9 @@ describe('DashboardService', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      providers: [DashboardService, provideHttpClient(withInterceptorsFromDi()), provideHttpClientTesting()]
+      providers: [HomepageService, provideHttpClient(withInterceptorsFromDi()), provideHttpClientTesting()]
     });
-    service = TestBed.inject(DashboardService);
+    service = TestBed.inject(HomepageService);
     httpMock = TestBed.inject(HttpTestingController);
   });
 
@@ -32,12 +32,12 @@ describe('DashboardService', () => {
     expect(service).toBeTruthy();
   });
 
-  it('getStats() calls GET /api/dashboard and returns stats', () => {
+  it('getStats() calls GET /api/homepage and returns stats', () => {
     service.getStats().subscribe(stats => {
       expect(stats).toEqual(mockStats);
     });
 
-    const req = httpMock.expectOne('/api/dashboard');
+    const req = httpMock.expectOne('/api/homepage');
     expect(req.request.method).toBe('GET');
     req.flush(mockStats);
   });

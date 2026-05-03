@@ -78,11 +78,11 @@ describe('LoginComponent', () => {
     expect(mockAuthService.login).toHaveBeenCalledWith('admin', 'pass123');
   });
 
-  it('submit() navigates to /dashboard on successful login', () => {
+  it('submit() navigates to /homepage on successful login', () => {
     mockAuthService.login.and.returnValue(of(true));
     component.form.patchValue({ username: 'admin', password: 'pass' });
     component.submit();
-    expect(mockRouter.navigate).toHaveBeenCalledWith(['/dashboard']);
+    expect(mockRouter.navigate).toHaveBeenCalledWith(['/homepage']);
   });
 
   it('submit() sets error message when login returns false', () => {

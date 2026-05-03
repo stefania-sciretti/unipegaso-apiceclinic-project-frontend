@@ -1,15 +1,15 @@
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {of} from 'rxjs';
-import {DashboardComponent} from './dashboard.component';
+import {HomepageComponent} from './homepage.component';
 import {AppointmentService} from '../../services/appointment.service';
 import {ClinicalAppointmentService} from '../../services/clinical-appointment.service';
 import {AuthService} from '../../services/auth.service';
 import {BookingService} from '../../services/booking.service';
 import {Router} from '@angular/router';
 
-describe('DashboardComponent', () => {
-  let component: DashboardComponent;
-  let fixture: ComponentFixture<DashboardComponent>;
+describe('HomepageComponent', () => {
+  let component: HomepageComponent;
+  let fixture: ComponentFixture<HomepageComponent>;
 
   const mockApptService         = jasmine.createSpyObj('AppointmentService', ['create', 'getAll']);
   const mockClinicalApptService = jasmine.createSpyObj('ClinicalAppointmentService', ['getAll']);
@@ -29,7 +29,7 @@ describe('DashboardComponent', () => {
     mockApptService.create.and.returnValue(of({}));
 
     await TestBed.configureTestingModule({
-      imports: [DashboardComponent],
+      imports: [HomepageComponent],
       providers: [
         { provide: AppointmentService,         useValue: mockApptService },
         { provide: ClinicalAppointmentService, useValue: mockClinicalApptService },
@@ -39,7 +39,7 @@ describe('DashboardComponent', () => {
       ]
     }).compileComponents();
 
-    fixture   = TestBed.createComponent(DashboardComponent);
+    fixture   = TestBed.createComponent(HomepageComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });
