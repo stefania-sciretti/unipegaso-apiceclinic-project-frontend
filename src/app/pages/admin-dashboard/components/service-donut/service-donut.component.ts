@@ -1,4 +1,5 @@
-import { Component, input, effect, ViewChild, ElementRef, OnDestroy } from '@angular/core';
+import { Component, input, effect, ViewChild, ElementRef, OnDestroy, PLATFORM_ID, inject } from '@angular/core';
+import { isPlatformBrowser } from '@angular/common';
 import ApexCharts from 'apexcharts';
 import { RevenueByService } from '../../../../models/dashboard.model';
 
@@ -11,18 +12,19 @@ export class ServiceDonutComponent implements OnDestroy {
   data = input.required<RevenueByService[]>();
   @ViewChild('chartEl', { static: true }) chartEl!: ElementRef;
   private chart: ApexCharts | null = null;
+  private readonly platformId = inject(PLATFORM_ID);
+  private rendered = false;
 
   constructor() {
     effect(() => {
+      if (!isPlatformBrowser(this.platformId)) return;
       const d = this.data();
-      try {
-        if (this.chart) {
-          this.chart.updateOptions(this.buildOptions(d));
-        } else {
-          this.chart = new ApexCharts(this.chartEl.nativeElement, this.buildOptions(d));
-          this.chart.render();
-        }
-      } catch (_) { /* no-op in test/JSDOM environments */ }
+      if (this.chart && this.rendered) {
+        this.chart.updateOptions(this.buildOptions(d));
+      } else if (!this.chart) {
+        this.chart = new ApexCharts(this.chartEl.nativeElement, this.buildOptions(d));
+        this.chart.render().then(() => { this.rendered = true; });
+      }
     });
   }
 
