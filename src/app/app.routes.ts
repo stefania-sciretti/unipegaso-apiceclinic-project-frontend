@@ -1,12 +1,12 @@
 import { Routes } from '@angular/router';
 import { loginGuard, adminGuard } from './guards/auth.guard';
 export const routes: Routes = [
-  { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
+  { path: '', redirectTo: 'landing-page', pathMatch: 'full' },
 
   // ── Pubbliche (visibili a tutti senza login) ──────────────────────────
   {
-    path: 'dashboard',
-    loadComponent: () => import('./pages/dashboard/dashboard.component').then(m => m.DashboardComponent)
+    path: 'landing-page',
+    loadComponent: () => import('./pages/landing-page/landing-page.component').then(m => m.LandingPageComponent)
   },
   {
     path: 'specialists',
@@ -68,6 +68,12 @@ export const routes: Routes = [
     loadComponent: () => import('./pages/booking-calendar/booking-calendar.component').then(m => m.BookingCalendarComponent),
     canActivate: [adminGuard]
   },
+  {
+    path: 'admin/dashboard',
+    loadComponent: () => import('./pages/admin-dashboard/admin-dashboard.component')
+      .then(m => m.AdminDashboardComponent),
+    canActivate: [adminGuard]
+  },
 
-  { path: '**', redirectTo: 'dashboard' }
+  { path: '**', redirectTo: 'landing-page' }
 ];

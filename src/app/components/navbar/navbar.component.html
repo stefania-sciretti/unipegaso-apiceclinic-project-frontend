@@ -2,7 +2,7 @@
   <div class="max-w-[1200px] mx-auto px-6 h-full flex items-center justify-between">
 
     <!-- Logo -->
-    <button type="button" aria-label="Vai alla dashboard" (click)="go('/dashboard')"
+    <button type="button" aria-label="Vai alla landing-page" (click)="go('/landing-page')"
       class="flex items-center cursor-pointer bg-transparent border-0 p-0 m-0">
       <img ngSrc="assets/logo/logo-full.svg" alt="Apice Clinic"
         class="h-9 w-auto block brightness-0 invert"
@@ -55,6 +55,15 @@
             [ngClass]="isActive('/training') ? 'bg-white/15 text-white' : 'text-white/[.82]'"
             (click)="go('/training')">
             <span class="material-icons text-[1.1rem] leading-none">fitness_center</span> Sport
+          </a>
+        </li>
+
+        <!-- Dashboard Admin -->
+        <li class="flex items-center">
+          <a class="flex items-center gap-[0.35rem] px-[0.85rem] py-[0.4rem] rounded-md text-sm font-medium cursor-pointer transition-colors duration-150 hover:bg-white/15 hover:text-white"
+            [ngClass]="isActive('/admin/dashboard') ? 'bg-white/15 text-white' : 'text-white/[.82]'"
+            (click)="go('/admin/dashboard')">
+            <span class="material-icons text-[1.1rem] leading-none">bar_chart</span> Dashboard
           </a>
         </li>
       }
@@ -152,6 +161,7 @@
         <button class="flex items-center gap-2 px-6 py-3 text-sm font-medium text-white/[.82] hover:bg-white/15 hover:text-white transition-colors duration-150 text-left w-full bg-transparent border-0 cursor-pointer" (click)="go('/recipes')"><span class="material-icons text-[1.1rem]">menu_book</span> Ricette</button>
         <button class="flex items-center gap-2 px-6 py-3 text-sm font-medium text-white/[.82] hover:bg-white/15 hover:text-white transition-colors duration-150 text-left w-full bg-transparent border-0 cursor-pointer" (click)="go('/glycemia')"><span class="material-icons text-[1.1rem]">colorize</span> Glicemia</button>
         <button class="flex items-center gap-2 px-6 py-3 text-sm font-medium text-white/[.82] hover:bg-white/15 hover:text-white transition-colors duration-150 text-left w-full bg-transparent border-0 cursor-pointer" (click)="go('/training')"><span class="material-icons text-[1.1rem]">fitness_center</span> Sport</button>
+        <button class="flex items-center gap-2 px-6 py-3 text-sm font-medium text-white/[.82] hover:bg-white/15 hover:text-white transition-colors duration-150 text-left w-full bg-transparent border-0 cursor-pointer" (click)="go('/admin/dashboard')"><span class="material-icons text-[1.1rem]">bar_chart</span> Dashboard</button>
       }
 
       @if (auth.isLoggedIn && !auth.isAdmin) {
