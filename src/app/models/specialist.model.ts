@@ -6,4 +6,8 @@ export interface Specialist {
   bio?: string;
   email: string;
   createdAt: string;
+  area: {
+    id: number;
+    name: string;
+  };
 }

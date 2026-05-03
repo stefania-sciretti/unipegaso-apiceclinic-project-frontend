@@ -1,4 +1,4 @@
-import { Component, input, effect, ViewChild, ElementRef, OnDestroy, PLATFORM_ID, inject } from '@angular/core';
+import { Component, input, effect, ViewChild, ElementRef, OnDestroy, AfterViewInit, PLATFORM_ID, inject } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
 import ApexCharts from 'apexcharts';
 import { RevenueByService } from '../../../../models/dashboard.model';
@@ -8,38 +8,46 @@ import { RevenueByService } from '../../../../models/dashboard.model';
   standalone: true,
   templateUrl: './service-donut.component.html'
 })
-export class ServiceDonutComponent implements OnDestroy {
+export class ServiceDonutComponent implements AfterViewInit, OnDestroy {
   data = input.required<RevenueByService[]>();
   @ViewChild('chartEl', { static: true }) chartEl!: ElementRef;
   private chart: ApexCharts | null = null;
   private readonly platformId = inject(PLATFORM_ID);
-  private rendered = false;
 
   constructor() {
     effect(() => {
-      if (!isPlatformBrowser(this.platformId)) return;
       const d = this.data();
-      if (this.chart && this.rendered) {
+      if (this.chart) {
         this.chart.updateOptions(this.buildOptions(d));
-      } else if (!this.chart) {
-        this.chart = new ApexCharts(this.chartEl.nativeElement, this.buildOptions(d));
-        this.chart.render().then(() => { this.rendered = true; });
       }
     });
+  }
+
+  ngAfterViewInit(): void {
+    if (!isPlatformBrowser(this.platformId)) return;
+    this.chart = new ApexCharts(this.chartEl.nativeElement, this.buildOptions(this.data()));
+    this.chart.render();
   }
 
   ngOnDestroy(): void { this.chart?.destroy(); }
 
   buildOptions(data: RevenueByService[]): ApexCharts.ApexOptions {
     return {
-      chart: { type: 'donut', height: 220, fontFamily: 'Inter, sans-serif' },
+      chart: { type: 'donut', height: 260, fontFamily: 'Inter, sans-serif', foreColor: '#374151' },
+      theme: { mode: 'light' },
       series: data.map(d => d.total),
       labels: data.map(d => d.service),
       colors: ['#6366f1', '#22c55e', '#f59e0b', '#ec4899', '#14b8a6'],
       plotOptions: { pie: { donut: { size: '60%' } } },
-      legend: { position: 'bottom', fontSize: '12px' },
+      legend: {
+        position: 'bottom',
+        fontSize: '12px',
+        markers: { size: 8 },
+        labels: { colors: '#374151' },
+        formatter: (name: string) => `<span style="color:#374151;font-size:12px">${name}</span>`
+      },
       dataLabels: { enabled: false },
-      tooltip: { y: { formatter: (v: number) => `€${v.toLocaleString('it-IT')}` } }
+      tooltip: { y: { formatter: (v: number) => `€${v.toLocaleString('it-IT')}` }, theme: 'light' }
     };
   }
 }

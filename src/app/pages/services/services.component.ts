@@ -12,7 +12,7 @@ import { FormControlDirective } from '../../shared/form-control.directive';
 import { FormLabelDirective } from '../../shared/form-label.directive';
 
 interface ServiceCategory {
-  specialistId: number;
+  areaId: number;
   label: string;
   services: ServiceResponse[];
   open: boolean;
@@ -48,24 +48,24 @@ export class ServicesComponent {
   );
 
   readonly categories = computed<ServiceCategory[]>(() => {
-    const services    = this.allServices.value() ?? [];
-    const specialists = this.allSpecialists.value() ?? [];
+    const services = this.allServices.value() ?? [];
 
-    const grouped = new Map<number, ServiceResponse[]>();
+    const map = new Map<number, { areaName: string; services: ServiceResponse[] }>();
     for (const s of services) {
-      const list = grouped.get(s.specialistId) ?? [];
-      list.push(s);
-      grouped.set(s.specialistId, list);
+      const entry = map.get(s.areaId);
+      if (entry) {
+        entry.services.push(s);
+      } else {
+        map.set(s.areaId, { areaName: s.areaName, services: [s] });
+      }
     }
 
-    return specialists
-      .filter(sp => grouped.has(sp.id))
-      .map(sp => ({
-        specialistId: sp.id,
-        label: `${sp.firstName} ${sp.lastName} — ${sp.role}`,
-        services: grouped.get(sp.id) ?? [],
-        open: true,
-      }));
+    return Array.from(map.entries()).map(([areaId, { areaName, services }]) => ({
+      areaId,
+      label: areaName,
+      services,
+      open: true,
+    }));
   });
 
   readonly showForm = signal(false);

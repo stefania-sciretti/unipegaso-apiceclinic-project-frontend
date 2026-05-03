@@ -2,15 +2,15 @@
 
   <!-- Header + filtro periodo -->
   <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
-    <h1 class="text-2xl font-bold text-gray-900 dark:text-white">Dashboard Admin</h1>
+    <h1 class="text-2xl font-bold text-gray-900 ">Dashboard Admin</h1>
 
-    <div class="inline-flex rounded-lg border border-gray-200 dark:border-gray-700 overflow-hidden">
+    <div class="inline-flex rounded-lg border border-gray-200 overflow-hidden">
       @for (p of periods; track p.value) {
         <button
-          class="px-4 py-2 text-sm font-medium transition-colors duration-150 border-r border-gray-200 dark:border-gray-700 last:border-r-0"
+          class="px-4 py-2 text-sm font-medium transition-colors duration-150 border-r border-gray-200 last:border-r-0"
           [ngClass]="period() === p.value
             ? 'bg-indigo-600 text-white'
-            : 'bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700'"
+            : 'bg-white text-gray-700 hover:bg-gray-50 :bg-gray-700'"
           (click)="selectPeriod(p.value)">
           {{ p.label }}
         </button>
@@ -21,16 +21,16 @@
   <!-- Skeleton di caricamento -->
   @if (loading()) {
     <div class="animate-pulse grid grid-cols-1 md:grid-cols-2 gap-6">
-      <div class="rounded-xl bg-gray-200 dark:bg-gray-700 h-48"></div>
-      <div class="rounded-xl bg-gray-200 dark:bg-gray-700 h-48"></div>
-      <div class="rounded-xl bg-gray-200 dark:bg-gray-700 h-64"></div>
-      <div class="rounded-xl bg-gray-200 dark:bg-gray-700 h-64"></div>
+      <div class="rounded-xl bg-gray-200 h-48"></div>
+      <div class="rounded-xl bg-gray-200 h-48"></div>
+      <div class="rounded-xl bg-gray-200 h-64"></div>
+      <div class="rounded-xl bg-gray-200 h-64"></div>
     </div>
   }
 
   <!-- Alert errore -->
   @if (error() && !loading()) {
-    <div class="rounded-lg bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 p-4 text-red-700 dark:text-red-400 text-sm">
+    <div class="rounded-lg bg-red-50 border border-red-200 p-4 text-red-700 text-sm">
       Impossibile caricare i dati della dashboard. Riprova più tardi.
     </div>
   }

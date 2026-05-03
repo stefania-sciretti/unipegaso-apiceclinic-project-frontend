@@ -20,6 +20,10 @@
   --warning:      #e5992c;
   --radius:       10px;
   --shadow:       0 2px 14px rgba(17, 45, 78, 0.10);
+
+  /* Flowbite design tokens – necessari per ApexCharts integration */
+  --color-body:    #374151;
+  --color-heading: #111827;
 }
 
 * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -730,3 +734,33 @@ code { background: #eef4fa; border-radius: 4px; padding: 2px 6px; font-size: 0.8
 .faq-contact-link .material-icons { font-size: 1.1rem; }
 
 
+
+
+/* ApexCharts – fix testo assi (SVG fill) */
+.apexcharts-canvas .apexcharts-text,
+.apexcharts-canvas .apexcharts-xaxis-label,
+.apexcharts-canvas .apexcharts-yaxis-label {
+  fill: #374151 !important;
+}
+
+/* Nasconde i dot marker inline nel tooltip dei bar chart */
+.apexcharts-tooltip-marker {
+  display: none !important;
+}
+
+/* ApexCharts tooltip – forza testo scuro su sfondo chiaro */
+.apexcharts-tooltip {
+  background: #ffffff !important;
+  border: 1px solid #e5e7eb !important;
+  box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1) !important;
+}
+.apexcharts-tooltip-title {
+  background: #f9fafb !important;
+  color: #111827 !important;
+  border-bottom: 1px solid #e5e7eb !important;
+}
+.apexcharts-tooltip-text-y-label,
+.apexcharts-tooltip-text-y-value,
+.apexcharts-tooltip-text-z-value {
+  color: #374151 !important;
+}
