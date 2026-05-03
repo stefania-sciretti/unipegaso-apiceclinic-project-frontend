@@ -1,0 +1,37 @@
+<div class="grid grid-cols-2 gap-4 h-full">
+
+  <!-- Ricavi del mese -->
+  <div class="rounded-xl bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 p-4 shadow-sm flex flex-col justify-between">
+    <p class="text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400">Ricavi del mese</p>
+    <p class="mt-1 text-2xl font-bold text-gray-900 dark:text-white">
+      {{ kpi().revenueMonth | currency:'EUR':'symbol':'1.0-0':'it' }}
+    </p>
+    <p class="mt-1 text-sm font-medium"
+       [ngClass]="revenueDelta() >= 0 ? 'text-green-600' : 'text-red-600'">
+      {{ revenueDelta() >= 0 ? '▲' : '▼' }}
+      {{ revenueDelta() | number:'1.0-0' }}% vs mese precedente
+    </p>
+  </div>
+
+  <!-- Pazienti attivi -->
+  <div class="rounded-xl bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 p-4 shadow-sm flex flex-col justify-between">
+    <p class="text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400">Pazienti attivi</p>
+    <p class="mt-1 text-2xl font-bold text-gray-900 dark:text-white">{{ kpi().activePatients }}</p>
+    <p class="mt-1 text-sm font-medium text-green-600">▲ +{{ kpi().newPatients }} nuovi</p>
+  </div>
+
+  <!-- Appuntamenti -->
+  <div class="rounded-xl bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 p-4 shadow-sm flex flex-col justify-between">
+    <p class="text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400">Appuntamenti</p>
+    <p class="mt-1 text-2xl font-bold text-gray-900 dark:text-white">{{ kpi().appointmentsMonth }}</p>
+    <p class="mt-1 text-sm font-medium text-amber-600">{{ kpi().cancellationRate }}% di cancellazioni</p>
+  </div>
+
+  <!-- Occupazione agenda -->
+  <div class="rounded-xl bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 p-4 shadow-sm flex flex-col justify-between">
+    <p class="text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400">Occupazione agenda</p>
+    <p class="mt-1 text-2xl font-bold text-gray-900 dark:text-white">{{ kpi().agendaOccupancy }}%</p>
+    <p class="mt-1 text-sm font-medium text-green-600">▲ Ottimale</p>
+  </div>
+
+</div>
