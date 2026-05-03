@@ -73,21 +73,21 @@ describe('LoginComponent', () => {
 
   it('submit() calls auth.login() when form is valid and not registering', () => {
     mockAuthService.login.and.returnValue(of(true));
-    component.form.patchValue({ username: 'admin', password: 'pass123' });
+    component.form.patchValue({ username: 'admin', password: 'pass1234' });
     component.submit();
-    expect(mockAuthService.login).toHaveBeenCalledWith('admin', 'pass123');
+    expect(mockAuthService.login).toHaveBeenCalledWith('admin', 'pass1234');
   });
 
   it('submit() navigates to /homepage on successful login', () => {
     mockAuthService.login.and.returnValue(of(true));
-    component.form.patchValue({ username: 'admin', password: 'pass' });
+    component.form.patchValue({ username: 'admin', password: 'password1' });
     component.submit();
     expect(mockRouter.navigate).toHaveBeenCalledWith(['/homepage']);
   });
 
   it('submit() sets error message when login returns false', () => {
     mockAuthService.login.and.returnValue(of(false));
-    component.form.patchValue({ username: 'admin', password: 'wrong' });
+    component.form.patchValue({ username: 'admin', password: 'wrongpwd' });
     component.submit();
     expect(component.error()).toBeTruthy();
     expect(component.error()).toContain('valide');
@@ -95,7 +95,7 @@ describe('LoginComponent', () => {
 
   it('submit() sets error when login observable errors', () => {
     mockAuthService.login.and.returnValue(throwError(() => new Error('Network')));
-    component.form.patchValue({ username: 'admin', password: 'pass' });
+    component.form.patchValue({ username: 'admin', password: 'password1' });
     component.submit();
     expect(component.error()).toBeTruthy();
     expect(component.loading()).toBeFalse();

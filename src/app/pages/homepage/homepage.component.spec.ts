@@ -64,9 +64,11 @@ describe('HomepageComponent', () => {
     expect(realDays.length).toBeGreaterThan(0);
   });
 
-  it('getAvailableSlots() returns empty array when no date selected', () => {
-    component.selectedDate = '';
-    expect(component.getAvailableSlots()).toEqual([]);
+  it('getAvailableSlots() returns 10 time slots from 09:00 to 18:00', () => {
+    const slots = component.getAvailableSlots();
+    expect(slots.length).toBe(10);
+    expect(slots[0]).toBe('09:00');
+    expect(slots[slots.length - 1]).toBe('18:00');
   });
 
   it('selectArea() sets selectedArea and clears selectedService', () => {

@@ -53,7 +53,8 @@ describe('AuthService', () => {
         accessToken: 'token123',
         tokenType: 'Bearer',
         username: 'testuser',
-        role: 'ROLE_USER'
+        role: 'ROLE_USER',
+        userId: 1
       };
 
       service.login('testuser', 'password123').subscribe();
@@ -72,7 +73,8 @@ describe('AuthService', () => {
         accessToken: 'token123',
         tokenType: 'Bearer',
         username: 'TestUser',
-        role: 'ROLE_USER'
+        role: 'ROLE_USER',
+        userId: 1
       };
 
       service.login('TestUser', 'password123').subscribe();
@@ -87,7 +89,8 @@ describe('AuthService', () => {
         accessToken: 'token123',
         tokenType: 'Bearer',
         username: 'testuser',
-        role: 'ROLE_USER'
+        role: 'ROLE_USER',
+        userId: 1
       };
 
       service.login('testuser', 'password123').subscribe(result => {
@@ -107,7 +110,8 @@ describe('AuthService', () => {
         accessToken: 'token123',
         tokenType: 'Bearer',
         username: 'admin',
-        role: 'ROLE_ADMIN'
+        role: 'ROLE_ADMIN',
+        userId: 1
       };
 
       service.login('admin', 'password123').subscribe(() => {
@@ -123,7 +127,8 @@ describe('AuthService', () => {
         accessToken: 'token123',
         tokenType: 'Bearer',
         username: 'testuser',
-        role: 'ROLE_USER'
+        role: 'ROLE_USER',
+        userId: 1
       };
 
       service.login('testuser', 'password123').subscribe(() => {
@@ -140,7 +145,8 @@ describe('AuthService', () => {
         accessToken: 'token123',
         tokenType: 'Bearer',
         username: 'testuser',
-        role: 'ROLE_USER'
+        role: 'ROLE_USER',
+        userId: 1
       };
 
       service.login('testuser', 'password123').subscribe(() => {
@@ -313,7 +319,8 @@ describe('AuthService', () => {
         accessToken: 'abc123',
         tokenType: 'Bearer',
         username: 'testuser',
-        role: 'ROLE_USER'
+        role: 'ROLE_USER',
+        userId: 1
       };
 
       service.login('testuser', 'password').subscribe(() => {

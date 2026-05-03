@@ -6,6 +6,7 @@ import { AppointmentService } from '../../services/appointment.service';
 import { PatientService } from '../../services/patient.service';
 import { SpecialistService } from '../../services/specialist.service';
 import { AlertService } from '../../services/alert.service';
+import { AuthService } from '../../services/auth.service';
 import { FitnessAppointment } from '../../models/models';
 
 const makeAppt = (overrides: Partial<FitnessAppointment> = {}): FitnessAppointment => ({
@@ -26,6 +27,7 @@ describe('AppointmentsComponent', () => {
   const mockPatientService    = jasmine.createSpyObj('PatientService', ['getAll']);
   const mockSpecialistService = jasmine.createSpyObj('SpecialistService', ['getAll']);
   const mockAlertService      = jasmine.createSpyObj('AlertService', ['show'], { alert: () => null });
+  const mockAuthService       = { isAdmin: true, patientId: undefined, isLoggedIn: true, user: () => null };
 
   beforeEach(async () => {
     mockRouter = jasmine.createSpyObj('Router', ['navigate']);
@@ -48,6 +50,7 @@ describe('AppointmentsComponent', () => {
         { provide: PatientService,    useValue: mockPatientService },
         { provide: SpecialistService, useValue: mockSpecialistService },
         { provide: AlertService,       useValue: mockAlertService },
+        { provide: AuthService,        useValue: mockAuthService },
         { provide: ActivatedRoute,     useValue: { queryParams: of({}) } },
         { provide: Router,             useValue: mockRouter }
       ]
