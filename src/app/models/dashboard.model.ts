@@ -2,11 +2,14 @@ export type PeriodFilter = '1m' | '3m' | '6m' | '1y';
 
 export interface DashboardKpi {
   revenueMonth: number;
-  revenuePrevMonth: number;
+  /** null when no prior billing period exists */
+  revenuePrevMonth: number | null;
   activePatients: number;
   newPatients: number;
   appointmentsMonth: number;
+  /** Percentage 0–100 */
   cancellationRate: number;
+  /** Percentage 0–100 */
   agendaOccupancy: number;
 }
 

@@ -1,5 +1,6 @@
 import { TestBed } from '@angular/core/testing';
-import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
+import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
+import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
 import { DashboardService } from './dashboard.service';
 import { DashboardStats } from '../../../models/dashboard.model';
 
@@ -25,8 +26,14 @@ describe('DashboardService', () => {
   let httpMock: HttpTestingController;
 
   beforeEach(() => {
-    TestBed.configureTestingModule({ imports: [HttpClientTestingModule] });
-    service = TestBed.inject(DashboardService);
+    TestBed.configureTestingModule({
+      providers: [
+        DashboardService,
+        provideHttpClient(withInterceptorsFromDi()),
+        provideHttpClientTesting()
+      ]
+    });
+    service  = TestBed.inject(DashboardService);
     httpMock = TestBed.inject(HttpTestingController);
   });
 
@@ -44,8 +51,12 @@ describe('DashboardService', () => {
   });
 
   it('should pass period=1m when requested', () => {
-    service.getStats('1m').subscribe();
-    const req = httpMock.expectOne(r => r.params.get('period') === '1m');
+    service.getStats('1m').subscribe(stats => {
+      expect(stats).toEqual(MOCK_STATS);
+    });
+    const req = httpMock.expectOne(r =>
+      r.url === '/api/dashboard' && r.params.get('period') === '1m'
+    );
     expect(req.request.method).toBe('GET');
     req.flush(MOCK_STATS);
   });

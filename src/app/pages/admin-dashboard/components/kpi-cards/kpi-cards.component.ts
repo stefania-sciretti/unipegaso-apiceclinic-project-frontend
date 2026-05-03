@@ -13,7 +13,7 @@ export class KpiCardsComponent {
 
   revenueDelta = computed(() => {
     const k = this.kpi();
-    if (!k.revenuePrevMonth) return 0;
+    if (k.revenuePrevMonth == null || k.revenuePrevMonth === 0) return 0;
     return Math.round(((k.revenueMonth - k.revenuePrevMonth) / k.revenuePrevMonth) * 100);
   });
 }
