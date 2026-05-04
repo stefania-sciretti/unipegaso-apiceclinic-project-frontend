@@ -10,6 +10,7 @@ Permette la prenotazione online di visite, il monitoraggio della glicemia, la ge
 - **Tailwind CSS** — utility-first styling
 - **ApexCharts** — grafici dashboard
 - **Angular Material** — componenti UI
+- **Flowbite** — componenti UI aggiuntivi (dropdown, modal, tooltip)
 
 ---
 
