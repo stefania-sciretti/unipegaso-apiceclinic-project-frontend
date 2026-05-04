@@ -48,7 +48,7 @@ export class ServiceDonutComponent implements AfterViewInit, OnDestroy {
         formatter: (name: string) => `<span style="color:#374151;font-size:12px">${name}</span>`
       },
       dataLabels: { enabled: false },
-      tooltip: { y: { formatter: (v: number) => `€${v.toLocaleString('it-IT')}` }, theme: 'light' }
+      tooltip: { enabled: false }
     };
   }
 }

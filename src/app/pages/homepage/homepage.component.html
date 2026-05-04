@@ -1,17 +1,14 @@
 <main class="max-w-[1200px] mx-auto my-8 px-6">
-  <div class="bg-gradient-to-br from-[var(--primary)] to-[var(--primary-mid)] text-white rounded-[10px] px-8 py-10 mb-8 flex items-center gap-6">
-    <span class="material-icons text-[3rem] text-white/80">local_hospital</span>
-    <div>
-      <h1 class="text-[2rem] font-bold mb-[0.35rem]">Apice Clinic</h1>
-      <p class="text-[1rem] opacity-90">Clinica privata di nutrizione clinica e medicina dello sport — valutazione, monitoraggio e performance</p>
-    </div>
+  <div class="bg-gradient-to-br from-[var(--primary-mid)] to-[var(--primary)] text-white rounded-[10px] px-6 py-6 mb-8">
+    <h1 class="text-[1.5rem] font-bold mb-[0.25rem]">Apice Clinic</h1>
+    <p class="text-[0.9rem] opacity-90">Il tuo centro integrato di medicina dello sport e nutrizione clinica — prenotazioni, referti e monitoraggio della salute in un unico posto</p>
   </div>
 
   <!-- ──────── BOOKING BANNER ──────── -->
   <div class="bg-gradient-to-br from-[var(--primary)] to-[var(--primary-mid)] rounded-xl p-8 mb-12 shadow-[0_4px_20px_rgba(17,45,78,0.15)] text-white">
     <h2 class="text-[1.75rem] font-bold mb-8 text-white">Cosa vuoi prenotare?</h2>
 
-    <div class="grid grid-cols-1 lg:grid-cols-[1fr_1fr_1fr_auto] gap-6 items-stretch">
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 items-stretch">
       <!-- Step 1: Select Area/Service -->
       <div class="flex flex-col gap-3 h-full">
         <p class="text-[0.9rem] font-semibold text-white/90 tracking-wide">1. Cosa vuoi prenotare? *</p>
@@ -81,8 +78,9 @@
         }
       </div>
 
-      <!-- Step 2: Select Date with Calendar — always in DOM to avoid grid layout shift -->
-      <div [ngClass]="!selectedService ? 'hidden lg:block lg:invisible lg:pointer-events-none flex-col gap-3 h-full' : 'flex flex-col gap-3 h-full'">
+      <!-- Step 2: Calendario — visibile ma blurrato finché non si sceglie un servizio -->
+      <div class="flex flex-col gap-3 h-full transition-all duration-300"
+           [ngClass]="!selectedService ? 'blur-sm opacity-50 pointer-events-none select-none' : ''">
         <p class="text-[0.9rem] font-semibold text-white/90 tracking-wide">2. Da quando sei disponibile? *</p>
         <div class="bg-white rounded-lg p-6 shadow-[0_2px_8px_rgba(0,0,0,0.1)] flex-1">
           <div class="flex items-center justify-between mb-6">
@@ -103,12 +101,12 @@
             @for (d of getCalendarDays(); track d) {
               @if (d !== 0) {
                 <button
-                  class="aspect-square flex items-center justify-center border rounded-md bg-white text-[var(--primary)] cursor-pointer text-[0.9rem] font-medium transition-all duration-200"
+                  class="aspect-square flex items-center justify-center border rounded-md cursor-pointer text-[0.9rem] font-medium transition-all duration-200"
                   [ngClass]="isDateSelected(d)
                     ? 'bg-[var(--primary)] text-white border-[var(--primary)] font-bold'
                     : isDateDisabled(d)
                       ? 'opacity-50 cursor-not-allowed bg-gray-100 text-gray-400 border-gray-200'
-                      : 'border-gray-200 hover:border-[var(--primary)] hover:bg-slate-100'"
+                      : 'bg-white text-[var(--primary)] border-gray-200 hover:border-[var(--primary)] hover:bg-slate-100'"
                   [disabled]="isDateDisabled(d)"
                   (click)="selectCalendarDate(d)">
                   {{ d }}
@@ -122,8 +120,9 @@
         </div>
       </div>
 
-      <!-- Step 3: Doctor Availability — always in DOM to avoid grid layout shift -->
-      <div [ngClass]="!selectedService || !selectedDate ? 'hidden lg:block lg:invisible lg:pointer-events-none flex-col gap-3 h-full' : 'flex flex-col gap-3 h-full'">
+      <!-- Step 3: Orario — blurrato finché non si sceglie anche la data -->
+      <div class="flex flex-col gap-3 h-full transition-all duration-300"
+           [ngClass]="!selectedService || !selectedDate ? 'blur-sm opacity-50 pointer-events-none select-none' : ''">
         <p class="text-[0.9rem] font-semibold text-white/90 tracking-wide">3. Seleziona orario *</p>
         <div class="bg-white rounded-lg overflow-hidden shadow-[0_2px_8px_rgba(0,0,0,0.1)] flex-1">
           <div class="flex items-center gap-6 p-6 bg-gradient-to-br from-slate-100 to-slate-50 border-b border-gray-200">
@@ -152,17 +151,18 @@
           </div>
         </div>
       </div>
+    </div>
 
-      <!-- Booking Button: visible only when all 3 steps are complete -->
-      <div class="flex items-stretch"
-           [ngClass]="!selectedService || !selectedDate || !selectedTime ? 'hidden lg:flex lg:invisible lg:pointer-events-none' : ''">
-        <app-button
-          extraClass="gap-3 px-8 py-4 text-[1.05rem] uppercase tracking-wide whitespace-nowrap rounded-lg"
+    <!-- Tasto Prenota — in basso a destra, appare solo quando tutti e 3 gli step sono completati -->
+    @if (selectedService && selectedDate && selectedTime) {
+      <div class="flex justify-end mt-5 animate-[fadeIn_0.2s_ease-in]">
+        <app-button size="sm"
+          extraClass="gap-2 px-5 py-2 uppercase tracking-wide whitespace-nowrap rounded-lg"
           (click)="bookAppointment()">
-          <span class="material-icons text-[1.3rem]">check</span> Prenota
+          <span class="material-icons text-[1rem]">check</span> Prenota
         </app-button>
       </div>
-    </div>
+    }
   </div>
 
   <!-- ──────── OFFER SECTION ──────── -->
@@ -174,14 +174,14 @@
   <div class="grid gap-6 mb-8 grid-cols-[repeat(auto-fill,minmax(280px,1fr))]">
 
     @for (area of bookingAreas(); track area.id) {
-      <div class="group bg-white rounded-[10px] shadow-[0_2px_14px_rgba(17,45,78,0.10)] overflow-hidden flex flex-col transition-all duration-150 hover:-translate-y-1 hover:shadow-[0_8px_24px_rgba(53,88,114,0.15)]">
+      <div class="bg-white rounded-[10px] shadow-[0_2px_14px_rgba(17,45,78,0.10)] overflow-hidden flex flex-col">
         <div class="flex items-center gap-3 px-5 py-4 text-white bg-gradient-to-br from-[var(--primary)] to-[var(--primary-mid)]">
           <span class="material-icons text-[1.8rem]">{{ area.icon }}</span>
           <span class="text-[1.05rem] font-bold tracking-[0.2px]">{{ area.label }}</span>
         </div>
         @if (area.image) {
           <div class="w-full h-40 overflow-hidden">
-            <img class="w-full h-full object-cover block transition-transform duration-[350ms] ease-in-out group-hover:scale-105"
+            <img class="w-full h-full object-cover block"
                  [src]="area.image" [alt]="area.label"/>
           </div>
         }
@@ -193,7 +193,7 @@
             </li>
           }
         </ul>
-        <app-button size="sm" extraClass="mx-5 mb-5 self-start" (click)="navigate(area.navPath)">
+        <app-button size="sm" extraClass="mx-5 mb-5 self-start" (click)="navigate(area)">
           {{ area.navLabel }}
         </app-button>
       </div>
@@ -202,3 +202,60 @@
   </div>
 
 </main>
+
+<!-- ── Modale di successo prenotazione ── -->
+@if (successModal()) {
+  <div class="fixed inset-0 z-[99999] flex items-center justify-center bg-black/50 backdrop-blur-sm animate-[fadeIn_0.2s_ease]"
+       (click)="successModal.set(null)">
+    <div class="bg-white rounded-2xl shadow-2xl max-w-sm w-full mx-4 overflow-hidden"
+         (click)="$event.stopPropagation()">
+      <!-- Header verde -->
+      <div class="bg-gradient-to-br from-green-500 to-emerald-600 px-6 py-8 flex flex-col items-center gap-3 text-white">
+        <span class="material-icons text-[3.5rem]">check_circle</span>
+        <h2 class="text-[1.4rem] font-bold m-0">Prenotazione confermata!</h2>
+      </div>
+      <!-- Dettagli -->
+      <div class="px-6 py-5 flex flex-col gap-3">
+        <div class="flex items-start gap-3">
+          <span class="material-icons text-[1.3rem] text-[var(--primary)] mt-[2px] shrink-0">medical_services</span>
+          <div>
+            <p class="text-[0.75rem] text-gray-400 font-medium m-0 mb-[2px]">Servizio</p>
+            <p class="text-[0.95rem] font-semibold text-[var(--primary)] m-0">{{ successModal()!.service }}</p>
+          </div>
+        </div>
+        <div class="flex items-start gap-3">
+          <span class="material-icons text-[1.3rem] text-[var(--primary)] mt-[2px] shrink-0">calendar_today</span>
+          <div>
+            <p class="text-[0.75rem] text-gray-400 font-medium m-0 mb-[2px]">Data e ora</p>
+            <p class="text-[0.95rem] font-semibold text-[var(--primary)] m-0">{{ successModal()!.date }} alle {{ successModal()!.time }}</p>
+          </div>
+        </div>
+        <p class="text-[0.85rem] text-gray-500 m-0 mt-1">Puoi visualizzare i tuoi appuntamenti nella sezione <em>I miei appuntamenti</em>.</p>
+      </div>
+      <!-- Footer -->
+      <div class="px-6 pb-5 flex justify-end">
+        <app-button size="sm" (click)="successModal.set(null)">Chiudi</app-button>
+      </div>
+    </div>
+  </div>
+}
+
+<!-- ── Modale di errore prenotazione ── -->
+@if (errorModal()) {
+  <div class="fixed inset-0 z-[99999] flex items-center justify-center bg-black/50 backdrop-blur-sm animate-[fadeIn_0.2s_ease]"
+       (click)="errorModal.set(null)">
+    <div class="bg-white rounded-2xl shadow-2xl max-w-sm w-full mx-4 overflow-hidden"
+         (click)="$event.stopPropagation()">
+      <div class="bg-gradient-to-br from-red-500 to-rose-600 px-6 py-8 flex flex-col items-center gap-3 text-white">
+        <span class="material-icons text-[3.5rem]">error_outline</span>
+        <h2 class="text-[1.4rem] font-bold m-0">Attenzione</h2>
+      </div>
+      <div class="px-6 py-5">
+        <p class="text-[0.95rem] text-gray-700 m-0">{{ errorModal() }}</p>
+      </div>
+      <div class="px-6 pb-5 flex justify-end">
+        <app-button size="sm" (click)="errorModal.set(null)">Ok</app-button>
+      </div>
+    </div>
+  </div>
+}

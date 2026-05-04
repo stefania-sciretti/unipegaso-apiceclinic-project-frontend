@@ -26,13 +26,13 @@ describe('RevenueChartComponent', () => {
 
   it('buildOptions should include series data mapped from input', () => {
     const comp = fixture.componentInstance;
-    const opts = comp.buildOptions(MOCK_DATA) as any;
+    const opts = (comp as any).buildOptions(MOCK_DATA);
     expect(opts.series[0].data).toEqual([8000, 9500, 12450]);
     expect(opts.xaxis.categories).toEqual(['Gen', 'Feb', 'Mar']);
   });
 
   it('buildOptions should use bar chart type', () => {
-    const opts = (fixture.componentInstance.buildOptions(MOCK_DATA) as any);
+    const opts = (fixture.componentInstance as any).buildOptions(MOCK_DATA);
     expect(opts.chart.type).toBe('bar');
   });
 });

@@ -24,7 +24,7 @@ describe('AppointmentsChartComponent', () => {
   });
 
   it('buildOptions should have 3 series (booked, completed, cancelled)', () => {
-    const opts = fixture.componentInstance.buildOptions(MOCK_DATA) as any;
+    const opts = (fixture.componentInstance as any).buildOptions(MOCK_DATA);
     expect(opts.series.length).toBe(3);
     expect(opts.series[0].name).toBe('Prenotati');
     expect(opts.series[1].name).toBe('Completati');
@@ -32,7 +32,7 @@ describe('AppointmentsChartComponent', () => {
   });
 
   it('buildOptions should map data correctly', () => {
-    const opts = fixture.componentInstance.buildOptions(MOCK_DATA) as any;
+    const opts = (fixture.componentInstance as any).buildOptions(MOCK_DATA);
     expect(opts.series[0].data).toEqual([80, 90]);
     expect(opts.series[2].data).toEqual([10, 10]);
     expect(opts.xaxis.categories).toEqual(['Gen', 'Feb']);

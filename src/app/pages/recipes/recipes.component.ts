@@ -5,6 +5,7 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { RecipeService } from '../../services/recipe.service';
 import { AlertService } from '../../services/alert.service';
 import { ConfirmModalService } from '../../services/confirm-modal.service';
+import { AuthService } from '../../services/auth.service';
 import { Recipe, RecipeRequest, ApiError } from '../../models/models';
 import { ButtonComponent } from '../../components/ui/button/button.component';
 import { FormControlDirective } from '../../shared/form-control.directive';
@@ -20,8 +21,10 @@ export class RecipesComponent implements OnInit {
   private readonly alertSvc   = inject(AlertService);
   private readonly fb         = inject(FormBuilder);
   private readonly confirmSvc = inject(ConfirmModalService);
+  private readonly auth       = inject(AuthService);
 
   protected readonly alertSignal = this.alertSvc.alert;
+  protected get isAdmin(): boolean { return this.auth.isAdmin; }
 
   recipes: Recipe[] = [];
   loading        = false;

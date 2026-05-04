@@ -1,4 +1,4 @@
-import { Component, computed, inject, resource } from '@angular/core';
+import { Component, computed, inject, resource, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { HttpErrorResponse } from '@angular/common/http';
 import { Router } from '@angular/router';
@@ -24,9 +24,9 @@ interface BookingArea {
 }
 
 const AREA_CONFIG: Record<string, Omit<BookingArea, 'id' | 'services'>> = {
-  'Alimentazione': { label: 'Area Nutrizione', icon: 'restaurant_menu',  image: 'assets/images/nutrition.webp', appointmentType: 'fitness',  navPath: '/nutrition', navLabel: 'Vedi piani nutrizionali →'     },
-  'Sport':         { label: 'Area Sport',       icon: 'fitness_center',   image: 'assets/images/gym.webp',       appointmentType: 'fitness',  navPath: '/training',  navLabel: 'Vedi schede allenamento →'    },
-  'Clinica':       { label: 'Area Clinica',     icon: 'medical_services', image: 'assets/images/visit.webp',     appointmentType: 'clinical', navPath: '/services',  navLabel: 'Vedi tutte le prestazioni →' },
+  'Alimentazione': { label: 'Area Nutrizione', icon: 'restaurant_menu',  image: 'assets/images/nutrition.webp', appointmentType: 'fitness',  navPath: '/services', navLabel: 'Scopri i servizi di nutrizione →' },
+  'Sport':         { label: 'Area Sport',       icon: 'fitness_center',   image: 'assets/images/gym.webp',       appointmentType: 'fitness',  navPath: '/services', navLabel: 'Scopri i servizi sportivi →'      },
+  'Clinica':       { label: 'Area Clinica',     icon: 'medical_services', image: 'assets/images/visit.webp',     appointmentType: 'clinical', navPath: '/services', navLabel: 'Vedi tutte le prestazioni →'      },
 };
 
 @Component({
@@ -80,6 +80,9 @@ export class HomepageComponent {
   bookingLoading = false;
   showAreaDropdown = false;
   currentMonth: Date = new Date();
+
+  successModal = signal<{ service: string; date: string; time: string } | null>(null);
+  errorModal   = signal<string | null>(null);
 
   constructor() {
     this.initDateRange();
@@ -170,7 +173,7 @@ export class HomepageComponent {
 
   bookAppointment(): void {
     if (!this.selectedService || !this.selectedDate || !this.selectedTime) {
-      alert('Per favore completa tutti i campi');
+      this.errorModal.set('Per favore completa tutti i campi');
       return;
     }
 
@@ -178,7 +181,7 @@ export class HomepageComponent {
     const today = new Date();
     today.setHours(0, 0, 0, 0);
     if (selectedDateTime <= today) {
-      alert('Non puoi prenotare per oggi. Scegli una data da domani in poi');
+      this.errorModal.set('Non puoi prenotare per oggi. Scegli una data da domani in poi');
       return;
     }
 
@@ -203,12 +206,16 @@ export class HomepageComponent {
 
     const onSuccess = () => {
       this.bookingLoading = false;
-      alert(`Prenotazione confermata per ${this.selectedService?.service} il ${this.formatDateDisplay(this.selectedDate)} alle ${this.selectedTime}`);
+      this.successModal.set({
+        service: this.selectedService?.service ?? '',
+        date:    this.formatDateDisplay(this.selectedDate),
+        time:    this.selectedTime,
+      });
       this.resetForm();
     };
     const onError = (err: HttpErrorResponse) => {
       this.bookingLoading = false;
-      alert('Errore nella prenotazione: ' + (err.error?.message ?? 'Riprova più tardi'));
+      this.errorModal.set('Errore nella prenotazione: ' + (err.error?.message ?? 'Riprova più tardi'));
     };
 
     if (appointmentType === 'clinical') {
@@ -240,5 +247,7 @@ export class HomepageComponent {
     this.showAreaDropdown = false;
   }
 
-  navigate(path: string): void { this.router.navigate([path]); }
+  navigate(area: BookingArea): void {
+    this.router.navigate([area.navPath], { queryParams: { areaId: area.id } });
+  }
 }

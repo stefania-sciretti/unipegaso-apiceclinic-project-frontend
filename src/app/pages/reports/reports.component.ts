@@ -55,6 +55,12 @@ export class ReportsComponent implements OnInit {
 
   protected get isAdmin(): boolean { return this.auth.isAdmin; }
 
+  protected get isSelectedAppointmentUsed(): boolean {
+    const selectedId = this.form.get('appointmentId')?.value;
+    if (!selectedId) return false;
+    return this.completedAppointments.find(a => a.id === +selectedId)?.hasReport ?? false;
+  }
+
   constructor() {}
 
   ngOnInit(): void {
@@ -79,7 +85,7 @@ export class ReportsComponent implements OnInit {
     this.clinicalAppointmentService.getAll({ status: 'COMPLETED' }).pipe(
       catchError(() => of([]))
     ).subscribe(appointments => {
-      this.completedAppointments = appointments.filter(a => !a.hasReport);
+      this.completedAppointments = appointments;
     });
   }
 
@@ -108,6 +114,7 @@ export class ReportsComponent implements OnInit {
 
   save(): void {
     if (this.form.invalid) { this.form.markAllAsTouched(); return; }
+    if (this.isSelectedAppointmentUsed) return;
     const value = this.form.value;
     const body = {
       appointmentId: +value.appointmentId,

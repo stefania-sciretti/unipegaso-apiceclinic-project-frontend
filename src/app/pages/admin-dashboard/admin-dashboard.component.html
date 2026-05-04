@@ -37,11 +37,11 @@
   @if (stats(); as s) {
     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
       <!-- Riga 1: KPI + Donut -->
-      <app-kpi-cards [kpi]="s.kpi" />
+      <app-kpi-cards [kpi]="s.kpi" [period]="period()" />
       <app-service-donut [data]="s.revenueByArea" />
       <!-- Riga 2: Revenue + Appointments -->
-      <app-revenue-chart [data]="s.revenueByMonth" />
-      <app-appointments-chart [data]="s.appointmentsByMonth" />
+      <app-revenue-chart [data]="s.revenueByMonth" [period]="period()" />
+      <app-appointments-chart [data]="s.appointmentsByMonth" [period]="period()" />
     </div>
   }
 

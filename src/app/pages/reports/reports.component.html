@@ -98,12 +98,18 @@
                 </option>
               }
             </select>
-            @if (isInvalid('appointmentId')) {
+            @if (isSelectedAppointmentUsed) {
+              <div class="text-[var(--danger)] text-[0.8rem] mt-1 flex items-center gap-1">
+                <span class="material-icons text-[0.95rem]">error_outline</span>
+                Questo appuntamento ha già un referto associato. Selezionane un altro.
+              </div>
+            }
+            @if (isInvalid('appointmentId') && !isSelectedAppointmentUsed) {
               <div class="text-[var(--danger)] text-[0.8rem] mt-1">Seleziona un appuntamento</div>
             }
             @if (completedAppointments.length === 0) {
               <small class="text-sm text-[var(--primary-mid)]">
-                Nessun appuntamento completato disponibile senza referto.
+                Nessun appuntamento completato disponibile.
               </small>
             }
           </div>

@@ -13,6 +13,7 @@ const FISCAL_CODE_PATTERN = /^[A-Z]{6}\d{2}[A-Z]\d{2}[A-Z]\d{3}[A-Z]$/;
 @Component({
   selector: 'app-login',
   imports: [ReactiveFormsModule, NgClass, ButtonComponent],
+  standalone: true,
   templateUrl: './login.component.html'
 })
 export class LoginComponent implements OnInit {

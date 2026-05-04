@@ -14,48 +14,39 @@
 
       <!-- ── Solo admin ──────────────────────────────────────────── -->
       @if (auth.isAdmin) {
+        <!-- Gestionale dropdown -->
+        <li class="relative self-stretch flex items-center">
+          <a class="flex items-center gap-[0.35rem] cursor-pointer h-full px-[0.85rem] select-none text-sm font-medium transition-colors duration-[180ms] rounded-md hover:bg-white/15 hover:text-white"
+            [ngClass]="(activeMenu==='gestionale' || isSection(['/patients','/appointments','/reports','/booking-calendar'])) ? 'bg-white/15 text-white' : 'text-white/[.82]'"
+            [class.rounded-b-none]="activeMenu==='gestionale'"
+            (click)="toggle('gestionale', $event)">
+            <span class="material-icons text-[1.1rem] leading-none">manage_accounts</span> Gestionale ▾
+          </a>
+          @if (activeMenu === 'gestionale') {
+            <ul class="absolute top-full left-0 bg-[var(--primary)] rounded-[0_8px_8px_8px] shadow-[0_8px_24px_rgba(0,0,0,0.30)] min-w-[210px] list-none py-[0.35rem] z-[10000] border border-white/[.12] border-t-0 p-0">
+              <li class="list-none"><a class="flex items-center gap-2 px-5 py-[0.6rem] whitespace-nowrap text-sm cursor-pointer text-white/[.82] hover:bg-white/15 hover:text-white transition-colors duration-150" (click)="go('/patients')"><span class="material-icons text-[1.1rem]">people</span> Pazienti</a></li>
+              <li class="list-none"><a class="flex items-center gap-2 px-5 py-[0.6rem] whitespace-nowrap text-sm cursor-pointer text-white/[.82] hover:bg-white/15 hover:text-white transition-colors duration-150" (click)="go('/appointments')"><span class="material-icons text-[1.1rem]">calendar_today</span> Appuntamenti</a></li>
+              <li class="list-none"><a class="flex items-center gap-2 px-5 py-[0.6rem] whitespace-nowrap text-sm cursor-pointer text-white/[.82] hover:bg-white/15 hover:text-white transition-colors duration-150" (click)="go('/reports')"><span class="material-icons text-[1.1rem]">assignment</span> Referti</a></li>
+              <li class="list-none"><a class="flex items-center gap-2 px-5 py-[0.6rem] whitespace-nowrap text-sm cursor-pointer text-white/[.82] hover:bg-white/15 hover:text-white transition-colors duration-150" (click)="go('/booking-calendar')"><span class="material-icons text-[1.1rem]">calendar_view_month</span> Calendario</a></li>
+            </ul>
+          }
+        </li>
+
         <!-- Clinico dropdown -->
         <li class="relative self-stretch flex items-center">
           <a class="flex items-center gap-[0.35rem] cursor-pointer h-full px-[0.85rem] select-none text-sm font-medium transition-colors duration-[180ms] rounded-md hover:bg-white/15 hover:text-white"
-            [ngClass]="(activeMenu==='clinico' || isSection(['/patients','/appointments','/reports','/services','/booking-calendar'])) ? 'bg-white/15 text-white' : 'text-white/[.82]'"
+            [ngClass]="(activeMenu==='clinico' || isSection(['/glycemia','/nutrition','/training'])) ? 'bg-white/15 text-white' : 'text-white/[.82]'"
             [class.rounded-b-none]="activeMenu==='clinico'"
             (click)="toggle('clinico', $event)">
             <span class="material-icons text-[1.1rem] leading-none">medical_services</span> Clinico ▾
           </a>
           @if (activeMenu === 'clinico') {
-            <ul class="absolute top-full left-0 bg-[var(--primary)] rounded-[0_8px_8px_8px] shadow-[0_8px_24px_rgba(0,0,0,0.30)] min-w-[210px] list-none py-[0.35rem] z-[10000] border border-white/[.12] border-t-0 p-0">
-              <li class="list-none"><a class="flex items-center gap-2 px-5 py-[0.6rem] whitespace-nowrap text-sm cursor-pointer text-white/[.82] hover:bg-white/15 hover:text-white transition-colors duration-150" (click)="go('/patients')"><span class="material-icons text-[1.1rem]">people</span> Pazienti</a></li>
-              <li class="list-none"><a class="flex items-center gap-2 px-5 py-[0.6rem] whitespace-nowrap text-sm cursor-pointer text-white/[.82] hover:bg-white/15 hover:text-white transition-colors duration-150" (click)="go('/appointments')"><span class="material-icons text-[1.1rem]">calendar_today</span> Appuntamenti</a></li>
-              <li class="list-none"><a class="flex items-center gap-2 px-5 py-[0.6rem] whitespace-nowrap text-sm cursor-pointer text-white/[.82] hover:bg-white/15 hover:text-white transition-colors duration-150" (click)="go('/reports')"><span class="material-icons text-[1.1rem]">assignment</span> Referti</a></li>
-              <li class="list-none"><a class="flex items-center gap-2 px-5 py-[0.6rem] whitespace-nowrap text-sm cursor-pointer text-white/[.82] hover:bg-white/15 hover:text-white transition-colors duration-150" (click)="go('/booking-calendar')"><span class="material-icons text-[1.1rem]">calendar_view_month</span> Calendario prenotazioni</a></li>
-            </ul>
-          }
-        </li>
-
-        <!-- Nutrizione dropdown -->
-        <li class="relative self-stretch flex items-center">
-          <a class="flex items-center gap-[0.35rem] cursor-pointer h-full px-[0.85rem] select-none text-sm font-medium transition-colors duration-[180ms] rounded-md hover:bg-white/15 hover:text-white"
-            [ngClass]="(activeMenu==='nutrizione' || isSection(['/nutrition','/recipes','/glycemia'])) ? 'bg-white/15 text-white' : 'text-white/[.82]'"
-            [class.rounded-b-none]="activeMenu==='nutrizione'"
-            (click)="toggle('nutrizione', $event)">
-            <span class="material-icons text-[1.1rem] leading-none">restaurant_menu</span> Nutrizione ▾
-          </a>
-          @if (activeMenu === 'nutrizione') {
-            <ul class="absolute top-full left-0 bg-[var(--primary)] rounded-[0_8px_8px_8px] shadow-[0_8px_24px_rgba(0,0,0,0.30)] min-w-[210px] list-none py-[0.35rem] z-[10000] border border-white/[.12] border-t-0 p-0">
-              <li class="list-none"><a class="flex items-center gap-2 px-5 py-[0.6rem] whitespace-nowrap text-sm cursor-pointer text-white/[.82] hover:bg-white/15 hover:text-white transition-colors duration-150" (click)="go('/nutrition')"><span class="material-icons text-[1.1rem]">restaurant_menu</span> Piani Dieta</a></li>
-              <li class="list-none"><a class="flex items-center gap-2 px-5 py-[0.6rem] whitespace-nowrap text-sm cursor-pointer text-white/[.82] hover:bg-white/15 hover:text-white transition-colors duration-150" (click)="go('/recipes')"><span class="material-icons text-[1.1rem]">menu_book</span> Ricette</a></li>
+            <ul class="absolute top-full left-0 bg-[var(--primary)] rounded-[0_8px_8px_8px] shadow-[0_8px_24px_rgba(0,0,0,0.30)] min-w-[200px] list-none py-[0.35rem] z-[10000] border border-white/[.12] border-t-0 p-0">
               <li class="list-none"><a class="flex items-center gap-2 px-5 py-[0.6rem] whitespace-nowrap text-sm cursor-pointer text-white/[.82] hover:bg-white/15 hover:text-white transition-colors duration-150" (click)="go('/glycemia')"><span class="material-icons text-[1.1rem]">colorize</span> Glicemia</a></li>
+              <li class="list-none"><a class="flex items-center gap-2 px-5 py-[0.6rem] whitespace-nowrap text-sm cursor-pointer text-white/[.82] hover:bg-white/15 hover:text-white transition-colors duration-150" (click)="go('/nutrition')"><span class="material-icons text-[1.1rem]">restaurant_menu</span> Nutrizione</a></li>
+              <li class="list-none"><a class="flex items-center gap-2 px-5 py-[0.6rem] whitespace-nowrap text-sm cursor-pointer text-white/[.82] hover:bg-white/15 hover:text-white transition-colors duration-150" (click)="go('/training')"><span class="material-icons text-[1.1rem]">fitness_center</span> Sport</a></li>
             </ul>
           }
-        </li>
-
-        <!-- Sport -->
-        <li class="flex items-center">
-          <a class="flex items-center gap-[0.35rem] px-[0.85rem] py-[0.4rem] rounded-md text-sm font-medium cursor-pointer transition-colors duration-150 hover:bg-white/15 hover:text-white"
-            [ngClass]="isActive('/training') ? 'bg-white/15 text-white' : 'text-white/[.82]'"
-            (click)="go('/training')">
-            <span class="material-icons text-[1.1rem] leading-none">fitness_center</span> Sport
-          </a>
         </li>
 
         <!-- Dashboard Admin -->
@@ -69,33 +60,28 @@
       }
 
       <!-- ── User loggato (non admin) ────────────────────────────── -->
-      @if (auth.isLoggedIn && !auth.isAdmin) {
+
+      <!-- ── Prestazioni (solo non-admin) ───────────────────────── -->
+      @if (!auth.isAdmin) {
         <li class="flex items-center">
           <a class="flex items-center gap-[0.35rem] px-[0.85rem] py-[0.4rem] rounded-md text-sm font-medium cursor-pointer transition-colors duration-150 hover:bg-white/15 hover:text-white"
-            [ngClass]="isActive('/appointments') ? 'bg-white/15 text-white' : 'text-white/[.82]'"
-            (click)="go('/appointments')">
-            <span class="material-icons text-[1.1rem] leading-none">calendar_today</span> I miei appuntamenti
+            [ngClass]="isActive('/services') ? 'bg-white/15 text-white' : 'text-white/[.82]'"
+            (click)="go('/services')">
+            <span class="material-icons text-[1.1rem] leading-none">list_alt</span> Prestazioni
           </a>
         </li>
       }
 
-      <!-- ── Prestazioni (tutti) ─────────────────────────────────── -->
-      <li class="flex items-center">
-        <a class="flex items-center gap-[0.35rem] px-[0.85rem] py-[0.4rem] rounded-md text-sm font-medium cursor-pointer transition-colors duration-150 hover:bg-white/15 hover:text-white"
-          [ngClass]="isActive('/services') ? 'bg-white/15 text-white' : 'text-white/[.82]'"
-          (click)="go('/services')">
-          <span class="material-icons text-[1.1rem] leading-none">list_alt</span> Prestazioni
-        </a>
-      </li>
-
-      <!-- ── Specialisti (tutti) ────────────────────────────────── -->
-      <li class="flex items-center">
-        <a class="flex items-center gap-[0.35rem] px-[0.85rem] py-[0.4rem] rounded-md text-sm font-medium cursor-pointer transition-colors duration-150 hover:bg-white/15 hover:text-white"
-          [ngClass]="isSection(['/specialists','/specialist']) ? 'bg-white/15 text-white' : 'text-white/[.82]'"
-          (click)="go('/specialists')">
-          <span class="material-icons text-[1.1rem] leading-none">badge</span> Specialisti
-        </a>
-      </li>
+      <!-- ── Specialisti (solo non-admin) ──────────────────────── -->
+      @if (!auth.isAdmin) {
+        <li class="flex items-center">
+          <a class="flex items-center gap-[0.35rem] px-[0.85rem] py-[0.4rem] rounded-md text-sm font-medium cursor-pointer transition-colors duration-150 hover:bg-white/15 hover:text-white"
+            [ngClass]="isSection(['/specialists','/specialist']) ? 'bg-white/15 text-white' : 'text-white/[.82]'"
+            (click)="go('/specialists')">
+            <span class="material-icons text-[1.1rem] leading-none">badge</span> Specialisti
+          </a>
+        </li>
+      }
 
       <!-- ── Non loggato: Login ──────────────────────────────────── -->
       @if (!auth.isLoggedIn) {
@@ -103,6 +89,17 @@
           <app-button variant="ghost-light" (click)="openLogin()">
             <span class="material-icons text-[1.1rem]">login</span> Login
           </app-button>
+        </li>
+      }
+
+      <!-- ── Ricette (solo utenti loggati) ─────────────────────── -->
+      @if (auth.isLoggedIn) {
+        <li class="flex items-center">
+          <a class="flex items-center gap-[0.35rem] px-[0.85rem] py-[0.4rem] rounded-md text-sm font-medium cursor-pointer transition-colors duration-150 hover:bg-white/15 hover:text-white"
+            [ngClass]="isActive('/recipes') ? 'bg-white/15 text-white' : 'text-white/[.82]'"
+            (click)="go('/recipes')">
+            <span class="material-icons text-[1.1rem] leading-none">menu_book</span> Ricette
+          </a>
         </li>
       }
 
@@ -124,6 +121,11 @@
               <li class="list-none">
                 <a class="flex items-center gap-2 px-5 py-[0.6rem] whitespace-nowrap text-sm cursor-pointer text-white/[.82] hover:bg-white/15 hover:text-white transition-colors duration-150" (click)="go('/reports')">
                   <span class="material-icons text-[1.1rem]">assignment</span> I miei referti
+                </a>
+              </li>
+              <li class="list-none">
+                <a class="flex items-center gap-2 px-5 py-[0.6rem] whitespace-nowrap text-sm cursor-pointer text-white/[.82] hover:bg-white/15 hover:text-white transition-colors duration-150" (click)="go('/appointments')">
+                  <span class="material-icons text-[1.1rem]">calendar_today</span> I miei appuntamenti
                 </a>
               </li>
               <li class="list-none">
@@ -155,16 +157,17 @@
         <button class="flex items-center gap-2 px-6 py-3 text-sm font-medium text-white/[.82] hover:bg-white/15 hover:text-white transition-colors duration-150 text-left w-full bg-transparent border-0 cursor-pointer" (click)="go('/appointments')"><span class="material-icons text-[1.1rem]">calendar_today</span> Prenotazioni</button>
         <button class="flex items-center gap-2 px-6 py-3 text-sm font-medium text-white/[.82] hover:bg-white/15 hover:text-white transition-colors duration-150 text-left w-full bg-transparent border-0 cursor-pointer" (click)="go('/reports')"><span class="material-icons text-[1.1rem]">assignment</span> Referti</button>
         <button class="flex items-center gap-2 px-6 py-3 text-sm font-medium text-white/[.82] hover:bg-white/15 hover:text-white transition-colors duration-150 text-left w-full bg-transparent border-0 cursor-pointer" (click)="go('/booking-calendar')"><span class="material-icons text-[1.1rem]">calendar_view_month</span> Calendario prenotazioni</button>
-        <button class="flex items-center gap-2 px-6 py-3 text-sm font-medium text-white/[.82] hover:bg-white/15 hover:text-white transition-colors duration-150 text-left w-full bg-transparent border-0 cursor-pointer" (click)="go('/nutrition')"><span class="material-icons text-[1.1rem]">restaurant_menu</span> Piani Dieta</button>
-        <button class="flex items-center gap-2 px-6 py-3 text-sm font-medium text-white/[.82] hover:bg-white/15 hover:text-white transition-colors duration-150 text-left w-full bg-transparent border-0 cursor-pointer" (click)="go('/recipes')"><span class="material-icons text-[1.1rem]">menu_book</span> Ricette</button>
         <button class="flex items-center gap-2 px-6 py-3 text-sm font-medium text-white/[.82] hover:bg-white/15 hover:text-white transition-colors duration-150 text-left w-full bg-transparent border-0 cursor-pointer" (click)="go('/glycemia')"><span class="material-icons text-[1.1rem]">colorize</span> Glicemia</button>
+        <button class="flex items-center gap-2 px-6 py-3 text-sm font-medium text-white/[.82] hover:bg-white/15 hover:text-white transition-colors duration-150 text-left w-full bg-transparent border-0 cursor-pointer" (click)="go('/nutrition')"><span class="material-icons text-[1.1rem]">restaurant_menu</span> Nutrizione</button>
         <button class="flex items-center gap-2 px-6 py-3 text-sm font-medium text-white/[.82] hover:bg-white/15 hover:text-white transition-colors duration-150 text-left w-full bg-transparent border-0 cursor-pointer" (click)="go('/training')"><span class="material-icons text-[1.1rem]">fitness_center</span> Sport</button>
+        <button class="flex items-center gap-2 px-6 py-3 text-sm font-medium text-white/[.82] hover:bg-white/15 hover:text-white transition-colors duration-150 text-left w-full bg-transparent border-0 cursor-pointer" (click)="go('/recipes')"><span class="material-icons text-[1.1rem]">menu_book</span> Ricette</button>
         <button class="flex items-center gap-2 px-6 py-3 text-sm font-medium text-white/[.82] hover:bg-white/15 hover:text-white transition-colors duration-150 text-left w-full bg-transparent border-0 cursor-pointer" (click)="go('/admin/dashboard')"><span class="material-icons text-[1.1rem]">bar_chart</span> Dashboard</button>
       }
 
       @if (auth.isLoggedIn && !auth.isAdmin) {
-        <button class="flex items-center gap-2 px-6 py-3 text-sm font-medium text-white/[.82] hover:bg-white/15 hover:text-white transition-colors duration-150 text-left w-full bg-transparent border-0 cursor-pointer" (click)="go('/appointments')"><span class="material-icons text-[1.1rem]">calendar_today</span> Prenota</button>
         <button class="flex items-center gap-2 px-6 py-3 text-sm font-medium text-white/[.82] hover:bg-white/15 hover:text-white transition-colors duration-150 text-left w-full bg-transparent border-0 cursor-pointer" (click)="go('/reports')"><span class="material-icons text-[1.1rem]">assignment</span> I miei referti</button>
+        <button class="flex items-center gap-2 px-6 py-3 text-sm font-medium text-white/[.82] hover:bg-white/15 hover:text-white transition-colors duration-150 text-left w-full bg-transparent border-0 cursor-pointer" (click)="go('/appointments')"><span class="material-icons text-[1.1rem]">calendar_today</span> I miei appuntamenti</button>
+        <button class="flex items-center gap-2 px-6 py-3 text-sm font-medium text-white/[.82] hover:bg-white/15 hover:text-white transition-colors duration-150 text-left w-full bg-transparent border-0 cursor-pointer" (click)="go('/recipes')"><span class="material-icons text-[1.1rem]">menu_book</span> Ricette</button>
       }
 
       <button class="flex items-center gap-2 px-6 py-3 text-sm font-medium text-white/[.82] hover:bg-white/15 hover:text-white transition-colors duration-150 text-left w-full bg-transparent border-0 cursor-pointer" (click)="go('/services')"><span class="material-icons text-[1.1rem]">list_alt</span> Prestazioni</button>

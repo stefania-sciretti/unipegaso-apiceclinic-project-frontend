@@ -17,18 +17,6 @@ export const routes: Routes = [
     loadComponent: () => import('./pages/services/services.component').then(m => m.ServicesComponent)
   },
   {
-    path: 'nutrition',
-    loadComponent: () => import('./pages/nutrition/nutrition.component').then(m => m.NutritionComponent)
-  },
-  {
-    path: 'recipes',
-    loadComponent: () => import('./pages/recipes/recipes.component').then(m => m.RecipesComponent)
-  },
-  {
-    path: 'training',
-    loadComponent: () => import('./pages/training/training.component').then(m => m.TrainingComponent)
-  },
-  {
     path: 'faq',
     loadComponent: () => import('./pages/faq/faq.component').then(m => m.FaqComponent)
   },
@@ -39,6 +27,11 @@ export const routes: Routes = [
   { path: 'staff/:slug', redirectTo: '/specialist/:slug' },
 
   // ── Richiede login (admin o user) ─────────────────────────────────────
+  {
+    path: 'recipes',
+    loadComponent: () => import('./pages/recipes/recipes.component').then(m => m.RecipesComponent),
+    canActivate: [loginGuard]
+  },
   {
     path: 'appointments',
     loadComponent: () => import('./pages/appointments/appointments.component').then(m => m.AppointmentsComponent),
@@ -51,6 +44,16 @@ export const routes: Routes = [
   },
 
   // ── Solo admin ────────────────────────────────────────────────────────
+  {
+    path: 'nutrition',
+    loadComponent: () => import('./pages/nutrition/nutrition.component').then(m => m.NutritionComponent),
+    canActivate: [adminGuard]
+  },
+  {
+    path: 'training',
+    loadComponent: () => import('./pages/training/training.component').then(m => m.TrainingComponent),
+    canActivate: [adminGuard]
+  },
   {
     path: 'patients',
     loadComponent: () => import('./pages/patients/patients.component').then(m => m.PatientsComponent),

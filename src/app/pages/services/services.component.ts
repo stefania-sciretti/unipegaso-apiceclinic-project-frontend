@@ -1,5 +1,6 @@
-import { Component, computed, inject, resource, signal } from '@angular/core';
+import { Component, computed, effect, inject, resource, signal } from '@angular/core';
 import { CurrencyPipe } from '@angular/common';
+import { ActivatedRoute } from '@angular/router';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { firstValueFrom } from 'rxjs';
 import { SpecialistService } from '../../services/specialist.service';
@@ -26,6 +27,7 @@ interface ServiceCategory {
 export class ServicesComponent {
   private readonly specialistSvc = inject(SpecialistService);
   private readonly clinicSvc     = inject(ClinicServicesService);
+  private readonly route         = inject(ActivatedRoute);
   readonly authSvc               = inject(AuthService);
   private readonly alertSvc      = inject(AlertService);
   private readonly fb            = inject(FormBuilder);
@@ -76,6 +78,20 @@ export class ServicesComponent {
     price:        [null, [Validators.required, Validators.min(0)]],
     specialistId: [null, Validators.required],
   });
+
+  constructor() {
+    const areaIdParam = this.route.snapshot.queryParamMap.get('areaId');
+    if (areaIdParam) {
+      const targetAreaId = Number(areaIdParam);
+      effect(() => {
+        const cats = this.categories();
+        if (cats.length > 0 && this.openCategoryId() === null) {
+          const match = cats.find(c => c.areaId === targetAreaId);
+          if (match) this.openCategoryId.set(match.areaId);
+        }
+      });
+    }
+  }
 
   toggle(areaId: number): void {
     this.openCategoryId.update(current => current === areaId ? null : areaId);

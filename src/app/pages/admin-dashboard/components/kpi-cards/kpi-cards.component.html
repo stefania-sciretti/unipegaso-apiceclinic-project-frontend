@@ -1,15 +1,15 @@
 <div class="grid grid-cols-2 gap-4 h-full">
 
-  <!-- Ricavi del mese -->
+  <!-- Ricavi -->
   <div class="rounded-xl bg-white border border-gray-200 p-4 shadow-sm flex flex-col justify-between">
-    <p class="text-xs font-semibold uppercase tracking-wide text-gray-500">Ricavi del mese</p>
+    <p class="text-xs font-semibold uppercase tracking-wide text-gray-500">Ricavi {{ periodLabel() }}</p>
     <p class="mt-1 text-2xl font-bold text-gray-900">
       {{ kpi().revenueMonth | currency:'EUR':'symbol':'1.0-0':'it' }}
     </p>
     <p class="mt-1 text-sm font-medium"
        [ngClass]="revenueDelta() >= 0 ? 'text-green-600' : 'text-red-600'">
       {{ revenueDelta() >= 0 ? '▲' : '▼' }}
-      {{ revenueDelta() | number:'1.0-0' }}% vs mese precedente
+      {{ revenueDelta() | number:'1.0-0' }}% vs periodo precedente
     </p>
   </div>
 
@@ -22,7 +22,7 @@
 
   <!-- Appuntamenti -->
   <div class="rounded-xl bg-white border border-gray-200 p-4 shadow-sm flex flex-col justify-between">
-    <p class="text-xs font-semibold uppercase tracking-wide text-gray-500">Appuntamenti</p>
+    <p class="text-xs font-semibold uppercase tracking-wide text-gray-500">Appuntamenti {{ periodLabel() }}</p>
     <p class="mt-1 text-2xl font-bold text-gray-900">{{ kpi().appointmentsMonth }}</p>
     <p class="mt-1 text-sm font-medium text-amber-600">{{ kpi().cancellationRate }}% di cancellazioni</p>
   </div>
