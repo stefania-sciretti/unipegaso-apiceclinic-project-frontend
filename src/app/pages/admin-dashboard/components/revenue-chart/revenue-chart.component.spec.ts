@@ -17,6 +17,7 @@ describe('RevenueChartComponent', () => {
     }).compileComponents();
     fixture = TestBed.createComponent(RevenueChartComponent);
     fixture.componentRef.setInput('data', MOCK_DATA);
+    fixture.componentRef.setInput('period', '1m');
     fixture.detectChanges();
   });
 

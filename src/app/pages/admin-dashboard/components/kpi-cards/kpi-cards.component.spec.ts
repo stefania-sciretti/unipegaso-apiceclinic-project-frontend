@@ -20,6 +20,7 @@ describe('KpiCardsComponent', () => {
     }).compileComponents();
     fixture = TestBed.createComponent(KpiCardsComponent);
     fixture.componentRef.setInput('kpi', MOCK_KPI);
+    fixture.componentRef.setInput('period', '1m');
     fixture.detectChanges();
   });
 

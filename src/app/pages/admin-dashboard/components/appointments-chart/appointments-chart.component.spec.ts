@@ -16,6 +16,7 @@ describe('AppointmentsChartComponent', () => {
     }).compileComponents();
     fixture = TestBed.createComponent(AppointmentsChartComponent);
     fixture.componentRef.setInput('data', MOCK_DATA);
+    fixture.componentRef.setInput('period', '1m');
     fixture.detectChanges();
   });
 
