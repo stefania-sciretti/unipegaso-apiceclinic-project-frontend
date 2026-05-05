@@ -4,7 +4,13 @@
     <p class="text-[0.9rem] opacity-90">Il tuo centro integrato di medicina dello sport e nutrizione clinica — prenotazioni, referti e monitoraggio della salute in un unico posto</p>
   </div>
 
+  <!-- ──────── ADMIN DASHBOARD ──────── -->
+  @if (auth.isAdmin) {
+    <app-admin-dashboard />
+  }
+
   <!-- ──────── BOOKING BANNER ──────── -->
+  @if (!auth.isAdmin) {
   <div class="bg-gradient-to-br from-[var(--primary)] to-[var(--primary-mid)] rounded-xl p-8 mb-12 shadow-[0_4px_20px_rgba(17,45,78,0.15)] text-white">
     <h2 class="text-[1.75rem] font-bold mb-8 text-white">Cosa vuoi prenotare?</h2>
 
@@ -200,6 +206,7 @@
     }
 
   </div>
+  }
 
 </main>
 

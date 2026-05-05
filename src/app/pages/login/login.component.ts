@@ -134,7 +134,7 @@ export class LoginComponent implements OnInit {
 
   private completePendingBooking(pending: PendingBooking): void {
     const bookingRequest = {
-      patientId:    this.auth.currentUser!.id,
+      patientId:    this.auth.currentUser!.patientId!,
       specialistId: pending.specialistId,
       scheduledAt:  pending.scheduledAt,
       serviceType:  pending.serviceType

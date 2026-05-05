@@ -90,6 +90,7 @@ export class ReportsComponent implements OnInit {
   }
 
   openCreate(): void {
+    if (!this.auth.isAdmin) return;
     this.editingId = null;
     this.form.reset();
     this.loadCompletedAppointments();
@@ -97,6 +98,7 @@ export class ReportsComponent implements OnInit {
   }
 
   openEdit(report: Report): void {
+    if (!this.auth.isAdmin) return;
     this.editingId     = report.id;
     this.selectedReport = report;
     this.completedAppointments = [];
@@ -113,6 +115,7 @@ export class ReportsComponent implements OnInit {
   closeFormModal(): void           { this.showFormModal = false; }
 
   save(): void {
+    if (!this.auth.isAdmin) return;
     if (this.form.invalid) { this.form.markAllAsTouched(); return; }
     if (this.isSelectedAppointmentUsed) return;
     const value = this.form.value;

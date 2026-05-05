@@ -11,6 +11,7 @@ import { ClinicServicesService } from '../../services/clinic-services.service';
 import { SpecialistService } from '../../services/specialist.service';
 import { ButtonComponent } from '../../components/ui/button/button.component';
 import { ServiceResponse, Specialist } from '../../models/models';
+import { AdminDashboardComponent } from '../admin-dashboard/admin-dashboard.component';
 
 interface BookingArea {
   id: number;
@@ -31,7 +32,7 @@ const AREA_CONFIG: Record<string, Omit<BookingArea, 'id' | 'services'>> = {
 
 @Component({
   selector: 'app-homepage',
-  imports: [CommonModule, ButtonComponent],
+  imports: [CommonModule, ButtonComponent, AdminDashboardComponent],
   templateUrl: './homepage.component.html'
 })
 export class HomepageComponent {
@@ -220,14 +221,14 @@ export class HomepageComponent {
 
     if (appointmentType === 'clinical') {
       this.clinicalApptSvc.create({
-        patientId:   this.auth.currentUser!.id,
+        patientId:   this.auth.currentUser!.patientId!,
         specialistId,
         scheduledAt: appointmentDateTime,
-        visitType:   this.selectedService.service,
+        serviceType: this.selectedService.service,
       }).subscribe({ next: onSuccess, error: onError });
     } else {
       this.appointmentSvc.create({
-        patientId:   this.auth.currentUser!.id,
+        patientId:   this.auth.currentUser!.patientId!,
         specialistId,
         scheduledAt: appointmentDateTime,
         serviceType: this.selectedService.service,

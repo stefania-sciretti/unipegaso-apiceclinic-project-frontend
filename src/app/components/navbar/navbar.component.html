@@ -118,16 +118,18 @@
           </a>
           @if (activeMenu === 'user') {
             <ul class="absolute top-full right-0 left-auto bg-[var(--primary)] rounded-[8px_0_8px_8px] shadow-[0_8px_24px_rgba(0,0,0,0.30)] min-w-[160px] list-none py-[0.35rem] z-[10000] border border-white/[.12] border-t-0 p-0">
-              <li class="list-none">
-                <a class="flex items-center gap-2 px-5 py-[0.6rem] whitespace-nowrap text-sm cursor-pointer text-white/[.82] hover:bg-white/15 hover:text-white transition-colors duration-150" (click)="go('/reports')">
-                  <span class="material-icons text-[1.1rem]">assignment</span> I miei referti
-                </a>
-              </li>
-              <li class="list-none">
-                <a class="flex items-center gap-2 px-5 py-[0.6rem] whitespace-nowrap text-sm cursor-pointer text-white/[.82] hover:bg-white/15 hover:text-white transition-colors duration-150" (click)="go('/appointments')">
-                  <span class="material-icons text-[1.1rem]">calendar_today</span> I miei appuntamenti
-                </a>
-              </li>
+              @if (!auth.isAdmin) {
+                <li class="list-none">
+                  <a class="flex items-center gap-2 px-5 py-[0.6rem] whitespace-nowrap text-sm cursor-pointer text-white/[.82] hover:bg-white/15 hover:text-white transition-colors duration-150" (click)="go('/reports')">
+                    <span class="material-icons text-[1.1rem]">assignment</span> I miei referti
+                  </a>
+                </li>
+                <li class="list-none">
+                  <a class="flex items-center gap-2 px-5 py-[0.6rem] whitespace-nowrap text-sm cursor-pointer text-white/[.82] hover:bg-white/15 hover:text-white transition-colors duration-150" (click)="go('/appointments')">
+                    <span class="material-icons text-[1.1rem]">calendar_today</span> I miei appuntamenti
+                  </a>
+                </li>
+              }
               <li class="list-none">
                 <a class="flex items-center gap-2 px-5 py-[0.6rem] whitespace-nowrap text-sm cursor-pointer text-red-400 hover:bg-white/15 transition-colors duration-150" (click)="logout()">
                   <span class="material-icons text-[1.1rem]">logout</span> Esci

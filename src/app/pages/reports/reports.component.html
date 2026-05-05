@@ -195,9 +195,11 @@
       </div>
       <div class="flex justify-end gap-3 mt-6 pt-4 border-t border-[var(--border)]">
         <app-button variant="secondary" (click)="showDetailModal = false">Chiudi</app-button>
-        <app-button (click)="openEdit(selectedReport!); showDetailModal = false">
-          <span class="material-icons text-[15px] align-middle">edit</span> Modifica
-        </app-button>
+        @if (isAdmin) {
+          <app-button (click)="openEdit(selectedReport!); showDetailModal = false">
+            <span class="material-icons text-[15px] align-middle">edit</span> Modifica
+          </app-button>
+        }
       </div>
     </div>
   </div>

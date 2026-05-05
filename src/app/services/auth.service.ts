@@ -25,6 +25,7 @@ export interface LoginResponse {
   username: string;
   role: string;
   userId: number;
+  patientId?: number;
 }
 
 export interface RegisterRequest {
@@ -86,7 +87,7 @@ export class AuthService {
       map(response => {
         if (!response?.accessToken) return false;
         const role: UserRole = response.role === 'ROLE_ADMIN' ? 'admin' : 'user';
-        const patientId = role === 'user' ? response.userId : undefined;
+        const patientId = role === 'user' ? response.patientId : undefined;
         this.persistUser(response, role, patientId);
         return true;
       })

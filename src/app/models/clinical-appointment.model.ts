@@ -17,6 +17,6 @@ export interface ClinicalAppointmentRequest {
   patientId: number;
   specialistId: number;
   scheduledAt: string;
-  visitType: string;
+  serviceType: string;
   notes?: string | null;
 }

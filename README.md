@@ -105,6 +105,175 @@ Le voci *Prestazioni* e *Specialisti* sono visibili solo agli utenti non-admin.
 
 ---
 
+## Diagramma UML delle classi
+
+```mermaid
+classDiagram
+    class AuthUser {
+        +number id
+        +string username
+        +UserRole role
+        +string displayName
+        +number patientId
+    }
+
+    class Patient {
+        +number id
+        +string firstName
+        +string lastName
+        +string fiscalCode
+        +string birthDate
+        +string email
+        +string phone
+    }
+
+    class Specialist {
+        +number id
+        +string firstName
+        +string lastName
+        +string role
+        +string bio
+        +string email
+        +Area area
+    }
+
+    class Area {
+        +number id
+        +string name
+    }
+
+    class FitnessAppointment {
+        +number id
+        +number patientId
+        +number specialistId
+        +string scheduledAt
+        +string serviceType
+        +AppointmentStatus status
+        +string notes
+    }
+
+    class ClinicalAppointment {
+        +number id
+        +number patientId
+        +number specialistId
+        +string scheduledAt
+        +string visitType
+        +string status
+        +boolean hasReport
+        +string notes
+    }
+
+    class GlycemiaMeasurement {
+        +number id
+        +number patientId
+        +number specialistId
+        +string measuredAt
+        +number valueMgDl
+        +GlycemiaContext context
+        +GlycemiaClassification classification
+        +string notes
+    }
+
+    class DietPlan {
+        +number id
+        +number patientId
+        +number specialistId
+        +string title
+        +number calories
+        +number durationWeeks
+        +boolean active
+    }
+
+    class TrainingPlan {
+        +number id
+        +number patientId
+        +number specialistId
+        +string title
+        +number weeks
+        +number sessionsPerWeek
+        +boolean active
+    }
+
+    class Recipe {
+        +number id
+        +string title
+        +string ingredients
+        +string instructions
+        +number calories
+        +string category
+    }
+
+    class ServiceResponse {
+        +number id
+        +string service
+        +number price
+        +number specialistId
+        +Area area
+    }
+
+    AuthUser ..> Patient : identifica (utente)
+
+    Specialist --> Area : appartiene a
+    ServiceResponse --> Area : appartiene a
+
+    Patient "1" --> "0..*" FitnessAppointment : prenota
+    Patient "1" --> "0..*" ClinicalAppointment : prenota
+    Patient "1" --> "0..*" GlycemiaMeasurement : registra
+    Patient "1" --> "0..*" DietPlan : segue
+    Patient "1" --> "0..*" TrainingPlan : segue
+
+    Specialist "1" --> "0..*" FitnessAppointment : gestisce
+    Specialist "1" --> "0..*" ClinicalAppointment : gestisce
+    Specialist "1" --> "0..*" GlycemiaMeasurement : monitora
+    Specialist "1" --> "0..*" DietPlan : crea
+    Specialist "1" --> "0..*" TrainingPlan : crea
+    Specialist "1" --> "0..*" ServiceResponse : offre
+```
+
+---
+
+## Architettura — Diagramma UML
+
+```mermaid
+flowchart TD
+    U([Utente non loggato]) --> PUB
+    L([Utente loggato]) --> PUB
+    L --> USR
+    A([Admin]) --> PUB
+    A --> ADM
+
+    subgraph PUB[Pagine pubbliche]
+        direction TB
+        HP[/homepage/]
+        SP[/specialists/]
+        SD[/specialist/:slug/]
+        SV[/services/]
+        FA[/faq/]
+    end
+
+    subgraph USR[Solo utente loggato]
+        direction TB
+        AP[/appointments/\nI miei appuntamenti]
+        RP[/reports/\nI miei referti]
+        RC[/recipes/\nRicette - solo lettura]
+    end
+
+    subgraph ADM[Solo admin]
+        direction TB
+        DB[/admin\/dashboard/\nDashboard KPI]
+        PT[/patients/\nPazienti]
+        BC[/booking-calendar/\nCalendario prenotazioni]
+        GL[/glycemia/\nGlicemia]
+        NT[/nutrition/\nNutrizione]
+        TR[/training/\nAllenamento]
+        RCA[/recipes/\nRicette - CRUD]
+        APA[/appointments/\nTutte le prenotazioni]
+        RPA[/reports/\nTutti i referti]
+    end
+```
+
+---
+
 ## Note
 
 - Le rotte protette richiedono autenticazione; senza login si viene reindirizzati automaticamente.

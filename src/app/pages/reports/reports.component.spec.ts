@@ -4,6 +4,7 @@ import { ReportsComponent } from './reports.component';
 import { ReportService } from '../../services/report.service';
 import { ClinicalAppointmentService } from '../../services/clinical-appointment.service';
 import { AlertService } from '../../services/alert.service';
+import { AuthService } from '../../services/auth.service';
 import { Report } from '../../services/report.service';
 
 const makeReport = (overrides: Partial<Report> = {}): Report => ({
@@ -24,6 +25,7 @@ describe('ReportsComponent', () => {
   const mockReportService = jasmine.createSpyObj('ReportService', ['getAll', 'create', 'update']);
   const mockApptService   = jasmine.createSpyObj('ClinicalAppointmentService', ['getAll']);
   const mockAlertService  = jasmine.createSpyObj('AlertService', ['show'], { alert: () => null });
+  const mockAuthService   = { isAdmin: true, isLoggedIn: true, patientId: undefined, user: () => null };
 
   beforeEach(async () => {
     mockReportService.getAll.calls.reset();
@@ -39,7 +41,8 @@ describe('ReportsComponent', () => {
       providers: [
         { provide: ReportService,              useValue: mockReportService },
         { provide: ClinicalAppointmentService, useValue: mockApptService },
-        { provide: AlertService,               useValue: mockAlertService }
+        { provide: AlertService,               useValue: mockAlertService },
+        { provide: AuthService,                useValue: mockAuthService }
       ]
     }).compileComponents();
 
