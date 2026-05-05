@@ -232,48 +232,6 @@ classDiagram
 
 ---
 
-## Architettura — Diagramma UML
-
-```mermaid
-flowchart TD
-    U([Utente non loggato]) --> PUB
-    L([Utente loggato]) --> PUB
-    L --> USR
-    A([Admin]) --> PUB
-    A --> ADM
-
-    subgraph PUB[Pagine pubbliche]
-        direction TB
-        HP[/homepage/]
-        SP[/specialists/]
-        SD[/specialist/:slug/]
-        SV[/services/]
-        FA[/faq/]
-    end
-
-    subgraph USR[Solo utente loggato]
-        direction TB
-        AP[/appointments/\nI miei appuntamenti]
-        RP[/reports/\nI miei referti]
-        RC[/recipes/\nRicette - solo lettura]
-    end
-
-    subgraph ADM[Solo admin]
-        direction TB
-        DB[/admin\/dashboard/\nDashboard KPI]
-        PT[/patients/\nPazienti]
-        BC[/booking-calendar/\nCalendario prenotazioni]
-        GL[/glycemia/\nGlicemia]
-        NT[/nutrition/\nNutrizione]
-        TR[/training/\nAllenamento]
-        RCA[/recipes/\nRicette - CRUD]
-        APA[/appointments/\nTutte le prenotazioni]
-        RPA[/reports/\nTutti i referti]
-    end
-```
-
----
-
 ## Note
 
 - Le rotte protette richiedono autenticazione; senza login si viene reindirizzati automaticamente.
